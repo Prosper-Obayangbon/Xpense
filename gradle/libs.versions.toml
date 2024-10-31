@@ -5,6 +5,7 @@ converterGson = "2.9.0"
 datastorePreferences = "1.1.1"
 hiltAndroid = "2.51.1"
 hiltCompiler = "1.2.0"
+hiltCompilerVersion = "1.0.0"
 hiltLifecycleViewmodel = "1.0.0-alpha03"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
@@ -25,7 +26,6 @@ roomRuntime = "2.6.1"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }
-androidx-hilt-lifecycle-viewmodel = { module = "androidx.hilt:hilt-lifecycle-viewmodel", version.ref = "hiltLifecycleViewmodel" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltLifecycleViewmodel" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
@@ -59,4 +59,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-kapt = {id ="org.jetbrains.kotlin.kapt", version = "2.1.0-Beta2"}
 kotlin-compose = { id= "org.jetbrains.kotlin.plugin.compose", version ="2.1.0-Beta2" }
+hilt1 = { id = "com.google.dagger.hilt.android", version ="2.51.1" }
 

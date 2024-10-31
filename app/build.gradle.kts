@@ -3,11 +3,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.kapt)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt1)
 }
 
 android {
     namespace = "uk.ac.tees.mad.d3424757.xpenseapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "uk.ac.tees.mad.d3424757.xpenseapp"
@@ -57,13 +58,15 @@ dependencies {//firebase/firestore
 //    implementation 'com.google.firebase:firebase-auth-ktx'
 //    implementation 'com.google.firebase:firebase-firestore-ktx'
 
+
+
     //Dagger - Hilt
     implementation(libs.hilt.android)
 
-    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+   //implementation(libs.androidx.hilt.lifecycle.viewmodel)
 // Dagger - Hilt
     kapt(libs.hilt.android.compiler)
-    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+
     kapt(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
@@ -119,4 +122,7 @@ dependencies {//firebase/firestore
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+kapt {
+    correctErrorTypes = true
 }
