@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.kapt)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -49,7 +51,58 @@ android {
     }
 }
 
-dependencies {
+dependencies {//firebase/firestore
+    //  implementation platform('com.google.firebase:firebase-bom:29.0.0')
+    //firebase auth and firestore
+//    implementation 'com.google.firebase:firebase-auth-ktx'
+//    implementation 'com.google.firebase:firebase-firestore-ktx'
+
+    //Dagger - Hilt
+    implementation(libs.hilt.android)
+
+    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+// Dagger - Hilt
+    kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+    kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    //material icons - use with caution!
+    // implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    // Coroutine Lifecycle Scopes
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+
+    // Coil
+    implementation(libs.coil.compose)
+
+    // Retrofit
+    implementation(libs.retrofit)
+
+    // OkHttp
+    implementation(libs.okhttp)
+
+    // JSON Converter
+    implementation(libs.converter.gson)
+
+    //Room
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+
+    // To use Kotlin annotation processing tool (kapt) MUST HAVE!
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+
+    //Datastorage/Shared Prefs
+    implementation(libs.androidx.datastore.preferences)
+
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
