@@ -21,6 +21,7 @@ composeBom = "2024.10.01"
 okhttp = "5.0.0-alpha.2"
 retrofit = "2.9.0"
 roomRuntime = "2.6.1"
+composeMaterial3 = "1.0.0-alpha28"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
