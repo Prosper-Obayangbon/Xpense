@@ -25,13 +25,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.pm.ShortcutInfoCompat.Surface
 import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
+import uk.ac.tees.mad.d3424757.xpenseapp.components.XTextLink
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
+
 
 @Composable
 fun Onboarding(navController: NavController) {
@@ -97,16 +100,7 @@ fun Onboarding(navController: NavController) {
                     fontSize = 14.sp
                 )
 
-                // Login Link
-                TextButton(
-                    onClick = { /* TODO: Handle login click */ },
-                ) {
-                    Text(
-                        text = "Log In",
-                        fontSize = 14.sp,
-                        color = tealGreen
-                    )
-                }
+                XTextLink(text = "Log In", onClick = {} )
             }
 
 

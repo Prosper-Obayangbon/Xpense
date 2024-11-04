@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.splash
 
 import android.view.animation.OvershootInterpolator
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -31,70 +32,84 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
 
-@Composable
-fun SplashScreen(navController: NavController){
+// Constants for animation
+private const val ANIMATION_DURATION = 800 // Duration for the scale animation in milliseconds
+private const val SPLASH_DELAY = 2000L // Delay before navigating to the next screen
 
-    val scale = remember {
-        androidx.compose.animation.core.Animatable(0f)
+/**
+ * A composable function that displays a splash screen with an animated logo.
+ *
+ * @param navController The NavController to navigate to the next screen.
+ */
+@Composable
+fun SplashScreen(navController: NavController) {
+    // Animatable variable for the scale effect
+    val scale = remember { Animatable(0f) }
+
+    // Launch effect for animating the scale and navigating to the next screen
+    LaunchedEffect(Unit) {
+        scale.animateTo(
+            targetValue = 0.9f,
+            animationSpec = tween(
+                durationMillis = ANIMATION_DURATION,
+                easing = {
+                    OvershootInterpolator(8f).getInterpolation(it)
+                }
+            )
+        )
+        delay(SPLASH_DELAY)
+        navController.navigate(XpenseScreens.Onboarding.name)
     }
 
-    LaunchedEffect(key1 = true, block = {
-        scale.animateTo(targetValue = 0.9f,
-            animationSpec = tween(
-                durationMillis = 800,
-                easing = {
-                    OvershootInterpolator(8f)
-                        .getInterpolation(it)
-                }
-            ))
-
-        delay(2000L)
-        navController.navigate(XpenseScreens.Onboarding.name)
-    })
-
-
     Surface(
-        modifier = Modifier.padding(15.dp)
+        modifier = Modifier
+            .padding(15.dp)
             .size(330.dp)
             .scale(scale.value),
         shape = CircleShape,
         color = tealGreen,
         border = BorderStroke(width = 2.dp, color = Color.LightGray)
     ) {
-        Column(verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-
-            Row(
-                modifier = Modifier.padding(1.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-
-            ) {
-
-                Text(text ="X",
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.lavishly)),
-                        fontSize = 96.sp,
-                        color = Color.White
-                    )
-                )
-                Text(text = "PENSE",
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.iowan)),
-                        fontSize = 32.sp,
-                        color = Color.White
-                    )
-
-                )
-            }
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            SplashTitle()
             Text(
                 text = "Track, Save, Grow...",
                 fontSize = 16.sp,
                 fontStyle = FontStyle.Italic,
                 color = Color.LightGray
-
-                )
+            )
         }
+    }
+}
 
+/**
+ * A composable function to display the splash title.
+ */
+@Composable
+fun SplashTitle() {
+    Row(
+        modifier = Modifier.padding(1.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "X",
+            style = TextStyle(
+                fontFamily = FontFamily(Font(R.font.lavishly)),
+                fontSize = 96.sp,
+                color = Color.White
+            )
+        )
+        Text(
+            text = "PENSE",
+            style = TextStyle(
+                fontFamily = FontFamily(Font(R.font.iowan)),
+                fontSize = 32.sp,
+                color = Color.White
+            )
+        )
     }
 }
