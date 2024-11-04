@@ -207,4 +207,8 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+# Firebase configuration
+app/google-services.json
+
+
 # End of https://www.toptal.com/developers/gitignore/api/kotlin,android,gradle,androidstudio

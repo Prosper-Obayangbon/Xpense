@@ -1,8 +1,10 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.components
 
+import android.widget.Space
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,19 +29,23 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
  * A customizable top app bar with a back button and title.
  *
  * @param text The title text displayed on the app bar.
- * @param color The color of the text and icon (default is [DefaultTextColor]).
+ * @param color The color of the text and icon is white).
  * @param backClick A lambda function to be executed when the back button is clicked.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
+    modifier: Modifier = Modifier,
     text: String,
     color: Color = Color.White,
-    backClick: () -> Unit
+    backClick: () -> Unit,
+
 ) {
     TopAppBar(
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = backClick) {
                     Icon(
                         painter = painterResource(id = R.drawable.back_arrow),
@@ -48,13 +54,12 @@ fun TopBar(
                     )
                 }
 
-                Spacer(modifier = Modifier.width(220.dp)) // Space between icon and text
-
                 Text(
                     text = text,
                     color = color,
                     fontSize = 20.sp, // Font size of the title
-                    fontWeight = FontWeight.Bold // Weight of the title text
+                    fontWeight = FontWeight.Bold, // Weight of the title text
+                    modifier = modifier.padding(horizontal = 120.dp)
                 )
             }
         },

@@ -32,6 +32,7 @@ import androidx.core.content.pm.ShortcutInfoCompat.Surface
 import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XTextLink
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
@@ -74,7 +75,9 @@ fun Onboarding(navController: NavController) {
         ) {
             // Get Started Button
             Button(
-                onClick = { /* TODO: Handle click */ },
+                onClick = {
+                    navController.navigate(XpenseScreens.Signup.name)
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = tealGreen
                 ),
