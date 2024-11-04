@@ -1,56 +1,55 @@
-package uk.ac.tees.mad.d3424757.xpenseapp.screens.Signup
+package uk.ac.tees.mad.d3424757.xpenseapp.screens.signup
 
-import androidx.compose.foundation.layout.Arrangement
+
+import android.view.Display
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
+
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.components.GoogleSignUpButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XInputField
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XTextLink
-import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignUpViewModel
 
 @Composable
 fun Signup(navController: NavController) {
-    // Name Field
-    var name by remember { mutableStateOf("") }
-    // Email Field
-    var email by remember { mutableStateOf("") }
-    // password Field
-    var password by remember { mutableStateOf("") }
+    val signUpViewModel: SignUpViewModel = viewModel()
 
-    Surface(modifier =Modifier
-        .fillMaxSize(),
+    // Access the mutable states directly
+    val name = signUpViewModel.name
+    val email = signUpViewModel.email
+   val password = signUpViewModel.password
+    val error = signUpViewModel.error
+
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
         color = Color.White
-    )
-    {
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally)
-        {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = "Sign Up",
                 style = MaterialTheme.typography.headlineMedium,
@@ -60,30 +59,51 @@ fun Signup(navController: NavController) {
             // Name Field
             XInputField(
                 value = name,
-                onValueChange = {name = it},
+                onValueChange = { signUpViewModel.updateName(it) },
                 label = "Name",
             )
+
+            // Email Field
             XInputField(
                 value = email,
-                onValueChange = {email = it},
+                onValueChange = {signUpViewModel.updateEmail(it) },
                 label = "Email",
                 keyboardType = KeyboardType.Email,
             )
+
+            // Password Field
             XInputField(
                 value = password,
-                onValueChange = {password = it},
+                onValueChange = { signUpViewModel.updatePassword(it) },
                 label = "Password",
                 keyboardType = KeyboardType.Password,
                 isPassword = true
             )
 
-            //Sign-Up Button
+            // Display error message if it exists and is not empty
+                if (!error.isNullOrEmpty()) {
+                    Text(
+                        text = error,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
+            // Sign-Up Button
             XButton(
                 text = "Sign Up"
-            ) { }
+            ) {
+                signUpViewModel.signUpUser { success ->
+                    if (success) {
+                        navController.navigate(XpenseScreens.Home.name)
+                    }
+                }
+            }
+
 
             // Google Sign-Up Button
-            GoogleSignUpButton {  }
+            GoogleSignUpButton { /* Handle Google Sign-Up */ }
 
             // Login TextButton
             Row(
@@ -91,19 +111,19 @@ fun Signup(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Already Have Account?",
-                    color = Color.Black, // Set color to black
+                    text = "Already Have an Account?",
+                    color = Color.Black,
                     fontSize = 14.sp
                 )
 
-                XTextLink(text = "Log In", onClick = {} )
+                XTextLink(text = "Log In") {
+                    //navController.navigate(XpenseScreens.Login.name) // Navigate to login
+                }
             }
-
-
-
         }
     }
-    }
+}
+
 
 
 //@Preview(showBackground = true)

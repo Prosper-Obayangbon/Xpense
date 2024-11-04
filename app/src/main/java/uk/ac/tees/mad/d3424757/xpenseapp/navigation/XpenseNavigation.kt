@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import uk.ac.tees.mad.d3424757.xpenseapp.screens.Signup.Signup
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 
@@ -25,6 +26,9 @@ fun XpenseNavigation() {
         }
         composable(XpenseScreens.Signup.name){
             Signup(navController = navController)
+        }
+        composable(XpenseScreens.Home.name){
+            Home(navController = navController)
         }
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseNavigation
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
@@ -24,6 +26,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        class MyApplication : Application() {
+            override fun onCreate() {
+                super.onCreate()
+                FirebaseApp.initializeApp(this)
+            }
+        }
+
         setContent {
             XpenseAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

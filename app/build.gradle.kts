@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.android.kapt)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt1)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -62,6 +63,8 @@ dependencies {//firebase/firestore
 
     //Dagger - Hilt
     implementation(libs.hilt.android)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.auth)
 
     //implementation(libs.androidx.hilt.lifecycle.viewmodel)
 // Dagger - Hilt
@@ -77,8 +80,9 @@ dependencies {//firebase/firestore
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
 
-    // Coroutine Lifecycle Scopes
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    implementation(platform(libs.firebase.bom)) // Use the latest version
+    implementation(libs.google.firebase.auth.ktx)
 
 
     // Coil
@@ -103,6 +107,8 @@ dependencies {//firebase/firestore
 
     //Datastorage/Shared Prefs
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.lifecycle.viewmodel.ktx.v251)
 
 
 
