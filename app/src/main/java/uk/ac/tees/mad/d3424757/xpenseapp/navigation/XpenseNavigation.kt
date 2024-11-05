@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
@@ -11,6 +12,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
 
 @Composable
 fun XpenseNavigation() {
@@ -28,16 +30,17 @@ fun XpenseNavigation() {
 // Separate auth graph for auth-related screens
 private fun NavGraphBuilder.authNavGraph(navController: NavController) {
     composable(XpenseScreens.SplashScreen.route) {
-        SplashScreen(navController = navController)
+        SplashScreen(navController = navController, context = LocalContext.current
+        )
     }
     composable(XpenseScreens.Onboarding.route) {
         Onboarding(navController = navController)
     }
     composable(XpenseScreens.Signup.route) {
-        Signup(navController = navController)
+        Signup(navController = navController, viewModel = SignViewModel())
     }
     composable(XpenseScreens.Login.route) {
-        Login(navController = navController)
+        Login(navController = navController, viewModel = SignViewModel())
     }
 }
 

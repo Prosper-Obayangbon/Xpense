@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.splash
 
+import android.content.Context
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import uk.ac.tees.mad.d3424757.xpenseapp.R
+import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.UserPreferences
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
@@ -42,7 +45,11 @@ private const val SPLASH_DELAY = 2000L // Delay before navigating to the next sc
  * @param navController The NavController to navigate to the next screen.
  */
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(navController: NavController, context : Context) {
+
+    val context = LocalContext.current
+    val userPreferences = remember { UserPreferences(context) }
+
     // Animatable variable for the scale effect
     val scale = remember { Animatable(0f) }
 
@@ -58,7 +65,19 @@ fun SplashScreen(navController: NavController) {
             )
         )
         delay(SPLASH_DELAY)
-        navController.navigate(XpenseScreens.Onboarding.name)
+
+        // Check if user is registered
+        if (userPreferences.isUserRegistered()) {
+            // Navigate to Login Screen
+            navController.navigate(XpenseScreens.Login.route) {
+                popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+            }
+        } else {
+            // Navigate to Onboarding Screen
+            navController.navigate(XpenseScreens.Onboarding.route) {
+                popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+            }
+        }
     }
 
     Surface(

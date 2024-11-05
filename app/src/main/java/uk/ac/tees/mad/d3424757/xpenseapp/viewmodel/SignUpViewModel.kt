@@ -1,16 +1,14 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
+import android.content.Context
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.UserPreferences
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.AuthRepository
 
-class SignUpViewModel : ViewModel() {
+class SignViewModel : ViewModel() {
     private val authRepository = AuthRepository()
 
     // Backing properties with mutable state
@@ -29,33 +27,36 @@ class SignUpViewModel : ViewModel() {
     private val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$")
 
     /**
-     * Initiates sign-up if all validation checks pass.
-     * @param onComplete callback indicating success or failure of sign-up
+     * Initiates the sign-up process if all validation checks pass.
+     * @param onComplete Callback indicating the success or failure of sign-up
      */
     fun signUpUser(onComplete: (Boolean) -> Unit) {
-        when (val validationResult = validateInputs()) {
-            is ValidationResult.Success -> executeSignUp(onComplete)
-            is ValidationResult.Error -> {
-                _error.value = validationResult.message
-                onComplete(false)
-            }
+        validateInputs()?.let { errorMessage ->
+            _error.value = errorMessage
+            onComplete(false)
+        } ?: run {
+            executeSignUp(onComplete)
         }
     }
 
-    // Validation logic encapsulated in a sealed class
-    private fun validateInputs(): ValidationResult {
+    /**
+     * Validates user inputs and returns an error message if validation fails.
+     * @return Error message or null if validation is successful
+     */
+    private fun validateInputs(): String? {
         return when {
-            name.isBlank() -> ValidationResult.Error("Name cannot be empty.")
-            email.isBlank() -> ValidationResult.Error("Email cannot be empty.")
-            password.isBlank() -> ValidationResult.Error("Password cannot be empty.")
-            !password.matches(passwordPattern) -> ValidationResult.Error(
-                "Password must contain at least 8 characters, including uppercase, lowercase, number, and symbol."
-            )
-            else -> ValidationResult.Success
+            name.isBlank() -> "Name cannot be empty."
+            email.isBlank() -> "Email cannot be empty."
+            password.isBlank() -> "Password cannot be empty."
+            !password.matches(passwordPattern) -> "Password must contain at least 8 characters, including uppercase, lowercase, number, and symbol."
+            else -> null
         }
     }
 
-    // Executes the sign-up process by calling AuthRepository
+    /**
+     * Executes the sign-up process by calling AuthRepository.
+     * @param onComplete Callback indicating the success or failure of the sign-up
+     */
     private fun executeSignUp(onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             authRepository.signUpWithEmail(email, password) { success, errorMessage ->
@@ -70,14 +71,34 @@ class SignUpViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Handles user login.
+     * @param onComplete Callback indicating the success or failure of the login
+     */
+    fun executeSignIn(onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            authRepository.signInWithEmail(email, password) { success, errorMessage ->
+                if (success) {
+                    onComplete(true)
+                } else {
+                    _error.value =  "Incorrect Email or Password."
+                    onComplete(false)
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates the user's registration status in preferences.
+     * @param context Application context
+     */
+    fun updateUserRegistrationStatus(context: Context) {
+        val userPreferences = UserPreferences(context)
+        userPreferences.setUserRegistered(true)
+    }
+
     // Functions to update state
     fun updateName(newName: String) { _name.value = newName }
     fun updateEmail(newEmail: String) { _email.value = newEmail }
     fun updatePassword(newPassword: String) { _password.value = newPassword }
-
-    // Sealed class to handle validation outcomes
-    private sealed class ValidationResult {
-        data object Success : ValidationResult()
-        data class Error(val message: String) : ValidationResult()
-    }
 }
