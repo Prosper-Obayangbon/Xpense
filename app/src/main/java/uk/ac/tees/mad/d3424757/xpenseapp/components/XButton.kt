@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
+import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
 /**
@@ -62,13 +63,14 @@ fun XButton(
  * @param onClick A lambda function to be executed when the button is clicked.
  */
 @Composable
-fun GoogleSignUpButton(
+fun GoogleSignButton(
+    text : String,
     onClick: () -> Unit
 ) {
     // Button with Google Sign Up action
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(Color.White),
+        colors = ButtonDefaults.buttonColors(mintCream),
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
@@ -76,7 +78,7 @@ fun GoogleSignUpButton(
         // Google icon
         Icon(
             painter = painterResource(id = R.drawable.ic_google_icon),
-            contentDescription = "Google Sign Up",
+            contentDescription = "Google",
             tint = Color.Unspecified, // Use Unspecified to keep the original icon color
             modifier = Modifier.size(24.dp) // Icon size defined as a constant
         )
@@ -86,7 +88,7 @@ fun GoogleSignUpButton(
 
         // Button text
         Text(
-            text = "Sign Up with Google",
+            text = "$text with Google",
             color = Color.Black // Text color
         )
     }

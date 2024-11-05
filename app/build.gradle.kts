@@ -53,11 +53,8 @@ android {
     }
 }
 
-dependencies {//firebase/firestore
-    //  implementation platform('com.google.firebase:firebase-bom:29.0.0')
-    //firebase auth and firestore
-//    implementation 'com.google.firebase:firebase-auth-ktx'
-//    implementation 'com.google.firebase:firebase-firestore-ktx'
+dependencies {
+    implementation(libs.play.services.auth)
 
 
 
@@ -83,6 +80,8 @@ dependencies {//firebase/firestore
 
     implementation(platform(libs.firebase.bom)) // Use the latest version
     implementation(libs.google.firebase.auth.ktx)
+
+    
 
 
     // Coil

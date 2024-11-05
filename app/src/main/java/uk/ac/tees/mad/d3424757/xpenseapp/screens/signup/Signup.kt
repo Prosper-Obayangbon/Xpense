@@ -4,8 +4,10 @@ package uk.ac.tees.mad.d3424757.xpenseapp.screens.signup
 import android.view.Display
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 
 import androidx.compose.foundation.layout.padding
 
@@ -22,11 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import uk.ac.tees.mad.d3424757.xpenseapp.components.GoogleSignUpButton
+import uk.ac.tees.mad.d3424757.xpenseapp.components.GoogleSignButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XInputField
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XTextLink
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
+import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignUpViewModel
 
 @Composable
@@ -42,7 +45,7 @@ fun Signup(navController: NavController) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.White
+        color = mintCream
     ) {
         Column(
             modifier = Modifier
@@ -103,7 +106,9 @@ fun Signup(navController: NavController) {
 
 
             // Google Sign-Up Button
-            GoogleSignUpButton { /* Handle Google Sign-Up */ }
+            GoogleSignButton(text = "Sign Up") { /* Handle Google Sign-Up */ }
+
+            Spacer(modifier = Modifier.height(5.dp))
 
             // Login TextButton
             Row(
@@ -117,7 +122,7 @@ fun Signup(navController: NavController) {
                 )
 
                 XTextLink(text = "Log In") {
-                    //navController.navigate(XpenseScreens.Login.name) // Navigate to login
+                    navController.navigate(XpenseScreens.Login.name) // Navigate to login
                 }
             }
         }
@@ -125,12 +130,3 @@ fun Signup(navController: NavController) {
 }
 
 
-
-//@Preview(showBackground = true)
-//@Composable
-//fun SignUpPreview(){
-//    XpenseAppTheme{
-//        Signup()
-//    }
-//
-//}

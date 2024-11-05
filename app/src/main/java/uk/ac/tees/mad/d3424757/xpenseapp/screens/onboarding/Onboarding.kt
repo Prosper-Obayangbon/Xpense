@@ -103,7 +103,9 @@ fun Onboarding(navController: NavController) {
                     fontSize = 14.sp
                 )
 
-                XTextLink(text = "Log In", onClick = {} )
+                XTextLink(text = "Log In", onClick = {
+                    navController.navigate(XpenseScreens.Login.name)
+                } )
             }
 
 
