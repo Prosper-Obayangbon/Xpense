@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.components
 
+import androidx.compose.animation.core.animateSizeAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions

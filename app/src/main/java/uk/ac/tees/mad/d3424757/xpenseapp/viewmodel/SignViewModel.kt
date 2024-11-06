@@ -88,6 +88,20 @@ class SignViewModel : ViewModel() {
         }
     }
 
+    // Function to handle Google Sign-In
+    fun executeGoogleSignIn(idToken: String, onComplete: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            authRepository.signInWithGoogle(idToken) { success, errorMessage ->
+                if(success){
+                    onComplete(true)
+                } else {
+                    _error.value = "Failed! Try again later."
+                    onComplete(false)
+                }
+            }
+        }
+    }
+
     /**
      * Updates the user's registration status in preferences.
      * @param context Application context

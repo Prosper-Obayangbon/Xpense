@@ -48,7 +48,8 @@ fun Signup(navController: NavController, viewModel: SignViewModel) {
             Text(
                 text = "Sign Up",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 32.dp)
+                modifier = Modifier.padding(vertical = 32.dp),
+                color = Color.Black
             )
 
             // Name Field
@@ -100,7 +101,7 @@ fun Signup(navController: NavController, viewModel: SignViewModel) {
 
 
             // Google Sign-Up Button
-            GoogleSignButton(text = "Sign Up") { /* Handle Google Sign-Up */ }
+            GoogleSignButton(text = "Sign Up", context = context)
 
             Spacer(modifier = Modifier.height(5.dp))
 

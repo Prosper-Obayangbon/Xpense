@@ -1,5 +1,7 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.components
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,10 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
 
 /**
 * A composable button with customizable text and click handling.
@@ -65,11 +70,21 @@ fun XButton(
 @Composable
 fun GoogleSignButton(
     text : String,
-    onClick: () -> Unit
+    context: Context
 ) {
     // Button with Google Sign Up action
     Button(
-        onClick = onClick,
+        onClick = {
+
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            val signInIntent = googleSignInClient.signInIntent
+            (context as Activity).startActivityForResult(signInIntent, Constants.RC_SIGN_IN)
+        },
         colors = ButtonDefaults.buttonColors(mintCream),
         modifier = Modifier
             .fillMaxWidth()

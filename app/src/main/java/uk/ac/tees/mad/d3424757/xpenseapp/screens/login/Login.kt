@@ -13,8 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,7 +40,8 @@ fun Login(modifier: Modifier = Modifier, viewModel: SignViewModel, navController
             Text(
                 text = "Sign In",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 32.dp)
+                modifier = Modifier.padding(vertical = 32.dp),
+                color = Color.Black
             )
 
             Spacer(modifier.height(50.dp))
@@ -101,7 +102,7 @@ fun Login(modifier: Modifier = Modifier, viewModel: SignViewModel, navController
             Spacer(Modifier.height(8.dp))
 
             // Google Sign-Up Button
-            GoogleSignButton(text = "Sign In") { /* Handle Google Sign-Up */ }
+            GoogleSignButton(text = "Sign In", context = LocalContext.current)
 
             Spacer(modifier.height(5.dp))
 
