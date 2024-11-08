@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,17 +62,29 @@ fun Onboarding(navController: NavController) {
         // Tagline Section
         Text(
             text = "Spend Smarter\nSave More",
-            fontSize = 20.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = tealGreen,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 16.dp)
+                .padding(top = 16.dp)
+        )
+
+        // Onboarding Message
+        Text(
+            text = "Track your expenses, set budgets, and manage your finances efficiently with Xpense.",
+            fontSize = 16.sp,
+            color = Color.Black,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .padding(top = 16.dp)
         )
 
         // Buttons Section
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(bottom = 20.dp)
+            modifier = Modifier.padding(bottom = 40.dp)
         ) {
             // Get Started Button
             Button(
@@ -92,6 +105,7 @@ fun Onboarding(navController: NavController) {
                     fontSize = 18.sp
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.padding(top = 8.dp),

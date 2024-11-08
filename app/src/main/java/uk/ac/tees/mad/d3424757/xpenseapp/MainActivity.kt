@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -92,18 +93,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun XpenseApp(modifier: Modifier = Modifier){
-
-    Surface(modifier.fillMaxSize(),
-        color = tealGreen
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center)
-        {
-            XpenseNavigation()
-        }
-
-    }
+    XpenseNavigation(LocalContext.current)
 
 }
 

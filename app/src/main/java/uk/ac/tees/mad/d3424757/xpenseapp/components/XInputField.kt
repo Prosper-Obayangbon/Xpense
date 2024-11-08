@@ -1,11 +1,9 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.components
 
-import androidx.compose.animation.core.animateSizeAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -16,13 +14,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 
@@ -39,9 +37,11 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
  */
 @Composable
 fun XInputField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
+    leadingIcon: @Composable (() -> Unit)?= null,
     keyboardType: KeyboardType = KeyboardType.Text,
     isPassword: Boolean = false
 ) {
@@ -53,9 +53,11 @@ fun XInputField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
+        leadingIcon = leadingIcon,
         keyboardOptions = KeyboardOptions.Default.copy(
-            keyboardType = keyboardType // Set keyboard type
+            keyboardType = keyboardType,
         ),
+        singleLine = true,
         visualTransformation = if (isPassword && !showPassword) PasswordVisualTransformation() else VisualTransformation.None, // Handle password visibility
         trailingIcon = {
             if (isPassword) {
@@ -72,14 +74,14 @@ fun XInputField(
 
         modifier = Modifier
             .fillMaxWidth() // Full width input field
-            .padding(16.dp) // Padding for the field
+            .padding(bottom = 16.dp) // Padding for the field
     )
 }
-@Preview
-@Composable
-fun InputPreview(){
-        XpenseAppTheme{
-            XInputField(value = "heh" , onValueChange = {"hello"}, label = "hello")
-        }
-
-}
+//@Preview
+//@Composable
+//fun InputPreview(){
+//        XpenseAppTheme{
+//            XInputField(value = "heh" , onValueChange = {"hello"}, label = "hello")
+//        }
+//
+//}

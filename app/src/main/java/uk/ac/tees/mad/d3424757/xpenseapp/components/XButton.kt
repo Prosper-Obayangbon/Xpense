@@ -70,7 +70,8 @@ fun XButton(
 @Composable
 fun GoogleSignButton(
     text : String,
-    context: Context
+    context: Context,
+    modifier: Modifier = Modifier
 ) {
     // Button with Google Sign Up action
     Button(
@@ -86,16 +87,13 @@ fun GoogleSignButton(
             (context as Activity).startActivityForResult(signInIntent, Constants.RC_SIGN_IN)
         },
         colors = ButtonDefaults.buttonColors(mintCream),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+
     ) {
         // Google icon
         Icon(
             painter = painterResource(id = R.drawable.ic_google_icon),
             contentDescription = "Google",
             tint = Color.Unspecified, // Use Unspecified to keep the original icon color
-            modifier = Modifier.size(24.dp) // Icon size defined as a constant
         )
 
         // Spacer between icon and text
@@ -103,7 +101,7 @@ fun GoogleSignButton(
 
         // Button text
         Text(
-            text = "$text with Google",
+            text = text,
             color = Color.Black // Text color
         )
     }

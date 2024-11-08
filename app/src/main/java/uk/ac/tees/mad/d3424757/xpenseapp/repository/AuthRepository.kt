@@ -4,7 +4,6 @@ package uk.ac.tees.mad.d3424757.xpenseapp.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
