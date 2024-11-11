@@ -2,6 +2,7 @@
 activityComposeVersion = "1.9.3"
 agp = "8.6.1"
 coilCompose = "2.4.0"
+constraintlayoutCompose = "1.1.0"
 converterGson = "2.9.0"
 datastorePreferences = "1.1.1"
 firebaseBom = "33.5.1"
@@ -31,6 +32,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.1.0"
 
 [libraries]
+androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompiler" }

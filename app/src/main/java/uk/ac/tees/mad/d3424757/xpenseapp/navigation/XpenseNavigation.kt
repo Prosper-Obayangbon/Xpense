@@ -48,6 +48,6 @@ private fun NavGraphBuilder.authNavGraph(navController: NavController, context :
 // Separate main graph for main app screens
 private fun NavGraphBuilder.mainNavGraph(navController: NavController) {
     composable(XpenseScreens.Home.route) {
-        Home(navController = navController)
+        Home()
     }
 }

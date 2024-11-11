@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
+import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
 
@@ -43,7 +44,10 @@ fun BottomNavigationBar() {
         ) {
             // Home navigation item
             NavigationBarItem(
-                icon = { Icons.Default.Home },
+                icon = { Icon(
+                    imageVector = Icons.Default.Home,
+                       contentDescription = "Home",
+                ) },
                 label = {Text("Home")},
                 selected = true,
                 colors = NavigationBarItemDefaults.colors(
@@ -57,7 +61,10 @@ fun BottomNavigationBar() {
 
             // Transaction navigation item
             NavigationBarItem(
-                icon = { painterResource(id = R.drawable.transaction) },
+                icon = { Icon(
+                    painter = painterResource(id = R.drawable.transaction),
+                    contentDescription = "Transaction")
+                    },
                 label = {Text("Transaction")},
                 selected = false,
                 colors = NavigationBarItemDefaults.colors(
@@ -70,7 +77,10 @@ fun BottomNavigationBar() {
 
             // Budget navigation item
             NavigationBarItem(
-                icon = { painterResource(id = R.drawable.chart) },
+                icon = { Icon(
+                    painterResource(id = R.drawable.baseline_pie_chart_24),
+                       contentDescription = "Budget"
+                ) },
                 label = {Text("Budget")},
                 selected = false,
                 colors = NavigationBarItemDefaults.colors(
@@ -83,7 +93,10 @@ fun BottomNavigationBar() {
 
             // Profile navigation item
             NavigationBarItem(
-                icon = { Icons.Default.Person },
+                icon = { Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Profile"
+                ) },
                 label = {Text("Profile")},
                 selected = false,
                 colors = NavigationBarItemDefaults.colors(
