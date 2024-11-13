@@ -1,68 +1,60 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.home
 
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
 import uk.ac.tees.mad.d3424757.xpenseapp.components.TransactionItem
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XHomeBackground
-import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.TransactionData
-import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseNavigation
-import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
+import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatAmount
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.getIconAndColor
 
+/**
+ * Home Screen Composable displaying the dashboard, transactions, and other key details.
+ */
 @Composable
-fun Home(){
+fun Home(viewModel: HomeViewModel, navController: NavController) {
+    // Observe transactions from the ViewModel
+    val transactions by viewModel.transactions.collectAsState(emptyList())
 
-    // Background composable with all Home content
-    XHomeBackground() {
-        Column{
-            Box(modifier = Modifier.size(790.dp)){
+    // Background composable wrapping the entire screen content
+    XHomeBackground {
+        Column {
+            Box(modifier = Modifier.size(790.dp)) {
                 Column {
                     HeaderSection()
-                    BalanceCard()
-                    RecentTransactions()
+                    BalanceCard(viewModel, transactions)
+                    RecentTransactions(transactions)
                 }
             }
             BottomNavigationBar()
-
         }
-
     }
 }
 
+/**
+ * Header section displaying a greeting message and notification button.
+ */
 @Composable
 fun HeaderSection() {
     Row(
@@ -76,9 +68,8 @@ fun HeaderSection() {
                 text = "Prosper",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color =Color.White
+                color = Color.White
             )
-
         }
         Spacer(modifier = Modifier.weight(1f))
 
@@ -86,20 +77,21 @@ fun HeaderSection() {
         IconButton(
             onClick = {},
             modifier = Modifier.align(Alignment.CenterVertically)
-
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.notification),
-                contentDescription = "Username Icon",
-                tint = Color.White,
+                contentDescription = "Notification Icon",
+                tint = Color.White
             )
         }
     }
-
 }
 
+/**
+ * Balance card showing the total balance and a summary of income and expenses.
+ */
 @Composable
-fun BalanceCard() {
+fun BalanceCard(viewModel: HomeViewModel, list: List<TransactionData>) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(tealGreen),
@@ -117,7 +109,7 @@ fun BalanceCard() {
                 Column {
                     Text(text = "Total Balance", color = Color.White, fontSize = 14.sp)
                     Text(
-                        text = "£2,548.00",
+                        text = viewModel.getBalance(list),
                         color = Color.White,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
@@ -141,15 +133,23 @@ fun BalanceCard() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CardRowItem("Income", "£1,840.00", R.drawable.arrow_downward)
-                CardRowItem("Expenses", "£284.00", R.drawable.arrow_upward)
+                // Display income and expenses
+                CardRowItem(title = "Income",
+                    amount = viewModel.getTotalIncome(list) ,
+                    image = R.drawable.arrow_downward)
+                CardRowItem(title = "Expenses",
+                    amount = viewModel.getTotalExpense(list),
+                    image = R.drawable.arrow_upward)
             }
         }
     }
 }
 
+/**
+ * A row item for displaying a single card value (e.g., Income or Expenses).
+ */
 @Composable
-fun CardRowItem(title: String, amount: String, image: Int){
+fun CardRowItem(title: String, amount: String, image: Int) {
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
@@ -178,64 +178,48 @@ fun CardRowItem(title: String, amount: String, image: Int){
     }
 }
 
-
+/**
+ * Section displaying the list of recent transactions.
+ */
 @Composable
-fun RecentTransactions() {
+fun RecentTransactions(transactions : List<TransactionData>) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal =16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Recent Transaction", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Button(onClick = {},
+            Text(text = "Recent Transactions", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Button(
+                onClick = {},
                 colors = ButtonDefaults.buttonColors(mintCream),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                elevation = ButtonDefaults.buttonElevation(0.dp)) {
+                elevation = ButtonDefaults.buttonElevation(0.dp)
+            ) {
                 Text("See All", color = tealGreen)
             }
         }
 
 
-        // Sample transaction items
-        val transactions = listOf(
-            //TransactionData(name = "Shopping", description = "Buy some grocery", amount = "- $120", time = "10:00 AM", image = R.drawable.ic_google_icon, iconColor = Color(0xFFFFD2C4)),
-            //TransactionData(name = "Subscription", description = "Disney+ Annual..", amount = "- $80", time = "03:30 PM", image = R.drawable.ic_google_icon, iconColor = Color(0xFFD7DEFF)),
-            //TransactionData(name = "Food", description = "Buy a ramen", amount = "- $32", time = "07:30 PM", image = R.drawable.ic_google_icon, iconColor = Color(0xFFFFC8C7)),
-            //TransactionData(name = "Salary", description = "Salary for July", amount = "+ $5000", time = "04:30 PM", image = R.drawable.ic_google_icon, iconColor = Color(0xFFDEF7E7)),
-            TransactionData(name = "Salary", description = "Salary for July", amount = "+ $5000", time = "04:30 PM", image = R.drawable.ic_google_icon, iconColor = Color(0xFFDEF7E7)),
-            TransactionData(name = "Salary", description = "Salary for July", amount = "+ $5000", time = "04:30 PM", image = R.drawable.ic_google_icon, iconColor = Color(0xFFDEF7E7))
-        )
-        // Display each transaction item
-
-            LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-        ){
-            items(transactions){ transaction ->
+        // Display the transactions in a lazy column
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            items(transactions) { transaction ->
+                val image = getIconAndColor(category = transaction.category.displayName)
                 TransactionItem(
                     itemName = transaction.name,
                     description = transaction.description,
-                    amount = transaction.amount,
-                    time = transaction.time,
-                    icon = transaction.image,
-                    iconColor = transaction.iconColor
+                    amount = formatAmount(transaction.amount, transaction.category.displayName),
+                    time = transaction.time.toString(),
+                    icon = image.first,
+                    iconColor = image.second
                 )
-
             }
         }
-
-
-    }
-
-}
-
-
-@Preview
-@Composable
-fun HomePreview(){
-    XpenseAppTheme{
-        Home()
     }
 }
+
+

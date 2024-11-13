@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -24,7 +25,7 @@ fun XpenseNavigation(context: Context) {
         startDestination = XpenseScreens.SplashScreen.route
     ) {
         authNavGraph(navController, context)
-        mainNavGraph(navController)
+        mainNavGraph(navController, context)
     }
 }
 
@@ -46,8 +47,8 @@ private fun NavGraphBuilder.authNavGraph(navController: NavController, context :
 }
 
 // Separate main graph for main app screens
-private fun NavGraphBuilder.mainNavGraph(navController: NavController) {
+private fun NavGraphBuilder.mainNavGraph(navController: NavController, context: Context) {
     composable(XpenseScreens.Home.route) {
-        Home()
+        Home(viewModel = HomeViewModel(context), navController = navController)
     }
 }
