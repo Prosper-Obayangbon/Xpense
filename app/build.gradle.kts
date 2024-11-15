@@ -142,6 +142,7 @@ dependencies {
     implementation(libs.sqlite.bundled)
 
     implementation(libs.kotlin.stdlib)
+
     kapt(libs.androidx.room.compiler.v261)
 
 

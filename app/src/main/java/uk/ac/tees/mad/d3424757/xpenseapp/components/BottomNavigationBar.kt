@@ -24,99 +24,103 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import uk.ac.tees.mad.d3424757.xpenseapp.R
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
 
-// Composable function to render the Bottom Navigation Bar
+/**
+ * BottomNavigationBar composable displays the main navigation bar with a centered floating action button.
+ *
+ * @param onFabClick Lambda function to handle FloatingActionButton clicks.
+ */
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavController)
+{
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
-        // Main container for the navigation bar
+        // Primary Navigation Bar container
         NavigationBar(
             containerColor = Color.White,
             contentColor = Color.Gray
         ) {
             // Home navigation item
             NavigationBarItem(
-                icon = { Icon(
-                    imageVector = Icons.Default.Home,
-                       contentDescription = "Home",
-                ) },
-                label = {Text("Home")},
+                icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
+                label = { Text("Home") },
                 selected = true,
                 colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = tealGreen,
-                        selectedTextColor = tealGreen,
-                        indicatorColor = Color.Transparent
+                    selectedIconColor = tealGreen,
+                    selectedTextColor = tealGreen,
+                    indicatorColor = Color.Transparent
                 ),
-                onClick = {},
-
+                onClick = { /* TODO: Handle Home click */ }
             )
 
             // Transaction navigation item
             NavigationBarItem(
-                icon = { Icon(
-                    painter = painterResource(id = R.drawable.transaction),
-                    contentDescription = "Transaction")
-                    },
-                label = {Text("Transaction")},
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.transaction),
+                        contentDescription = "Transaction"
+                    )
+                },
+                label = { Text("Transaction") },
                 selected = false,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = {},
+                onClick = { /* TODO: Handle Transaction click */ }
             )
 
             // Budget navigation item
             NavigationBarItem(
-                icon = { Icon(
-                    painterResource(id = R.drawable.baseline_pie_chart_24),
-                       contentDescription = "Budget"
-                ) },
-                label = {Text("Budget")},
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_pie_chart_24),
+                        contentDescription = "Budget"
+                    )
+                },
+                label = { Text("Budget") },
                 selected = false,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = {},
+                onClick = { /* TODO: Handle Budget click */ }
             )
 
             // Profile navigation item
             NavigationBarItem(
-                icon = { Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Profile"
-                ) },
-                label = {Text("Profile")},
+                icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
+                label = { Text("Profile") },
                 selected = false,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = {}
+                onClick = { /* TODO: Handle Profile click */ }
             )
         }
 
-        // Floating action button positioned at the center of the bar
+        // Floating Action Button centered above the navigation bar
         FloatingActionButton(
-            onClick = {},
+            onClick =  {navController.navigate(XpenseScreens.AddScreen.route) },
             shape = CircleShape,
             containerColor = tealGreen,
             contentColor = Color.White,
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .offset(y = -30.dp) // Adjust position to float above the bar
+                .offset(y = -30.dp) // Adjusts position to float above the bar
         ) {
             Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
         }
@@ -127,6 +131,6 @@ fun BottomNavigationBar() {
 @Composable
 fun NavBarPreview(){
     XpenseAppTheme{
-        BottomNavigationBar()
+       // BottomNavigationBar()
     }
 }

@@ -21,9 +21,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
+import uk.ac.tees.mad.d3424757.xpenseapp.components.RecentTransactions
 import uk.ac.tees.mad.d3424757.xpenseapp.components.TransactionItem
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XHomeBackground
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatAmount
@@ -33,21 +35,47 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.getIconAndColor
  * Home Screen Composable displaying the dashboard, transactions, and other key details.
  */
 @Composable
-fun Home(viewModel: HomeViewModel, navController: NavController) {
+fun Home(modifier: Modifier, viewModel: HomeViewModel, navController: NavController) {
     // Observe transactions from the ViewModel
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
     // Background composable wrapping the entire screen content
     XHomeBackground {
-        Column {
-            Box(modifier = Modifier.size(790.dp)) {
+        Column(
+            modifier = modifier
+        ) {
+            Box(modifier = Modifier.size(750.dp)) {
                 Column {
                     HeaderSection()
                     BalanceCard(viewModel, transactions)
+
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Recent Transactions",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            Button(
+                                onClick  = { },
+                                colors = ButtonDefaults.buttonColors(mintCream),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                                elevation = ButtonDefaults.buttonElevation(0.dp)
+                            ) {
+                                Text("See All", color = tealGreen)
+                            }
+                        }
+                    }
                     RecentTransactions(transactions)
                 }
             }
-            BottomNavigationBar()
+            BottomNavigationBar(navController)
         }
     }
 }
@@ -178,48 +206,5 @@ fun CardRowItem(title: String, amount: String, image: Int) {
     }
 }
 
-/**
- * Section displaying the list of recent transactions.
- */
-@Composable
-fun RecentTransactions(transactions : List<TransactionData>) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Recent Transactions", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Button(
-                onClick = {},
-                colors = ButtonDefaults.buttonColors(mintCream),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                elevation = ButtonDefaults.buttonElevation(0.dp)
-            ) {
-                Text("See All", color = tealGreen)
-            }
-        }
-
-
-        // Display the transactions in a lazy column
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(transactions) { transaction ->
-                val image = getIconAndColor(category = transaction.category.displayName)
-                TransactionItem(
-                    itemName = transaction.name,
-                    description = transaction.description,
-                    amount = formatAmount(transaction.amount, transaction.category.displayName),
-                    time = transaction.time.toString(),
-                    icon = image.first,
-                    iconColor = image.second
-                )
-            }
-        }
-    }
-}
 
 

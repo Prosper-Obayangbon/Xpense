@@ -40,13 +40,16 @@ fun XInputField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
-    label: String,
-    leadingIcon: @Composable (() -> Unit)?= null,
+    label: String = "",
+    trailingIcon: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    readOnly: Boolean = false,
+    maxLine : Int = 1,
+    singleLine : Boolean = true
 ) {
     var showPassword by remember { mutableStateOf(false) } // State for password visibility
-
 
     // Outlined text field for input
     OutlinedTextField(
@@ -57,26 +60,31 @@ fun XInputField(
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = keyboardType,
         ),
-        singleLine = true,
+        maxLines = maxLine,
+        singleLine = singleLine,
         visualTransformation = if (isPassword && !showPassword) PasswordVisualTransformation() else VisualTransformation.None, // Handle password visibility
         trailingIcon = {
-            if (isPassword) {
-                IconButton(onClick = { showPassword = !showPassword }) {
-                    Icon(
-                        if (showPassword){
-                            painterResource(id = R.drawable.visibility)
-                        } else painterResource(id = R.drawable.visibility_off),
-                        contentDescription = if (showPassword) "Hide password" else "Show password"
-                    )
+            when {
+                isPassword -> {
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            painter = painterResource(
+                                id = if (showPassword) R.drawable.visibility else R.drawable.visibility_off
+                            ),
+                            contentDescription = if (showPassword) "Hide password" else "Show password"
+                        )
+                    }
                 }
+                trailingIcon != null -> trailingIcon()
             }
         },
-
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth() // Full width input field
-            .padding(bottom = 16.dp) // Padding for the field
+            .padding(bottom = 16.dp), // Padding for the field
+        readOnly = readOnly
     )
 }
+
 //@Preview
 //@Composable
 //fun InputPreview(){

@@ -138,7 +138,8 @@ fun Login(modifier: Modifier = Modifier, viewModel: SignViewModel, navController
                         viewModel.executeSignIn { success ->
                             if (success) {
                                 navController.navigate(XpenseScreens.Home.route) {
-                                    popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+                                    popUpTo(XpenseScreens.Login.route) { inclusive = true }
+
                                 }
 
                             }

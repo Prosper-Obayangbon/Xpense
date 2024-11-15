@@ -5,5 +5,7 @@ enum class XpenseScreens(val route: String) {
     Onboarding("onboarding"),
     Signup("signup"),
     Login("login"),
-    Home("home")
+    Home("home"),
+    AddScreen("add"),
+    AddTransaction("addExpese")
 }

@@ -14,5 +14,6 @@ class UserPreferences(context: Context) {
     fun setUserRegistered(isRegistered: Boolean) {
         sharedPreferences.edit().putBoolean("is_user_registered", isRegistered).apply()
     }
+
 }
 

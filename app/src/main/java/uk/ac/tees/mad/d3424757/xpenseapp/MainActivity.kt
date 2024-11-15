@@ -60,6 +60,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun XpenseApp(modifier: Modifier = Modifier, context : Context){
-    XpenseNavigation(context)
+    XpenseNavigation(modifier, context)
 
 }

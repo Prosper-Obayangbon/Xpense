@@ -2,6 +2,7 @@
 activityComposeVersion = "1.9.3"
 agp = "8.6.1"
 androidxHiltCompiler = "1.0.0"
+androidxRoomCompiler = "2.5.0"
 coilCompose = "2.4.0"
 constraintlayoutCompose = "1.1.0"
 converterGson = "2.9.0"
@@ -57,6 +58,7 @@ androidx-hilt-lifecycle-viewmodel = { module = "androidx.hilt:hilt-lifecycle-vie
 androidx-hilt-navigation-compose-v100 = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-lifecycle-viewmodel-ktx-v251 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 
+androidx-room-compiler-v250 = { module = "androidx.room:room-compiler", version.ref = "androidxRoomCompiler" }
 androidx-room-compiler-v261 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }

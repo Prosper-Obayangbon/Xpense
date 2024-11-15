@@ -146,7 +146,8 @@ fun Signup(navController: NavController, viewModel: SignViewModel, context: Cont
                                 if (success) {
                                     viewModel.updateUserRegistrationStatus(context)
                                     navController.navigate(XpenseScreens.Home.route) {
-                                        popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+                                        popUpTo(XpenseScreens.Signup.route) { inclusive = true }
+
                                     }
                                 }
                             }
