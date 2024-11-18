@@ -29,7 +29,6 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatAmount
-import uk.ac.tees.mad.d3424757.xpenseapp.utils.getIconAndColor
 
 /**
  * Home Screen Composable displaying the dashboard, transactions, and other key details.

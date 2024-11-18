@@ -77,7 +77,7 @@ fun BottomNavigationBar(navController: NavController)
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = { /* TODO: Handle Transaction click */ }
+                onClick = {  }
             )
 
             // Budget navigation item

@@ -12,3 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val tealGreen = Color(0xFF3E7C78)
 val mintCream = Color(0xFFEEF8F7)
+
+val IncomeBackground = Color(0xFFB2D9D2)
+val ExpenseBackground = Color(0xFFFFE6E6)
+val IconColor = Color(0xFF8C65F7)

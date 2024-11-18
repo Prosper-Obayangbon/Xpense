@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,10 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
-import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 
 @Composable
-fun TransactionItem(itemName : String, description: String, amount: String, time: String, icon :Int, iconColor: Color){
+fun TransactionItem(itemName: String, description: String, amount: String, time: String, icon: Int, iconColor: Color){
 
     Row(
         modifier = Modifier
@@ -43,7 +45,7 @@ fun TransactionItem(itemName : String, description: String, amount: String, time
                 )
         ){
             Icon(
-                painter  = painterResource(id= icon),
+                painter = painterResource(id = icon),
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.align(Alignment.Center)
@@ -65,7 +67,7 @@ fun TransactionItem(itemName : String, description: String, amount: String, time
 @Composable
 fun InputPreview(){
         XpenseAppTheme{
-          TransactionItem("Shopping","for food","-55", "10pm", icon = R.drawable.ic_google_icon, Color.Blue)
+          //TransactionItem("Shopping","for food","-55", "10pm", icon = Icons.Default.Menu, Color.Blue)
         }
 
 }

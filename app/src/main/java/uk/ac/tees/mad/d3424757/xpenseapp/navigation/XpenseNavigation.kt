@@ -1,22 +1,25 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 
+import AddScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import uk.ac.tees.mad.d3424757.xpenseapp.screens.add.AddScreen
-import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddExpense
+import androidx.navigation.navArgument
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 
 @Composable
 fun XpenseNavigation(modifier: Modifier, context: Context) {
@@ -55,10 +58,15 @@ private fun NavGraphBuilder.mainNavGraph(modifier: Modifier, navController: NavC
     }
 
     composable(XpenseScreens.AddScreen.route) {
-        AddScreen(modifier = modifier, viewModel = HomeViewModel(context), navController = navController)
+        AddScreen(modifier = modifier, viewModel = TransactionViewModel(context), navController = navController)
     }
 
-    composable(XpenseScreens.AddTransaction.route) {
-        AddExpense(modifier = modifier)
+    composable(
+        route = "addTransaction?isIncome={isIncome}",
+        arguments = listOf(navArgument("isIncome") { type = NavType.BoolType })
+    ) { backStackEntry ->
+        val isIncome = backStackEntry.arguments?.getBoolean("isIncome") ?: false
+        AddTransaction(navController = navController, context = context, viewModel = TransactionViewModel(context), isIncome = isIncome)
     }
+
 }
