@@ -2,6 +2,9 @@ package uk.ac.tees.mad.d3424757.xpenseapp.viewmodel
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +18,8 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.Category
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getCategoriesForTransactionType
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionType
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class TransactionViewModel(context : Context) : ViewModel() {
@@ -44,6 +49,12 @@ class TransactionViewModel(context : Context) : ViewModel() {
     // Error message to be displayed in the UI, if any validation fails.
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
+
+
+
+    private val _filteredAndGroupedTransactions = MutableStateFlow<Map<String, List<TransactionData>>>(emptyMap())
+    val filteredAndGroupedTransactions: StateFlow<Map<String, List<TransactionData>>> = _filteredAndGroupedTransactions
+
 
     // Initialize the repository with the DAO from the database.
     init {
@@ -89,6 +100,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
      * Updates the selected date for the transaction.
      */
     fun updateDate(newDate: String) {
+        Log.d("DateUpdate", "Selected Date: $newDate")
         _selectedDate.value = newDate
     }
 
@@ -147,7 +159,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
                     description = _description.value,
                     amount = _amount.value.toDouble(),
                     time = getFormattedCurrentTime(),
-                    date = _selectedDate.toString(),
+                    date = _selectedDate.value,
                     type = type,
 
                 )
@@ -180,4 +192,11 @@ class TransactionViewModel(context : Context) : ViewModel() {
         val currentTime = Date() // Get the current date and time
         return dateFormat.format(currentTime) // Return formatted time (e.g., 02:30 PM)
     }
+
+
+
+
+
+
+
 }

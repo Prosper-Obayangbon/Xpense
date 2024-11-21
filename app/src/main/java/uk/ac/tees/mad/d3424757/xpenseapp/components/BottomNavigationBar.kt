@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
@@ -41,6 +42,9 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 @Composable
 fun BottomNavigationBar(navController: NavController)
 {
+    // Get the current route from the NavController's back stack
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -53,13 +57,20 @@ fun BottomNavigationBar(navController: NavController)
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
                 label = { Text("Home") },
-                selected = true,
+                selected = currentRoute == XpenseScreens.Home.route,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = { /* TODO: Handle Home click */ }
+                onClick = {
+                    // Navigate to the home screen
+                    navController.navigate(XpenseScreens.Home.route) {
+                        // Avoid multiple copies of the same screen in the back stack
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
 
             // Transaction navigation item
@@ -71,13 +82,18 @@ fun BottomNavigationBar(navController: NavController)
                     )
                 },
                 label = { Text("Transaction") },
-                selected = false,
+                selected = (currentRoute == XpenseScreens.TransactionScreen.route),
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = {  }
+                onClick = {
+                    navController.navigate(XpenseScreens.TransactionScreen.route){
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
 
             // Budget navigation item

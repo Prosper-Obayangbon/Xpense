@@ -19,7 +19,7 @@ fun RecentTransactions(transactions : List<TransactionData>) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(transactions) { transaction ->
+        items(transactions.reversed()) { transaction ->
             val image = getIconAndColor(categoryName = transaction.category)
             if (image != null) {
                 TransactionItem(

@@ -1,8 +1,11 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 
 import AddScreen
+import TransactionScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -21,6 +24,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun XpenseNavigation(modifier: Modifier, context: Context) {
     val navController = rememberNavController()
@@ -31,6 +35,7 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
     ) {
         authNavGraph(navController, context)
         mainNavGraph(modifier, navController, context)
+        reportNavGraph(modifier, navController, context)
     }
 }
 
@@ -68,5 +73,15 @@ private fun NavGraphBuilder.mainNavGraph(modifier: Modifier, navController: NavC
         val isIncome = backStackEntry.arguments?.getBoolean("isIncome") ?: false
         AddTransaction(navController = navController, context = context, viewModel = TransactionViewModel(context), isIncome = isIncome)
     }
+
+}
+@RequiresApi(Build.VERSION_CODES.O)
+private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: NavController, context: Context) {
+    composable(XpenseScreens.TransactionScreen.route) {
+       TransactionScreen(modifier= modifier, viewModel = TransactionViewModel(context), navController = navController)
+
+    }
+
+
 
 }

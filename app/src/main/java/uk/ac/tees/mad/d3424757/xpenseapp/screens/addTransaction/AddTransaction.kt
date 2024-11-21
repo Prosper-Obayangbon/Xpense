@@ -30,6 +30,8 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Category
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * Main Composable for adding a transaction (income or expense).
@@ -213,6 +215,10 @@ fun TransactionForm(
     selectedDate: String,
     selectedCategory: Category?
 ) {
+    val calendar = Calendar.getInstance()
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -253,10 +259,12 @@ fun TransactionForm(
                 onValueChange = {},
                 trailingIcon = {
                     IconButton(onClick = {
-                        val calendar = Calendar.getInstance()
                         DatePickerDialog(
                             context,
                             { _, year, month, dayOfMonth ->
+                                dateFormat.format(Calendar.getInstance().apply {
+                                    set(year, month, dayOfMonth)
+                                }.time)
                                 viewModel.updateDate("$dayOfMonth/${month + 1}/$year")
                             },
                             calendar.get(Calendar.YEAR),
@@ -306,7 +314,7 @@ fun TransactionDropDown(
 
         val displayValue = selectedItem.value?.name ?: "Select category"
 
-        XInputField(
+        TextField(
             value = displayValue,
             onValueChange = {},
             modifier = Modifier.fillMaxWidth().menuAnchor(),

@@ -7,5 +7,7 @@ enum class XpenseScreens(val route: String) {
     Login("login"),
     Home("home"),
     AddScreen("add"),
-    AddTransaction("addTransaction")
+    AddTransaction("addTransaction"),
+    TransactionScreen("transaction")
+
 }
