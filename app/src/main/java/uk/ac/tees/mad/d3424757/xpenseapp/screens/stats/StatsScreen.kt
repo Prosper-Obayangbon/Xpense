@@ -15,10 +15,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -28,7 +27,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,23 +39,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.RecentTransactions
-import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getCategoriesForTransactionType
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.toMonthName
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 
+/**
+ * A composable function that displays the Stats Screen showing financial report with various charts and transaction data.
+ *
+ * @param viewModel The ViewModel that provides transaction data and related functionalities.
+ * @param modifier A modifier for custom styling of the composable.
+ * @param navController A navigation controller to handle navigation actions.
+ * @param context The context for use with Android components.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun StatsScreen(
@@ -66,20 +69,31 @@ fun StatsScreen(
     navController: NavController,
     context: Context
 ) {
-    val transactions by viewModel.transactions.collectAsState(emptyList()) // Flow or LiveData
+    // State for transaction data, selected filters, and chart type
+    val transactions by viewModel.transactions.collectAsState(emptyList())
+    val selectedMonth = remember { mutableStateOf("All") } // Default to "All"
     val selectedChart = remember { mutableStateOf("Donut") }
     val selectedCategory = remember { mutableStateOf("Expense") }
     var selectedType by remember { mutableStateOf("Transaction") }
-    val isIncome = selectedCategory.value == "Income"  // This determines whether it's Income or Expense
+    val isIncome = selectedCategory.value == "Income" // Determine if "Income" is selected
     val categoryColorMap = remember { mutableStateOf(mapOf<String, Color>()) }
 
-    // Layout for the Stats screen
+    // Filter transactions based on the selected month
+    val filteredTransactions = if (selectedMonth.value == "All") {
+        transactions // Show all transactions if "All" is selected
+    } else {
+        transactions.filter { transaction ->
+            transaction.date.toMonthName() == selectedMonth.value
+        }
+    }
+
+    // Main screen layout
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
             .background(color = mintCream)
     ) {
+        // Top bar with navigation and title
         XTopBar(
             text = "Financial Report",
             textColor = Color.Black,
@@ -90,15 +104,23 @@ fun StatsScreen(
 
         // Row for Month Dropdown and Chart Toggle
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Dropdown for selecting month
             DropDownSelector(
-                selectedItem = "Month",
-                options = listOf("January", "February", "March", "April", "May", "June", "July"),
-                onOptionSelected = { /* TODO */ }
+                selectedItem = selectedMonth.value,
+                options = listOf(
+                    "All", "January", "February", "March", "April",
+                    "May", "June", "July", "August", "September",
+                    "October", "November", "December"
+                ),
+                onOptionSelected = { selectedMonth.value = it }
             )
+            // Toggle button for chart type (Donut or Line)
             ChartToggle(selectedChart = selectedChart.value) { selectedChart.value = it }
         }
 
@@ -114,15 +136,15 @@ fun StatsScreen(
         ) {
             when (selectedChart.value) {
                 "Donut" -> {
-
                     selectedType = "Category"
+
                     // Get categories and color map
                     val categories = getCategoriesForTransactionType(isIncome)
                     categoryColorMap.value = viewModel.generateCategoryColorMap(categories)
 
-                    // Filter transactions by selected category type (Income/Expense)
+                    // Filter transactions by selected category type
                     val filteredData = viewModel.filterTransactionsByType(
-                        transactions,
+                        filteredTransactions,
                         type = selectedCategory.value
                     )
 
@@ -137,12 +159,11 @@ fun StatsScreen(
                 }
 
                 else -> {
-                    // For Line Chart, set the type to "Transaction"
                     selectedType = "Transaction"
 
-                    // Filter transactions by selected category type (Income/Expense)
+                    // Filter transactions by selected category type for Line chart
                     val filteredData = viewModel.filterTransactionsByType(
-                        transactions,
+                        filteredTransactions,
                         type = selectedCategory.value
                     )
 
@@ -161,54 +182,64 @@ fun StatsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Expense/Income Toggle
+        // Toggle for Expense/Income selection
         ExpenseIncomeToggle(
-            isIncome = isIncome,
             selected = selectedCategory,
-            onSelectionChange = { newSelection ->
-                selectedCategory.value = newSelection
-            }
+            onSelectionChange = { newSelection -> selectedCategory.value = newSelection }
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Dropdown to Select Transaction or Category
-        Text(
-            text = selectedType,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Display Transaction List or Category Progress
+        // Display Transaction List or Category Progress based on selected type
         if (selectedType == "Transaction") {
-            RecentTransactions(
-                transactions = viewModel.filterTransactionsByType(
-                    transactions = transactions,
-                    type = selectedCategory.value
-                )
+            val transType = viewModel.filterTransactionsByType(
+                transactions = filteredTransactions,
+                type = selectedCategory.value
             )
+            if (transType.isEmpty()) {
+                Text(
+                    text = "No Transaction data available",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            } else {
+                RecentTransactions(
+                    transactions = transType
+                )
+            }
         } else {
             val (categories, total) = viewModel.calculateCategoryProgress(
                 type = selectedCategory.value.uppercase(),
-                transactions = transactions
+                transactions = filteredTransactions
             )
 
             if (categories.isEmpty()) {
-                Text("No expense data available", modifier = Modifier.fillMaxWidth().padding(16.dp))
+                Text(
+                    "No Transaction data available",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
             } else {
-                CategoryProgress(categories = categories, total = total, colorMapping = categoryColorMap.value)
+                CategoryProgress(
+                    categories = categories,
+                    total = total,
+                    colorMapping = categoryColorMap.value,
+                )
             }
         }
     }
 }
 
-
-
-
-
+/**
+ * A composable function that displays a dropdown selector.
+ *
+ * @param selectedItem The currently selected item in the dropdown.
+ * @param options A list of options to display in the dropdown.
+ * @param onOptionSelected A callback to handle selection changes.
+ * @param modifier A modifier for custom styling of the composable.
+ */
 @Composable
 fun DropDownSelector(
     selectedItem: String,
@@ -218,7 +249,7 @@ fun DropDownSelector(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier.fillMaxWidth(0.4f)) {
+    Box(modifier = modifier.fillMaxWidth(0.35f)) {
         // Button to toggle the dropdown
         Button(
             onClick = { expanded = true },
@@ -233,11 +264,11 @@ fun DropDownSelector(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = selectedItem, modifier = Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Dropdown Icon"
                 )
+                Text(text = selectedItem, modifier = Modifier.weight(1f))
             }
         }
 
@@ -259,6 +290,12 @@ fun DropDownSelector(
     }
 }
 
+/**
+ * A composable function that displays a toggle to switch between Donut and Line charts.
+ *
+ * @param selectedChart The currently selected chart type.
+ * @param onToggle A callback to handle chart type toggling.
+ */
 @Composable
 fun ChartToggle(
     selectedChart: String,
@@ -280,10 +317,9 @@ fun ChartToggle(
             shape = RoundedCornerShape(bottomStart = 8.dp, topStart = 8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.baseline_pie_chart_24, ),
-                contentDescription = "Line chart",
+                painter = painterResource(id = R.drawable.baseline_pie_chart_24),
+                contentDescription = "Donut chart",
                 modifier = Modifier.size(40.dp)
-
             )
         }
 
@@ -296,109 +332,133 @@ fun ChartToggle(
             ),
             modifier = Modifier.weight(1f),
             shape = RoundedCornerShape(bottomEnd = 8.dp, topEnd = 8.dp)
-
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.timeline),
-                contentDescription = "Bar",
+                contentDescription = "Line chart",
                 modifier = Modifier.size(40.dp)
             )
         }
     }
 }
 
+/**
+ * A composable function that displays the progress of categories (Income/Expense) with a progress bar.
+ *
+ * @param categories A list of pairs containing category names and their corresponding amounts.
+ * @param total The total amount for comparison to show progress.
+ * @param colorMapping A map of category names to their respective colors.
+ */
 @Composable
-fun CategoryProgress(categories: List<Pair<String, Double>>, total: Double, colorMapping: Map<String, Color>) {
+fun CategoryProgress(
+    categories: List<Pair<String, Double>>,
+    total: Double,
+    colorMapping: Map<String, Color>,
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.padding(16.dp)
     ) {
-        LazyColumn {
-            items(categories) { (category, amount) ->
-                val progress = (amount / total).toFloat() // Convert to Float for ProgressBar
-                val categoryColor = colorMapping[category] ?: Color.Gray // Default to gray if not found
+        // Display progress for each category
+        categories.forEach { (category, amount) ->
+            val progress = (amount / total).coerceIn(0.0, 1.0).toFloat() // Normalize progress to 0-1 range
 
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-
-                ) {
-                    Text(
-                        text = category,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(bottom = 4.dp)
+            // Category Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "$category: £${"%.2f".format(amount)}",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 10.sp
                     )
-                    LinearProgressIndicator(
-                        progress = { progress },
-                        color = categoryColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp),
+                )
+                Text(
+                    text = "%.2f%%".format(progress * 100),
+                    style = TextStyle(
+                        fontSize = 10.sp,
+                        color = colorMapping[category] ?: Color.Black
                     )
-                    Text(
-                        text = "£${"%.2f".format(amount)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
+                )
             }
+
+            // Progress Bar
+            LinearProgressIndicator(
+                progress = {
+                    progress  // Directly use normalized progress (0.0 to 1.0)
+                },
+                modifier = Modifier.
+                    fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .heightIn(10.dp),
+                color = colorMapping[category] ?: Color.Gray,
+            )
         }
     }
 }
 
 
-
+/**
+ * A composable function that displays a toggle to switch between "Expense" and "Income" categories.
+ *
+ * @param selected The current selected category (either "Expense" or "Income").
+ * @param onSelectionChange A callback to handle changes in the selected category.
+ */
 @Composable
 fun ExpenseIncomeToggle(
-    isIncome : Boolean,
     selected: MutableState<String>,
-    onSelectionChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onSelectionChange: (String) -> Unit
 ) {
-    Row(modifier = modifier.fillMaxWidth()
-        .padding(16.dp))
-         {
-        // Expense button
-        Button(
-            modifier = Modifier.fillMaxWidth(0.5f),
+    // Row for toggling between "Expense" and "Income"
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(0.6f)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // "Expense" Button
+        OutlinedButton(
             onClick = { onSelectionChange("Expense") },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (selected.value == "Expense") tealGreen else mintCream,
-                contentColor =  if (selected.value == "Expense") Color.White else Color.Black
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = if (selected.value == "Expense") tealGreen else Color.Transparent,
+                contentColor = if (selected.value == "Expense") Color.White else tealGreen
             ),
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(bottomStart = 8.dp, topStart = 8.dp)
         ) {
-            Text(text = "Expense")
+            Text(text = "Expense", style = TextStyle(fontWeight = FontWeight.Bold))
         }
 
-        // Income button
-        Button(
-            modifier = Modifier.fillMaxWidth(),
+        // "Income" Button
+        OutlinedButton(
             onClick = { onSelectionChange("Income") },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (selected.value == "Income") tealGreen else mintCream,
-                contentColor =  if (selected.value == "Income") Color.White else Color.Black
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = if (selected.value == "Income") tealGreen else Color.Transparent,
+                contentColor = if (selected.value == "Income") Color.White else tealGreen
             ),
+            modifier = Modifier.weight(1f),
+            shape = RoundedCornerShape(bottomEnd = 8.dp, topEnd = 8.dp)
         ) {
-            Text(text = "Income")
+            Text(text = "Income", style = TextStyle(fontWeight = FontWeight.Bold))
         }
     }
 }
 
 
 
-
-@Preview(showBackground = true)
-@Composable
-fun Preview() {
-    // Mock ViewModel to simulate data for the preview.
-    val mockViewModel = StatsViewModel(LocalContext.current)
-    // Add mock transaction data here if needed.
-
-    val navController = rememberNavController()
-
-    XpenseAppTheme {
-        // Displaying the AddScreen with mock data and a theme.
-        //StatsScreen(mockViewModel, navController = navController, context = LocalContext.current)
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun Preview() {
+//    // Mock ViewModel to simulate data for the preview.
+//    //val mockViewModel = StatsViewModel(LocalContext.current)
+//    // Add mock transaction data here if needed.
+//
+//    val navController = rememberNavController()
+//
+//    XpenseAppTheme {
+//        // Displaying the AddScreen with mock data and a theme.
+//        //StatsScreen(mockViewModel, navController = navController, context = LocalContext.current)
+//    }
+//}

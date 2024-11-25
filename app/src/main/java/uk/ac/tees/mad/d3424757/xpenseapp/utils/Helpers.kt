@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
 
@@ -102,11 +103,17 @@ fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, Li
     return groupedTransactions.filterValues { it.isNotEmpty() }
 }
 
-fun formatDateForChart(dateMillis: Long): String {
-    val date = Date(dateMillis)
-    val formatter = SimpleDateFormat("dd", Locale.getDefault()) // Show only the day
-    return formatter.format(date)
+@RequiresApi(Build.VERSION_CODES.O)
+fun String.toMonthName(): String {
+    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
+    return try {
+        val date = LocalDate.parse(this, formatter)
+        date.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
+    } catch (e: Exception) {
+        "Invalid Date" // Handle invalid date formats
+    }
 }
+
 
 
 

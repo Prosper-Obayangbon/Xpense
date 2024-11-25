@@ -23,7 +23,6 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.utils.Utils
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
-import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatDateForChart
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

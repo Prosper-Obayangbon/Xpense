@@ -16,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
+import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
@@ -84,8 +86,10 @@ private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: Na
        TransactionScreen(modifier= modifier, viewModel = TransactionViewModel(context), navController = navController)
 
     }
+    val dao = XpenseDatabase.getDatabase(context)
+    val repository = TransactionRepository(dao)
     composable(XpenseScreens.StatsScreen.route) {
-       StatsScreen(viewModel = StatsViewModel(context), modifier = modifier, navController = navController, context = context)
+       StatsScreen(viewModel = StatsViewModel(repository), modifier = modifier, navController = navController, context = context)
 
     }
 

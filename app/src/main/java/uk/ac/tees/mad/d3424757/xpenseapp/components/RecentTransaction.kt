@@ -26,7 +26,7 @@ fun RecentTransactions(transactions : List<TransactionData>) {
                     itemName = transaction.category,
                     description = transaction.description,
                     amount = formatAmount(transaction.amount, transaction.type.displayName),
-                    time = transaction.time.toString(),
+                    time = transaction.time,
                     icon = image.first,
                     iconColor = image.second
                 )
