@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -21,7 +22,9 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.stats.StatsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -79,6 +82,10 @@ private fun NavGraphBuilder.mainNavGraph(modifier: Modifier, navController: NavC
 private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: NavController, context: Context) {
     composable(XpenseScreens.TransactionScreen.route) {
        TransactionScreen(modifier= modifier, viewModel = TransactionViewModel(context), navController = navController)
+
+    }
+    composable(XpenseScreens.StatsScreen.route) {
+       StatsScreen(viewModel = StatsViewModel(context), modifier = modifier, navController = navController, context = context)
 
     }
 

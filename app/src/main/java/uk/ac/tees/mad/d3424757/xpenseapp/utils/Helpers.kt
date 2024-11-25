@@ -2,10 +2,15 @@ package uk.ac.tees.mad.d3424757.xpenseapp.utils
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.github.mikephil.charting.formatter.ValueFormatter
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
+import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import java.util.Date
+import java.util.Locale
 
 /**
  * Formats the amount based on the transaction type (INCOME/EXPENSE).
@@ -22,6 +27,7 @@ fun formatAmount(amount: Double, type: String): String {
         "- £$amount"
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, List<TransactionData>> {
@@ -95,3 +101,13 @@ fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, Li
     // Filter out empty categories
     return groupedTransactions.filterValues { it.isNotEmpty() }
 }
+
+fun formatDateForChart(dateMillis: Long): String {
+    val date = Date(dateMillis)
+    val formatter = SimpleDateFormat("dd", Locale.getDefault()) // Show only the day
+    return formatter.format(date)
+}
+
+
+
+

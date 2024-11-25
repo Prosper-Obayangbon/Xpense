@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.room)
 
+
 }
 
 android {
@@ -115,7 +116,11 @@ dependencies {
 
     // Kotlin KAPT dependency
     implementation(libs.kotlin.stdlib.jdk7)
+    implementation(libs.androidx.constraintlayout)
     kapt(libs.kotlin.annotation.processing.gradle)
+
+    implementation(libs.mpandroidchart)
+
 
 
 
@@ -159,5 +164,6 @@ kapt {
 room {
     schemaDirectory("$projectDir/schemas")
 }
+
 
 

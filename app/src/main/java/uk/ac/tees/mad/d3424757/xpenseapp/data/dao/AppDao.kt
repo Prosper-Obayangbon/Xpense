@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.data.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -19,4 +20,6 @@ interface TransactionDao {
 
     @Query("SELECT * FROM Transactions")
     fun getTransactions(): Flow<List<TransactionData>>
+
+
 }

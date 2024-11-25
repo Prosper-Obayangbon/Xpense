@@ -21,6 +21,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
 import uk.ac.tees.mad.d3424757.xpenseapp.components.RecentTransactions
 import uk.ac.tees.mad.d3424757.xpenseapp.components.TransactionItem
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
@@ -108,7 +109,9 @@ fun TransactionScreen(modifier: Modifier, viewModel: TransactionViewModel, navCo
 
         // Financial report link
         Row(
-            modifier = Modifier.fillMaxWidth().clickable { }.padding(16.dp),
+            modifier = Modifier.fillMaxWidth()
+                .clickable {navController.navigate(XpenseScreens.StatsScreen.route) }
+                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "See your financial Report", color = tealGreen)
