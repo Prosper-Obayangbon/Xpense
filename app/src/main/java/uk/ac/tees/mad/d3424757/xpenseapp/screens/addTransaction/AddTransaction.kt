@@ -70,7 +70,7 @@ fun AddTransaction(
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(32.dp)
+                .padding(16.dp)
         ) {
             // Top Bar Section
             TopBar(
@@ -123,7 +123,8 @@ fun AddTransaction(
                         // Handle save action
                         viewModel.addTransaction(isIncome)
                         viewModel.resetTransaction()
-                        showDialog = false // Close the dialog after action
+                        showDialog = false
+                        navController.popBackStack()
                     },
                     onCancel = {
                         // Handle cancel action
@@ -160,7 +161,7 @@ fun TopBar(
     viewModel: TransactionViewModel
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

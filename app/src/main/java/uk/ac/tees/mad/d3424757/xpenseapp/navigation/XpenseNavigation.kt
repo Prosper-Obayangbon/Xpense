@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -25,6 +26,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.stats.StatsScreen
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction.TransactionDetailsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
@@ -82,17 +84,30 @@ private fun NavGraphBuilder.mainNavGraph(modifier: Modifier, navController: NavC
 }
 @RequiresApi(Build.VERSION_CODES.O)
 private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: NavController, context: Context) {
+    // Transaction Screen
     composable(XpenseScreens.TransactionScreen.route) {
-       TransactionScreen(modifier= modifier, viewModel = TransactionViewModel(context), navController = navController)
-
+        TransactionScreen(modifier = modifier, viewModel = TransactionViewModel(context), navController = navController)
     }
+
+    // Stats Screen
     val dao = XpenseDatabase.getDatabase(context)
     val repository = TransactionRepository(dao)
     composable(XpenseScreens.StatsScreen.route) {
-       StatsScreen(viewModel = StatsViewModel(repository), modifier = modifier, navController = navController, context = context)
-
+        StatsScreen(viewModel = StatsViewModel(repository), modifier = modifier, navController = navController, context = context)
     }
 
-
-
+    // Transaction Details Screen
+    composable(
+        XpenseScreens.TransactionDetailsScreen.route ,
+        arguments = listOf(navArgument("transactionId") { type = NavType.StringType })
+    ) { backStackEntry ->
+        // Retrieve the transactionId argument from the back stack entry
+        val transactionId = backStackEntry.arguments?.getString("transactionId")
+        if (transactionId != null) {
+            // Navigate to the details screen with the transactionId
+            TransactionDetailsScreen(modifier = modifier, transactionId = transactionId, navController = navController, viewModel = TransactionViewModel(context))
+        } else {
+            // Handle the case where transactionId is null, maybe show an error screen
+        }
+    }
 }

@@ -3,10 +3,13 @@ package uk.ac.tees.mad.d3424757.xpenseapp
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +31,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseNavigation
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.AuthRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
+import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
@@ -36,6 +40,7 @@ import kotlin.text.Typography.dagger
 
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -58,6 +63,7 @@ class MainActivity : ComponentActivity() {
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun XpenseApp(modifier: Modifier = Modifier, context : Context){
     XpenseNavigation(modifier, context)

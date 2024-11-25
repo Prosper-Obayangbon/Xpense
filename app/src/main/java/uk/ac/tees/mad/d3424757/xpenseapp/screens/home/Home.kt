@@ -34,7 +34,11 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatAmount
  * Home Screen Composable displaying the dashboard, transactions, and other key details.
  */
 @Composable
-fun Home(modifier: Modifier, viewModel: HomeViewModel, navController: NavController) {
+fun Home(
+    modifier: Modifier,
+    viewModel: HomeViewModel,
+    navController: NavController
+) {
     // Observe transactions from the ViewModel
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
@@ -43,7 +47,7 @@ fun Home(modifier: Modifier, viewModel: HomeViewModel, navController: NavControl
         Column(
             modifier = modifier
         ) {
-            Box(modifier = Modifier.size(750.dp)) {
+            Box(modifier = Modifier.size(755.dp)) {
                 Column {
                     HeaderSection()
                     BalanceCard(viewModel, transactions)
@@ -62,7 +66,7 @@ fun Home(modifier: Modifier, viewModel: HomeViewModel, navController: NavControl
                                 fontSize = 18.sp
                             )
                             Button(
-                                onClick  = { },
+                                onClick  = {navController.navigate(XpenseScreens.TransactionScreen.route)},
                                 colors = ButtonDefaults.buttonColors(mintCream),
                                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                                 elevation = ButtonDefaults.buttonElevation(0.dp)

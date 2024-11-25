@@ -52,10 +52,6 @@ class TransactionViewModel(context : Context) : ViewModel() {
 
 
 
-    private val _filteredAndGroupedTransactions = MutableStateFlow<Map<String, List<TransactionData>>>(emptyMap())
-    val filteredAndGroupedTransactions: StateFlow<Map<String, List<TransactionData>>> = _filteredAndGroupedTransactions
-
-
     // Initialize the repository with the DAO from the database.
     init {
         val dao = XpenseDatabase.getDatabase(context)
@@ -114,14 +110,17 @@ class TransactionViewModel(context : Context) : ViewModel() {
                 _errorMessage.value = "Amount cannot be empty."
                 false
             }
+
             selectedCategory.value == null -> {
                 _errorMessage.value = "Please select a category."
                 false
             }
+
             selectedDate.value.isEmpty() -> {
                 _errorMessage.value = "Date cannot be empty."
                 false
             }
+
             else -> {
                 _errorMessage.value = "" // Clear any previous error message
                 true
@@ -149,7 +148,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
      */
     fun addTransaction(isIncome: Boolean) {
         var type = TransactionType.EXPENSE
-        if(isIncome) {
+        if (isIncome) {
             type = TransactionType.INCOME
         }
         viewModelScope.launch {
@@ -162,7 +161,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
                     date = _selectedDate.value,
                     type = type,
 
-                )
+                    )
             )
         }
     }
@@ -183,7 +182,11 @@ class TransactionViewModel(context : Context) : ViewModel() {
      */
     private fun getCurrentDate(): String {
         val calendar = Calendar.getInstance()
-        return "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.YEAR)}"
+        return "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${
+            calendar.get(
+                Calendar.YEAR
+            )
+        }"
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -193,10 +196,8 @@ class TransactionViewModel(context : Context) : ViewModel() {
         return dateFormat.format(currentTime) // Return formatted time (e.g., 02:30 PM)
     }
 
-
-
-
-
-
-
 }
+
+
+
+
