@@ -47,68 +47,58 @@ fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, Li
         }
     }
 
+    val remainingTransactions = transactions.toMutableList()
     val groupedTransactions = mutableMapOf<String, List<TransactionData>>()
 
-    // Group by "Today"
-    groupedTransactions["TODAY"] = transactions.filter {
+    // Group "Today"
+    groupedTransactions["TODAY"] = remainingTransactions.filter {
         parseDate(it.date)?.isEqual(today) == true
-    }
+    }.also { remainingTransactions.removeAll(it) }
 
-    // Group by "Yesterday"
-    groupedTransactions["YESTERDAY"] = transactions.filter {
+    // Group "Yesterday"
+    groupedTransactions["YESTERDAY"] = remainingTransactions.filter {
         parseDate(it.date)?.isEqual(yesterday) == true
-    }
+    }.also { remainingTransactions.removeAll(it) }
 
-    // Group by specific days of the week for transactions between "Yesterday" and "Last Week"
-    val daysBetween = transactions.filter {
+    // Group "Last Few Days" (2–6 days ago, between Yesterday and Last Week)
+    groupedTransactions["LAST FEW DAYS"] = remainingTransactions.filter {
         val date = parseDate(it.date)
         date != null && date.isBefore(yesterday) && date.isAfter(lastWeekStart)
-    }
-    daysBetween.forEach { transaction ->
-        val date = parseDate(transaction.date)
-        if (date != null) {
-            val dayName =
-                date.dayOfWeek.toString()
-                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() } // Convert to "Monday", "Tuesday", etc.
-            groupedTransactions[dayName] = groupedTransactions.getOrDefault(dayName, emptyList()) + transaction
-        }
-    }
+    }.also { remainingTransactions.removeAll(it) }
 
-    // Group transactions between "Last Week" and "Last Month" by weeks
-    val transactionsBetweenWeeks = transactions.filter {
+    // Group "Last Week" (7–13 days ago)
+    groupedTransactions["LAST WEEK"] = remainingTransactions.filter {
         val date = parseDate(it.date)
-        date != null && date.isBefore(lastWeekStart) && date.isAfter(lastMonthStart)
-    }
-
-    transactionsBetweenWeeks.forEach { transaction ->
-        val date = parseDate(transaction.date)
-        if (date != null) {
-            val weeksAgo = ((today.toEpochDay() - date.toEpochDay()) / 7).toInt() // Calculate weeks ago
-            val weekLabel = when (weeksAgo) {
-                2 -> "2 Weeks Ago"
-                3 -> "3 Weeks Ago"
-                4 -> "4 Weeks Ago"
-                else -> "Older" // Fallback for safety
-            }
-            groupedTransactions[weekLabel] = groupedTransactions.getOrDefault(weekLabel, emptyList()) + transaction
-        }
-    }
-
-    // Group by "Last Month"
-    groupedTransactions["Last Month"] = transactions.filter {
+        date != null && !date.isBefore(lastWeekStart) && date.isBefore(today)
+    }.also { remainingTransactions.removeAll(it) }
+    // Group "Last 2 Weeks" (14–20 days ago)
+    groupedTransactions["2 WEEKS AGO"] = remainingTransactions.filter {
         val date = parseDate(it.date)
-        date != null && date.isBefore(lastMonthStart) && date.isAfter(lastMonthStart.minusMonths(1))
-    }
+        date != null && date.isBefore(lastWeekStart) && date.isAfter(lastWeekStart.minusWeeks(1))
+    }.also { remainingTransactions.removeAll(it) }
 
-    // Group by "Older"
-    groupedTransactions["Older"] = transactions.filter {
+    // Group "Last 3 Weeks" (21–27 days ago)
+    groupedTransactions["3 WEEKS AGO"] = remainingTransactions.filter {
+        val date = parseDate(it.date)
+        date != null && date.isBefore(lastWeekStart.minusWeeks(1)) && date.isAfter(lastWeekStart.minusWeeks(2))
+    }.also { remainingTransactions.removeAll(it) }
+
+    // Group "Last Month" (28 days ago up to one month)
+    groupedTransactions["LAST MONTH"] = remainingTransactions.filter {
+        val date = parseDate(it.date)
+        date != null && !date.isBefore(lastMonthStart) && date.isBefore(lastMonthStart.minusMonths(1))
+    }.also { remainingTransactions.removeAll(it) }
+
+    // Group "Older" (More than a month ago)
+    groupedTransactions["OLDER"] = remainingTransactions.filter {
         val date = parseDate(it.date)
         date != null && date.isBefore(lastMonthStart.minusMonths(1))
-    }
+    }.also { remainingTransactions.removeAll(it) }
 
     // Filter out empty groups
     return groupedTransactions.filterValues { it.isNotEmpty() }
 }
+
 
 
 

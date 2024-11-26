@@ -10,6 +10,7 @@ enum class XpenseScreens(val route: String) {
     AddTransaction("addTransaction"),
     TransactionScreen("transaction"),
     StatsScreen("stats"),
-    TransactionDetailsScreen("transaction/{transactionId}")
+    TransactionDetailsScreen("transaction/{transactionId}"),
+    Budget("budget")
 
 }

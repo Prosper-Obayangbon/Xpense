@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.home
 
+import android.annotation.SuppressLint
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatAmount
 /**
  * Home Screen Composable displaying the dashboard, transactions, and other key details.
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Home(
     modifier: Modifier,
@@ -43,45 +45,55 @@ fun Home(
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
     // Background composable wrapping the entire screen content
-    XHomeBackground {
-        Column(
-            modifier = modifier
-        ) {
-            Box(modifier = Modifier.size(755.dp)) {
-                Column {
-                    HeaderSection()
-                    BalanceCard(viewModel, transactions)
 
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(
+                navController = navController,
+
+                )
+        }
+    ) {
+        XHomeBackground {
+            Column(
+                modifier = modifier
+            ) {
+                Box(modifier = Modifier.size(755.dp)) {
                     Column {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Recent Transactions",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            Button(
-                                onClick  = {navController.navigate(XpenseScreens.TransactionScreen.route)},
-                                colors = ButtonDefaults.buttonColors(mintCream),
-                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                                elevation = ButtonDefaults.buttonElevation(0.dp)
+                        HeaderSection()
+                        BalanceCard(viewModel, transactions)
+
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("See All", color = tealGreen)
+                                Text(
+                                    text = "Recent Transactions",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                Button(
+                                    onClick  = {navController.navigate(XpenseScreens.TransactionScreen.route)},
+                                    colors = ButtonDefaults.buttonColors(mintCream),
+                                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                                ) {
+                                    Text("See All", color = tealGreen)
+                                }
                             }
                         }
+                        RecentTransactions(transactions)
                     }
-                    RecentTransactions(transactions)
                 }
             }
-            BottomNavigationBar(navController)
         }
     }
-}
+    }
+
 
 /**
  * Header section displaying a greeting message and notification button.

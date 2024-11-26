@@ -105,13 +105,18 @@ fun BottomNavigationBar(navController: NavController)
                     )
                 },
                 label = { Text("Budget") },
-                selected = false,
+                selected = (currentRoute == XpenseScreens.Budget.route),
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = { /* TODO: Handle Budget click */ }
+                onClick = {
+                    navController.navigate(XpenseScreens.Budget.route){
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
 
             // Profile navigation item

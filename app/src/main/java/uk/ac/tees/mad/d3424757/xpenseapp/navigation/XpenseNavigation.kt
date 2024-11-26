@@ -20,6 +20,8 @@ import androidx.navigation.navArgument
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.Budget
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
@@ -43,6 +45,7 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
         authNavGraph(navController, context)
         mainNavGraph(modifier, navController, context)
         reportNavGraph(modifier, navController, context)
+        budgetNavGraph(modifier, navController, context)
     }
 }
 
@@ -109,5 +112,12 @@ private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: Na
         } else {
             // Handle the case where transactionId is null, maybe show an error screen
         }
+    }
+}
+
+// Separate budget graph for main app screens
+private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: NavController, context: Context) {
+    composable(XpenseScreens.Budget.route) {
+        BudgetScreen(modifier = modifier, navController = navController)
     }
 }
