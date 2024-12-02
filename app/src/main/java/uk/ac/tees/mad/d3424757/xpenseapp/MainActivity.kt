@@ -40,6 +40,7 @@ import kotlin.text.Typography.dagger
 
 
 class MainActivity : ComponentActivity() {
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +54,8 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             XpenseAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()) { innerPadding ->
 
                     XpenseApp(modifier = Modifier.padding(innerPadding), this)
                 }

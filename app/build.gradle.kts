@@ -117,6 +117,8 @@ dependencies {
     // Kotlin KAPT dependency
     implementation(libs.kotlin.stdlib.jdk7)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.runtime.livedata)
     kapt(libs.kotlin.annotation.processing.gradle)
 
     implementation(libs.mpandroidchart)

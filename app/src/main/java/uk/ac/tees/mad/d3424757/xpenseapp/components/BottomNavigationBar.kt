@@ -1,7 +1,9 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -40,17 +42,17 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
  * @param onFabClick Lambda function to handle FloatingActionButton clicks.
  */
 @Composable
-fun BottomNavigationBar(navController: NavController)
+fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavController)
 {
     // Get the current route from the NavController's back stack
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().height(100.dp)
     ) {
         // Primary Navigation Bar container
         NavigationBar(
-            containerColor = Color.White,
+            containerColor = mintCream,
             contentColor = Color.Gray
         ) {
             // Home navigation item

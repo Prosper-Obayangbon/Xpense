@@ -1,3 +1,4 @@
+import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -25,6 +26,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.monthFilter
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getIconAndColor
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionFilters
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionType
@@ -40,6 +42,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
  * @param viewModel The ViewModel for managing and providing transaction data.
  * @param navController The NavController for navigating between screens.
  */
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionScreen(
@@ -51,13 +54,12 @@ fun TransactionScreen(
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
     // Month and type filter options
-    val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+    //val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
     val types = listOf("All", "Income", "Expense")
 
-    // State for dropdown menu visibility and selected filters
-    var expanded by remember { mutableStateOf(false) }
+
     var filterExpanded by remember { mutableStateOf(false) }
-    var selectedMonth by remember { mutableStateOf(months.first()) }
+    var selectedMonth by remember { mutableStateOf(monthFilter.first()) }
     var selectedType by remember { mutableStateOf(types.first()) }
 
     // Grouped transactions by date (initially done here without filters)
@@ -71,7 +73,7 @@ fun TransactionScreen(
 
         // Apply month filter if it's not "All"
         if (selectedMonth != "All") {
-            val monthIndex = months.indexOf(selectedMonth)  // Get the month index (1-based)
+            val monthIndex = monthFilter.indexOf(selectedMonth)  // Get the month index (1-based)
             result = TransactionFilters.filterByMonth(transactions, monthIndex)  // Filter by month
         }
 
@@ -89,62 +91,67 @@ fun TransactionScreen(
         result
     }
 
-    // UI Layout for the Transaction Screen
-    Column(modifier
-        .background(color = mintCream)){
-
-        Box(modifier.fillMaxWidth()
-            .height(680.dp)
-        ){
-            Column {
-                // Filter Dropdowns (Month and Type)
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    DropDownSelector(
-                        selectedItem = selectedMonth,
-                        options = months,
-                        onOptionSelected = {selectedMonth = it}
-                    )
-
-                    FilterDropdownMenu(
-                        types = types,
-                        onTypeSelected = { selectedType = it },
-                        expanded = filterExpanded,
-                        onExpandedChange = { filterExpanded = it }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Financial report link
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                        .clickable {navController.navigate(XpenseScreens.StatsScreen.route) }
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = "See your financial Report", color = tealGreen)
-                    Icon(painter = painterResource(R.drawable.keyboard_arrow_right), contentDescription = null, tint = tealGreen)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Display the grouped transactions
-                GroupedTransactionList(groupedTransactions = filteredTransactions, navController = navController)
-
-                Spacer(modifier = Modifier.height(32.dp))
-            }
-        }
-
-
-
-
+    Scaffold(bottomBar = {
         // Bottom navigation
         BottomNavigationBar(navController = navController)
+    },
+        ) {
+        // UI Layout for the Transaction Screen
+        Column(modifier = Modifier
+            .background(color = mintCream)){
+
+            Box(modifier.fillMaxSize()
+            ){
+                Column {
+                    // Filter Dropdowns (Month and Type)
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        DropDownSelector(
+                            selectedItem = selectedMonth,
+                            options = monthFilter,
+                            onOptionSelected = {selectedMonth = it}
+                        )
+
+                        FilterDropdownMenu(
+                            types = types,
+                            onTypeSelected = { selectedType = it },
+                            expanded = filterExpanded,
+                            onExpandedChange = { filterExpanded = it }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Financial report link
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .clickable {navController.navigate(XpenseScreens.StatsScreen.route) }
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "See your financial Report", color = tealGreen)
+                        Icon(painter = painterResource(R.drawable.keyboard_arrow_right), contentDescription = null, tint = tealGreen)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Display the grouped transactions
+                    GroupedTransactionList(groupedTransactions = filteredTransactions, navController = navController)
+
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+
+
+
+
+
+        }
     }
+
 }
 
 

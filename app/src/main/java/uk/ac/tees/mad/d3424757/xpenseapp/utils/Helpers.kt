@@ -111,6 +111,14 @@ fun String.toMonthName(): String {
     } catch (e: Exception) {
         "Invalid Date" // Handle invalid date formats
     }
+
+
+
+
+}
+fun getCurrentMonth(): String {
+    val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
+    return dateFormat.format(Date())
 }
 
 

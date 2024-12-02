@@ -45,6 +45,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.DropDownSelector
 import uk.ac.tees.mad.d3424757.xpenseapp.components.RecentTransactions
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.monthFilter
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getCategoriesForTransactionType
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.toMonthName
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
@@ -85,12 +86,12 @@ fun StatsScreen(
 
     // Main screen layout
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(color = mintCream)
     ) {
         // Top bar with navigation and title
-        XTopBar(
+        XTopBar(modifier = modifier,
             text = "Financial Report",
             textColor = Color.Black,
             backClick = { navController.popBackStack() }
@@ -109,11 +110,7 @@ fun StatsScreen(
             // Dropdown for selecting month
             DropDownSelector(
                 selectedItem = selectedMonth.value,
-                options = listOf(
-                    "All", "January", "February", "March", "April",
-                    "May", "June", "July", "August", "September",
-                    "October", "November", "December"
-                ),
+                options = monthFilter,
                 onOptionSelected = { selectedMonth.value = it }
             )
             // Toggle button for chart type (Donut or Line)

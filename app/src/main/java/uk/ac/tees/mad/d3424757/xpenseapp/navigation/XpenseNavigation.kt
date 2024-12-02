@@ -20,7 +20,6 @@ import androidx.navigation.navArgument
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
-import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.Budget
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
@@ -118,6 +117,6 @@ private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: Na
 // Separate budget graph for main app screens
 private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: NavController, context: Context) {
     composable(XpenseScreens.Budget.route) {
-        BudgetScreen(modifier = modifier, navController = navController)
+        BudgetScreen(modifier = modifier, navController = navController, context)
     }
 }
