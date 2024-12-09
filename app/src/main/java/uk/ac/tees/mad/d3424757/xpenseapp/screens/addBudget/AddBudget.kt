@@ -2,6 +2,7 @@ package uk.ac.tees.mad.d3424757.xpenseapp.screens.addBudget
 
 import XTopBar
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,13 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -39,23 +38,31 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
  * @param modifier A Modifier instance to style the composable.
  * @param viewModel The ViewModel instance managing the screen's state.
  */
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
-fun AddBudget(modifier: Modifier = Modifier, viewModel: BudgetViewModel, navController: NavController, isEdit : Boolean) {
+fun AddBudget(modifier: Modifier = Modifier, context : Context, navController: NavController, isEdit : Boolean, budgetId : Int) {
+
+    val viewModel = BudgetViewModel(context)
+
     val errorMessage by viewModel.errorMessage.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
-    // Dialog State
-    var showDialog by remember { mutableStateOf(false) }
+
+    // Initialize ViewModel with existing budget details if in edit mode
+    LaunchedEffect(isEdit) {
+        if (isEdit && budgetId >= 0) {
+            viewModel.initializeBudget(viewModel.getBudgetById(budgetId))
+        }
+    }
 
 
-    // Scaffold to structure the screen with a top bar and a bottom bar
     Scaffold(
+        modifier = modifier,
         topBar = {
             XTopBar(
-                modifier = modifier,
-                text = "Create Budget",
-                backClick = {}
+                modifier = Modifier.padding(top = 30.dp),
+                text = if(isEdit) "Edit Budget" else "Create Budget",
+                backClick = {navController.popBackStack()}
             )
         },
         bottomBar = {
@@ -64,32 +71,14 @@ fun AddBudget(modifier: Modifier = Modifier, viewModel: BudgetViewModel, navCont
                 selectedCategory = selectedCategory,
                 onCategorySelected = { viewModel.onCategoryChange(it) },
                 navController = navController,
-                showDialog = { showDialog = true },
-                errorMessage = errorMessage
+                errorMessage = errorMessage,
+                isEdit = isEdit
             )
         }
     ) {
         BudgetContent(viewModel = viewModel)
     }
-    // Trigger SaveCancelDialog when `showDialog` is true
-    if (showDialog) {
-        SaveCancelDialog(
-            openDialog = showDialog,
-            onSave = {
-                val budget = BudgetData(
-                    category = selectedCategory,
-                    amount = viewModel.budgetAmount,
-                    alertEnabled = viewModel.isAlertEnabled,
-                    alertThreshold = (viewModel.budgetAmount.toInt() * viewModel.alertThreshold / 100),
-                    date = getCurrentDate()
-                )
-                viewModel.saveBudget(budget)
-                navController.popBackStack() // Navigate back after saving
-            },
-            onCancel = { showDialog = false },
-            onDismiss = { showDialog = false }
-        )
-    }
+
 }
 
 /**
@@ -155,9 +144,12 @@ fun BudgetBottomBar(
     selectedCategory: String,
     onCategorySelected: (String) -> Unit,
     navController: NavController,
-    showDialog: () -> Unit,
-    errorMessage: String
+    errorMessage: String,
+    isEdit: Boolean
 ) {
+    // Dialog State
+    var showDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,25 +228,38 @@ fun BudgetBottomBar(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            XButton(text = "Create Budget") {
+            XButton(text = "Continue") {
                 if (viewModel.validateBudget()) {
-                    showDialog()
+                    showDialog = true
                 }
             }
+            // Trigger SaveCancelDialog when `showDialog` is true
+            if (showDialog) {
+                SaveCancelDialog(
+                    openDialog = showDialog,
+                    onSave = {
+                        val budget = BudgetData(
+                            id = if (isEdit) viewModel.currentId else 0, // Use existing ID for editing, 0 for new budget
+                            category = selectedCategory,
+                            amount = viewModel.budgetAmount,
+                            alertEnabled = viewModel.isAlertEnabled,
+                            alertThreshold = (viewModel.budgetAmount.toInt() * viewModel.alertThreshold / 100),
+                            date = getCurrentDate()
+                        )
+                        if (isEdit) {
+                            viewModel.updateBudget(budget) // Update existing budget
+                        } else {
+                            viewModel.saveBudget(budget) // Save new budget
+                        }
+                        navController.popBackStack() // Navigate back after saving
+                    },
+                    onCancel = { showDialog = false },
+                    onDismiss = { showDialog = false }
+                )
+            }
+
         }
     }
 }
-
-
-
-/**
- * Preview function for the budget creation screen.
- */
-//@Preview(showBackground = true)
-//@Composable
-//fun CreateBudgetScreenPreview() {
-//    val viewModel = BudgetViewModel(LocalContext.current) // Create ViewModel instance
-//    AddBudget(modifier = Modifier, viewModel = viewModel)
-//}

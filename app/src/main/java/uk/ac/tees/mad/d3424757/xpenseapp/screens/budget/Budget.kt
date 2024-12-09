@@ -149,7 +149,7 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, b
                     XButton(
                         modifier = Modifier.padding(32.dp),
                         text = "Create a budget",
-                        handleClick = {navController.navigate(XpenseScreens.AddBudget.route)}
+                        handleClick = {navController.navigate("addBudget/${false}/${-1}")}
                     )
                 }) {
                     Column(
@@ -279,13 +279,14 @@ fun BudgetItem(budget: BudgetWithSpent, navController: NavController) {
 @Composable
 fun AddPreview() {
     // Mock ViewModel to simulate data for the preview.
-    val mockViewModel =BudgetViewModel(LocalContext.current).apply {
+    val mockViewModel = BudgetViewModel(LocalContext.current).apply {
         // Add mock transaction data here if needed.
     }
     val navController = rememberNavController()
 
     XpenseAppTheme {
         // Displaying the AddScreen with mock data and a theme.
-        //BudgetScreen(navController = navController, mockViewModel)
+        //BudgetScreen(navController = navController, m
+
     }
 }

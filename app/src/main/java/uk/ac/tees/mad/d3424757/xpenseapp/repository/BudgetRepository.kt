@@ -16,6 +16,10 @@ class BudgetRepository(
 
     }
 
+    suspend fun getBudgetById(budgetId : Int) : BudgetData{
+        return dao.budgetDao().getBudgetById(budgetId)
+    }
+
 
     suspend fun insertBudget(budget: BudgetData) {
         dao.budgetDao().insertBudget(budget)
@@ -24,6 +28,10 @@ class BudgetRepository(
     suspend fun deleteBudget(budgetId : Int){
         dao.budgetDao().deleteBudget(budgetId)
     }
+    suspend fun updateBudget(budget : BudgetData){
+        dao.budgetDao().updateBudget(budget)
+    }
+
 }
 
 

@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +44,7 @@ import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.components.SaveCancelDialog
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.BudgetData
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getIconAndColor
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.getCurrentDate
@@ -172,4 +172,58 @@ fun BudgetDetailScreen(
             )
 
             // Progress Bar
-         
+            if (categoryIcon != null) {
+                LinearProgressIndicator(
+                    progress = { (budget.spent / budget.amount).toFloat().coerceIn(0f, 1f) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(15.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    color = categoryIcon.second,
+                )
+            }
+
+            // Exceeded Warning
+            if ( budget.spent > budget.amount || budget.spent == budget.amount) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .background(MaterialTheme.colorScheme.errorContainer, shape = RoundedCornerShape(16.dp))
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = "Warning",
+                        tint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "You've exceeded the limit",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            XButton(text = "Edit") { navController.navigate("addBudget/${true}/${budget.id}")}
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewBudgetDetailScreen() {
+    val context = LocalContext.current
+    BudgetDetailScreen(
+        modifier = Modifier,
+        budgetId = "1",
+        navController = NavController(context),
+        budgetViewModel = BudgetViewModel(context)
+    )
+}
+

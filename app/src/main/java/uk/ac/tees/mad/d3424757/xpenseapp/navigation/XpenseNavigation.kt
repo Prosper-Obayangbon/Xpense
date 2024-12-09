@@ -125,18 +125,29 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
         )
     }
     composable(
-        route = "AddBudget?isIncome={isEdit}",
-        arguments = listOf(navArgument("isEdit") { type = NavType.BoolType })
+        route = "AddBudget/{isEdit}/{budgetId}",
+        arguments = listOf(
+            navArgument("isEdit") { type = NavType.BoolType },
+            navArgument("budgetId") { type = NavType.IntType; defaultValue = -1 } // -1 indicates no budget
+        )
     ) { backStackEntry ->
         val isEdit = backStackEntry.arguments?.getBoolean("isEdit") ?: false
-        AddBudget(navController = navController, viewModel = BudgetViewModel(context), isEdit = isEdit)
+        val budgetId = backStackEntry.arguments?.getInt("budgetId") ?: -1
+
+
+        AddBudget(
+            navController = navController,
+            isEdit = isEdit,
+            budgetId = budgetId,
+            context = context
+        )
     }
     composable(
         XpenseScreens.BudgetDetailScreen.route ,
-        arguments = listOf(navArgument("transactionId") { type = NavType.StringType })
+        arguments = listOf(navArgument("budgetId") { type = NavType.StringType })
     ) { backStackEntry ->
         // Retrieve the transactionId argument from the back stack entry
-        val budgetId = backStackEntry.arguments?.getString("transactionId")
+        val budgetId = backStackEntry.arguments?.getString("budgetId")
         if (budgetId != null) {
             // Navigate to the details screen with the transactionId
             BudgetDetailScreen(modifier = modifier, budgetId = budgetId, navController = navController, budgetViewModel = BudgetViewModel(context))

@@ -9,11 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -36,12 +34,17 @@ class BudgetViewModel(context: Context) : ViewModel() {
     private val _calculatedBudgets = MutableStateFlow<List<BudgetWithSpent>>(emptyList())
     val calculatedBudgets: StateFlow<List<BudgetWithSpent>> = _calculatedBudgets
 
-    var budgetAmount by mutableDoubleStateOf(0.0)
+
+
+    var budgetAmount: Double by mutableDoubleStateOf(0.0)
+    var currentId: Int by mutableIntStateOf(0)
+
     var isAlertEnabled by mutableStateOf(false)
     var alertThreshold by mutableIntStateOf(80)
 
-    private val _selectedCategory = MutableStateFlow("Category")
+    private var _selectedCategory = MutableStateFlow("Category")
     val selectedCategory: StateFlow<String> = _selectedCategory
+
 
     private val _errorMessage = MutableStateFlow("")
     val errorMessage: StateFlow<String> = _errorMessage
@@ -142,14 +145,34 @@ class BudgetViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun updateBudget(budget: BudgetData) {
+        viewModelScope.launch {
+            budgetRepository.updateBudget(budget)
+        }
+    }
+    suspend fun getBudgetById(budgetId: Int): BudgetData {
+        return budgetRepository.getBudgetById(budgetId)
+    }
+
+
+
+    fun initializeBudget(budget: BudgetData) {
+        currentId = budget.id
+        budgetAmount = budget.amount
+        _selectedCategory.value = budget.category
+        isAlertEnabled = budget.alertEnabled
+        alertThreshold = budget.alertThreshold
+    }
+
+
     fun validateBudget(): Boolean {
         return when {
             budgetAmount <= 0.0 -> {
-                _errorMessage.value = "Budget amount must be greater than 0."
+                _errorMessage.value = "Budget amount must be greater than zero. Please enter a valid amount."
                 false
             }
             _selectedCategory.value.isBlank() -> {
-                _errorMessage.value = "Please select a category."
+                _errorMessage.value = "Please select a category from the list."
                 false
             }
             else -> {
@@ -158,4 +181,5 @@ class BudgetViewModel(context: Context) : ViewModel() {
             }
         }
     }
+
 }

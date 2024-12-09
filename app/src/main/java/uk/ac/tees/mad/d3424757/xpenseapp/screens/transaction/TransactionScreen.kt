@@ -53,7 +53,6 @@ fun TransactionScreen(
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
     // Month and type filter options
-    //val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
     val types = listOf("All", "Income", "Expense")
 
 
