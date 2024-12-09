@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
-import uk.ac.tees.mad.d3424757.xpenseapp.components.DropDownSelector
+import uk.ac.tees.mad.d3424757.xpenseapp.components.XDropDownSelector
 import uk.ac.tees.mad.d3424757.xpenseapp.components.RecentTransactions
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
@@ -108,7 +108,7 @@ fun StatsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Dropdown for selecting month
-            DropDownSelector(
+            XDropDownSelector(
                 selectedItem = selectedMonth.value,
                 options = monthFilter,
                 onOptionSelected = { selectedMonth.value = it }

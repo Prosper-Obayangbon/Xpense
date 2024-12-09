@@ -8,8 +8,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -20,6 +18,8 @@ import androidx.navigation.navArgument
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.addBudget.AddBudget
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetDetailScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
@@ -28,6 +28,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.stats.StatsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction.TransactionDetailsScreen
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
@@ -117,6 +118,30 @@ private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: Na
 // Separate budget graph for main app screens
 private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: NavController, context: Context) {
     composable(XpenseScreens.Budget.route) {
-        BudgetScreen(modifier = modifier, navController = navController, context)
+        BudgetScreen(
+            modifier = modifier,
+            navController = navController,
+            budgetViewModel = BudgetViewModel(context)
+        )
+    }
+    composable(
+        route = "AddBudget?isIncome={isEdit}",
+        arguments = listOf(navArgument("isEdit") { type = NavType.BoolType })
+    ) { backStackEntry ->
+        val isEdit = backStackEntry.arguments?.getBoolean("isEdit") ?: false
+        AddBudget(navController = navController, viewModel = BudgetViewModel(context), isEdit = isEdit)
+    }
+    composable(
+        XpenseScreens.BudgetDetailScreen.route ,
+        arguments = listOf(navArgument("transactionId") { type = NavType.StringType })
+    ) { backStackEntry ->
+        // Retrieve the transactionId argument from the back stack entry
+        val budgetId = backStackEntry.arguments?.getString("transactionId")
+        if (budgetId != null) {
+            // Navigate to the details screen with the transactionId
+            BudgetDetailScreen(modifier = modifier, budgetId = budgetId, navController = navController, budgetViewModel = BudgetViewModel(context))
+        } else {
+            // Handle the case where transactionId is null, maybe show an error screen
+        }
     }
 }

@@ -53,7 +53,6 @@ fun AddTransaction(
     // Observing ViewModel states
     val amount by viewModel.amount.collectAsState()
     val description by viewModel.description.collectAsState()
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
     val selectedDate by viewModel.selectedDate.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
@@ -91,7 +90,6 @@ fun AddTransaction(
                 amount = amount,
                 description = description,
                 selectedDate = selectedDate,
-                selectedCategory = selectedCategory
             )
 
             if (errorMessage.isNotEmpty()) {
@@ -128,7 +126,6 @@ fun AddTransaction(
                     },
                     onCancel = {
                         // Handle cancel action
-                        println("Cancel button clicked!")
                         showDialog = false // Close the dialog after action
                     },
                     onDismiss = {
@@ -214,10 +211,9 @@ fun TransactionForm(
     amount: String,
     description: String,
     selectedDate: String,
-    selectedCategory: Category?
 ) {
     val calendar = Calendar.getInstance()
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
 
     Card(

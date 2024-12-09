@@ -32,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -40,17 +41,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
+import uk.ac.tees.mad.d3424757.xpenseapp.data.model.BudgetData
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.BudgetWithSpent
+import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
@@ -63,21 +68,15 @@ import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, context : Context) {
+fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, budgetViewModel: BudgetViewModel) {
 
-    // Initialize the ViewModel
-    val budgetViewModel = BudgetViewModel(context = context)
+    val monthName by budgetViewModel.monthName.collectAsState()
+    val currentMonth by budgetViewModel.currentMonth.collectAsState()
 
-    // Create state to hold current month and year
-    val currentMonth = remember { mutableStateOf(Calendar.getInstance()) }
 
-    // Get the month name
-    val monthName = remember(currentMonth.value) {
-        SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(currentMonth.value.time)
-    }
+    val budgets by budgetViewModel.calculatedBudgets.collectAsState()
 
-    // Observe budgets from the ViewModel
-    val budgets by budgetViewModel.budgetsForMonth.observeAsState(emptyList())
+
 
 
     Scaffold(
@@ -95,9 +94,9 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, c
             ) {
                 IconButton(
                     onClick = { // Update to previous month
-                        val updatedCalendar = currentMonth.value.clone() as Calendar
+                        val updatedCalendar = currentMonth.clone() as Calendar
                         updatedCalendar.add(Calendar.MONTH, -1)
-                        currentMonth.value = updatedCalendar
+                        budgetViewModel.onDateChange(updatedCalendar)
                     }
                 ) {
                     Icon(
@@ -116,9 +115,9 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, c
                 )
                 IconButton(onClick = {
                     // Update to previous month
-                    val updatedCalendar = currentMonth.value.clone() as Calendar
+                    val updatedCalendar = currentMonth.clone() as Calendar
                     updatedCalendar.add(Calendar.MONTH, 1)
-                    currentMonth.value = updatedCalendar
+                    budgetViewModel.onDateChange(updatedCalendar)
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -150,7 +149,7 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, c
                     XButton(
                         modifier = Modifier.padding(32.dp),
                         text = "Create a budget",
-                        handleClick = {}
+                        handleClick = {navController.navigate(XpenseScreens.AddBudget.route)}
                     )
                 }) {
                     Column(
@@ -171,7 +170,7 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, c
                         } else {
                             LazyColumn(modifier = Modifier.size(450.dp)) {
                                 items(budgets) { budget ->
-                                    BudgetItem(budget)
+                                    BudgetItem(budget, navController)
 
                                 }
                             }
@@ -187,11 +186,12 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, c
 
 // Budget Item Composable
 @Composable
-fun BudgetItem(budget: BudgetWithSpent) {
-    val exceeded = budget.spent > budget.amount
+fun BudgetItem(budget: BudgetWithSpent, navController: NavController) {
+
+    val exceeded = budget.spent > budget.amount || budget.spent == budget.amount
     Column(modifier = Modifier
-        .padding(top = 8.dp, bottom = 40.dp)
-        .clickable {  }
+        .padding(16.dp)
+        .clickable {navController.navigate("budget/${budget.id}") }
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -199,20 +199,35 @@ fun BudgetItem(budget: BudgetWithSpent) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                getIconAndColor(budget.category)?.let {
-                    Modifier
-                        .size(12.dp)
-                        .background(it.second, CircleShape)
-                }?.let {
-                    Box(
-                        modifier = it
-                    )
+
+                Box(modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth(0.8f)
+                    .clip(RoundedCornerShape(50))
+                ){
+                    Row(){
+                        getIconAndColor(budget.category)?.let {
+                            Modifier
+                                .size(15.dp)
+                                .background(it.second, CircleShape)
+                                .padding(16.dp)
+                        }?.let {
+                            Box(
+                                modifier = it
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = budget.category,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontSize = 18.sp,
+                        )
+                    }
+
+
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = budget.category,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+
             }
             if (exceeded) {
                 Icon(
@@ -222,25 +237,28 @@ fun BudgetItem(budget: BudgetWithSpent) {
                 )
             }
         }
+        val remainder = budget.amount - budget.spent
         Text(
-            text = "Remaining: $${"%.2f".format(budget.amount - budget.spent)}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            text = "Remaining: £${"%.2f".format(if (remainder > 0) remainder else 0.0)}",
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
         )
         getIconAndColor(budget.category)?.let {
             LinearProgressIndicator(
                 progress = { (budget.spent / budget.amount).toFloat().coerceIn(0f, 1f) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(8.dp)
+                    .height(15.dp)
                     .clip(RoundedCornerShape(4.dp)),
                 color = it.second,
             )
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "$${"%.2f".format(budget.spent)} of $${"%.2f".format(budget.amount)}",
+            text = "£${"%.2f".format(budget.spent)} of £${"%.2f".format(budget.amount)}",
             style = MaterialTheme.typography.bodyMedium,
+            fontSize = 18.sp,
             color = Color.Gray
         )
         if (exceeded) {
@@ -261,13 +279,13 @@ fun BudgetItem(budget: BudgetWithSpent) {
 @Composable
 fun AddPreview() {
     // Mock ViewModel to simulate data for the preview.
-    val mockViewModel = TransactionViewModel(LocalContext.current).apply {
+    val mockViewModel =BudgetViewModel(LocalContext.current).apply {
         // Add mock transaction data here if needed.
     }
     val navController = rememberNavController()
 
     XpenseAppTheme {
         // Displaying the AddScreen with mock data and a theme.
-        BudgetScreen(navController = navController, context = LocalContext.current)
+        //BudgetScreen(navController = navController, mockViewModel)
     }
 }

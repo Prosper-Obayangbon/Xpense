@@ -32,7 +32,7 @@ fun formatAmount(amount: Double, type: String): String {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, List<TransactionData>> {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val today = LocalDate.now()
     val yesterday = today.minusDays(1)
     val lastWeekStart = today.minusWeeks(1)
@@ -104,10 +104,10 @@ fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, Li
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun String.toMonthName(): String {
-    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
     return try {
         val date = LocalDate.parse(this, formatter)
-        date.month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())
+        date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
     } catch (e: Exception) {
         "Invalid Date" // Handle invalid date formats
     }
@@ -119,6 +119,11 @@ fun String.toMonthName(): String {
 fun getCurrentMonth(): String {
     val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
     return dateFormat.format(Date())
+}
+
+fun getCurrentDate(): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return formatter.format(Date())
 }
 
 

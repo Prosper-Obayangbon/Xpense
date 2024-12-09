@@ -21,8 +21,8 @@ interface TransactionDao {
     fun getTransactions(): Flow<List<TransactionData>>
 
     // Query to get all expense transactions for a given category and month in "dd/mm/yyyy" format
-    @Query("SELECT SUM(amount) FROM transactions WHERE category = :category AND type = 'Expense' AND substr(date, 4, 7) = :month")
-    suspend fun getTotalSpentForCategoryAndMonth(category: String, month: String): Double
+    @Query("SELECT SUM(amount) FROM transactions WHERE category = :category AND type = 'EXPENSE' AND substr(date, 1, 7) = :monthYr")
+    suspend fun getTotalSpentForCategoryAndMonth(category: String, monthYr: String): Double
 
 
 

@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -31,15 +32,16 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
  * @param modifier A modifier for custom styling of the composable.
  */
 @Composable
-fun DropDownSelector(
+fun XDropDownSelector(
     selectedItem: String,
     options: List<String>,
     onOptionSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    fraction : Float = 0.4f
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier.fillMaxWidth(0.4f)) {
+    Box(modifier = modifier.fillMaxWidth(fraction)) {
         // Button to toggle the dropdown
         Button(
             onClick = { expanded = true },
@@ -65,7 +67,7 @@ fun DropDownSelector(
         // Dropdown menu
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             options.forEach { option ->
                 DropdownMenuItem(

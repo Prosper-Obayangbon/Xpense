@@ -182,11 +182,8 @@ class TransactionViewModel(context : Context) : ViewModel() {
      */
     private fun getCurrentDate(): String {
         val calendar = Calendar.getInstance()
-        return "${calendar.get(Calendar.DAY_OF_MONTH)}/${calendar.get(Calendar.MONTH) + 1}/${
-            calendar.get(
-                Calendar.YEAR
-            )
-        }"
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(calendar.time)
     }
 
     @SuppressLint("SimpleDateFormat")

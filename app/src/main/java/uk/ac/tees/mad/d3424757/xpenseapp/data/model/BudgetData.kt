@@ -9,5 +9,7 @@ data class BudgetData(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val category: String,
     val amount: Double,
-    val date: String
+    val date: String,
+    val alertEnabled: Boolean,
+    val alertThreshold: Int
 )

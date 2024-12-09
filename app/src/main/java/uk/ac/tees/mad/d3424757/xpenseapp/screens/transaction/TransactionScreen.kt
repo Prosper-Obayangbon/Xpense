@@ -1,6 +1,5 @@
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
-import uk.ac.tees.mad.d3424757.xpenseapp.components.DropDownSelector
+import uk.ac.tees.mad.d3424757.xpenseapp.components.XDropDownSelector
 import uk.ac.tees.mad.d3424757.xpenseapp.components.TransactionItem
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
@@ -109,7 +108,7 @@ fun TransactionScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        DropDownSelector(
+                        XDropDownSelector(
                             selectedItem = selectedMonth,
                             options = monthFilter,
                             onOptionSelected = {selectedMonth = it}
