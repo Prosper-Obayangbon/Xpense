@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -39,10 +37,10 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.XTitle
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 
 @Composable
-fun Login(modifier: Modifier = Modifier, viewModel: SignViewModel, navController: NavController){
+fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController: NavController){
 
     Surface(modifier.fillMaxSize(),
         color = mintCream

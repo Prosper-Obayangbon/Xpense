@@ -42,10 +42,10 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.XTitle
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 
 @Composable
-fun Signup(navController: NavController, viewModel: SignViewModel, context: Context) {
+fun Signup(navController: NavController, viewModel: AuthViewModel, context: Context) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),

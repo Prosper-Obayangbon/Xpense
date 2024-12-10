@@ -48,7 +48,7 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     Box(
-        modifier = modifier.fillMaxWidth().height(100.dp)
+        modifier = modifier.fillMaxWidth().height(80.dp)
     ) {
         // Primary Navigation Bar container
         NavigationBar(
@@ -131,7 +131,12 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
                     selectedTextColor = tealGreen,
                     indicatorColor = Color.Transparent
                 ),
-                onClick = { /* TODO: Handle Profile click */ }
+                onClick = {
+                    navController.navigate(XpenseScreens.Profile.route){
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
         }
 

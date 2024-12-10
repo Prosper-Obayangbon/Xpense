@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 
 import AddScreen
+import ProfileScreen
 import TransactionScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import android.content.Context
@@ -29,7 +30,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.stats.StatsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction.TransactionDetailsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.SignViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 
@@ -46,6 +47,7 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
         mainNavGraph(modifier, navController, context)
         reportNavGraph(modifier, navController, context)
         budgetNavGraph(modifier, navController, context)
+        profileNavGraph(modifier, navController, context)
     }
 }
 
@@ -58,10 +60,10 @@ private fun NavGraphBuilder.authNavGraph(navController: NavController, context :
         Onboarding(navController = navController)
     }
     composable(XpenseScreens.Signup.route) {
-        Signup(navController = navController, viewModel = SignViewModel(), context = context)
+        Signup(navController = navController, viewModel = AuthViewModel(), context = context)
     }
     composable(XpenseScreens.Login.route) {
-        Login(navController = navController, viewModel = SignViewModel())
+        Login(navController = navController, viewModel = AuthViewModel())
     }
 }
 
@@ -125,7 +127,7 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
         )
     }
     composable(
-        route = "AddBudget/{isEdit}/{budgetId}",
+        route = XpenseScreens.AddBudget.route,
         arguments = listOf(
             navArgument("isEdit") { type = NavType.BoolType },
             navArgument("budgetId") { type = NavType.IntType; defaultValue = -1 } // -1 indicates no budget
@@ -155,4 +157,14 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
             // Handle the case where transactionId is null, maybe show an error screen
         }
     }
+}
+
+private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: NavController, context: Context) {
+    composable(XpenseScreens.Profile.route) {
+        val hVM = HomeViewModel(context)
+        ProfileScreen(navController = navController, modifier = modifier)
+    }
+
+
+
 }
