@@ -149,7 +149,12 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, b
                     XButton(
                         modifier = Modifier.padding(32.dp),
                         text = "Create a budget",
-                        handleClick = {navController.navigate("addBudget/${false}/${-1}")}
+                        handleClick = {
+                            val isEdit = false
+                            val budgetId = -1
+
+                            navController.navigate("addBudget/$isEdit/$budgetId")
+                        }
                     )
                 }) {
                     Column(

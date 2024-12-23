@@ -3,7 +3,7 @@ package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 import AddScreen
 import ProfileScreen
 import TransactionScreen
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -33,6 +33,8 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
+import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -47,12 +49,14 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
         mainNavGraph(modifier, navController, context)
         reportNavGraph(modifier, navController, context)
         budgetNavGraph(modifier, navController, context)
-        profileNavGraph(modifier, navController, context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            profileNavGraph(modifier, navController, context)
+        }
     }
 }
 
 // Separate auth graph for auth-related screens
-private fun NavGraphBuilder.authNavGraph(navController: NavController, context : Context) {
+private fun NavGraphBuilder.authNavGraph(navController: NavController, context: Context) {
     composable(XpenseScreens.SplashScreen.route) {
         SplashScreen(navController = navController, context = context)
     }
@@ -85,8 +89,8 @@ private fun NavGraphBuilder.mainNavGraph(modifier: Modifier, navController: NavC
         val isIncome = backStackEntry.arguments?.getBoolean("isIncome") ?: false
         AddTransaction(navController = navController, context = context, viewModel = TransactionViewModel(context), isIncome = isIncome)
     }
-
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: NavController, context: Context) {
     // Transaction Screen
@@ -106,13 +110,11 @@ private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: Na
         XpenseScreens.TransactionDetailsScreen.route ,
         arguments = listOf(navArgument("transactionId") { type = NavType.StringType })
     ) { backStackEntry ->
-        // Retrieve the transactionId argument from the back stack entry
         val transactionId = backStackEntry.arguments?.getString("transactionId")
         if (transactionId != null) {
-            // Navigate to the details screen with the transactionId
             TransactionDetailsScreen(modifier = modifier, transactionId = transactionId, navController = navController, viewModel = TransactionViewModel(context))
         } else {
-            // Handle the case where transactionId is null, maybe show an error screen
+            // Handle the case where transactionId is null, show an error or fallback screen
         }
     }
 }
@@ -126,16 +128,16 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
             budgetViewModel = BudgetViewModel(context)
         )
     }
+
     composable(
         route = XpenseScreens.AddBudget.route,
         arguments = listOf(
             navArgument("isEdit") { type = NavType.BoolType },
-            navArgument("budgetId") { type = NavType.IntType; defaultValue = -1 } // -1 indicates no budget
+            navArgument("budgetId") { type = NavType.IntType; defaultValue = -1 }
         )
     ) { backStackEntry ->
         val isEdit = backStackEntry.arguments?.getBoolean("isEdit") ?: false
         val budgetId = backStackEntry.arguments?.getInt("budgetId") ?: -1
-
 
         AddBudget(
             navController = navController,
@@ -144,27 +146,24 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
             context = context
         )
     }
+
     composable(
         XpenseScreens.BudgetDetailScreen.route ,
         arguments = listOf(navArgument("budgetId") { type = NavType.StringType })
     ) { backStackEntry ->
-        // Retrieve the transactionId argument from the back stack entry
         val budgetId = backStackEntry.arguments?.getString("budgetId")
         if (budgetId != null) {
-            // Navigate to the details screen with the transactionId
             BudgetDetailScreen(modifier = modifier, budgetId = budgetId, navController = navController, budgetViewModel = BudgetViewModel(context))
         } else {
-            // Handle the case where transactionId is null, maybe show an error screen
+            // Handle the case where budgetId is null, show an error or fallback screen
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: NavController, context: Context) {
+
     composable(XpenseScreens.Profile.route) {
-        val hVM = HomeViewModel(context)
         ProfileScreen(navController = navController, modifier = modifier)
     }
-
-
-
 }

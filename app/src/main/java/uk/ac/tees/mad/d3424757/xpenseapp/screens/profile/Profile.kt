@@ -1,4 +1,13 @@
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,13 +30,13 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,11 +46,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
@@ -49,19 +60,20 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ProfileScreen(navController: NavController, modifier: Modifier) {
-
+fun ProfileScreen(navController: NavController, modifier: Modifier = Modifier) {
     var showLogoutDialog by remember { mutableStateOf(false) }
+    var showImagePickerDialog by remember { mutableStateOf(false) }
+    var profileImageUri by remember { mutableStateOf<Uri?>(null) } // Store selected image URI
+    val context = LocalContext.current
 
     Scaffold(
-        bottomBar = {
-        // Bottom navigation
-        BottomNavigationBar(navController = navController)
-    },
+        bottomBar = { BottomNavigationBar(navController = navController) }
     ) {
-        Box(modifier = Modifier.fillMaxSize()
-            .background(mintCream)
-        ){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(mintCream)
+        ) {
             Column(
                 modifier = modifier
                     .fillMaxSize()
@@ -69,26 +81,32 @@ fun ProfileScreen(navController: NavController, modifier: Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(contentAlignment = Alignment.Center) {
+                        // Display profile picture
                         Image(
-                            painter = painterResource(id = R.drawable.default_profile),
+                            painter = rememberImagePainter(profileImageUri ?: R.drawable.default_profile),
                             contentDescription = "Profile Picture",
-                            modifier = Modifier.size(100.dp).clip(CircleShape).clickable { }//onUploadPicture() }
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
                         )
+
+                        // Add icon to change profile picture
                         Icon(
                             painter = painterResource(R.drawable.add_a_photo),
                             contentDescription = "Change Picture",
-                            modifier = Modifier.size(40.dp).align(Alignment.BottomEnd).padding(8.dp)
+                            modifier = Modifier
+                                .size(40.dp)
+                                .align(Alignment.BottomEnd)
+                                .padding(8.dp)
+                                .clickable { showImagePickerDialog = true }
                         )
                     }
-                    // Profile Section (Image + Name + Email in Row)
-
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    // Name and Email
+                    // User information
                     Column(
                         modifier = Modifier.padding(top = 20.dp),
                         verticalArrangement = Arrangement.Center
@@ -106,26 +124,23 @@ fun ProfileScreen(navController: NavController, modifier: Modifier) {
                     }
                 }
 
-
-
                 Spacer(modifier = Modifier.height(32.dp))
 
-
-                // Options List
+                // Profile Options
                 ProfileOptionItem(icon = Icons.Default.AccountCircle, label = "Account Info") {
                     // Navigate to Account Info
                 }
                 ProfileOptionItem(icon = Icons.Default.Lock, label = "Change Password") {
                     navController.navigate("change_password_screen")
                 }
-                ProfileOptionItem(Icons.Default.ExitToApp, label = "Logout"){
+                ProfileOptionItem(Icons.Default.ExitToApp, label = "Logout") {
                     showLogoutDialog = true
                 }
 
                 // Logout Confirmation Dialog
                 if (showLogoutDialog) {
                     AlertDialog(
-                        onDismissRequest = { showLogoutDialog = false }, // Dismiss the dialog
+                        onDismissRequest = { showLogoutDialog = false },
                         title = { Text(text = "Confirm Logout") },
                         text = { Text(text = "Are you sure you want to log out?") },
                         confirmButton = {
@@ -147,13 +162,18 @@ fun ProfileScreen(navController: NavController, modifier: Modifier) {
                     )
                 }
 
+                // Show Image Picker Dialog
+                if (showImagePickerDialog) {
+                    ImagePickerDialog(
+                        onImagePicked = { uri -> profileImageUri = uri },
+                        onDismiss = { showImagePickerDialog = false },
 
-
+                    )
+                }
             }
         }
-
     }
-        }
+}
 
 @Composable
 fun ProfileOptionItem(icon: ImageVector, label: String, onClick: () -> Unit) {

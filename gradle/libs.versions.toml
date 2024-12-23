@@ -1,8 +1,11 @@
 [versions]
+accompanistPermissions = "0.28.0"
 activityComposeVersion = "1.9.3"
 agp = "8.6.1"
+androidxActivityCompose = "1.7.2"
 androidxHiltCompiler = "1.0.0"
 androidxRoomCompiler = "2.5.0"
+cameraLifecycle = "1.4.0"
 coilCompose = "2.4.0"
 constraintlayoutCompose = "1.1.0"
 converterGson = "2.9.0"
@@ -18,6 +21,7 @@ hiltCompilerVersion = "1.0.0"
 hiltLifecycleViewmodel = "1.2.0"
 hiltLifecycleViewmodelVersion = "1.0.0-alpha03"
 hiltNavigationCompose = "1.0.0"
+imagepicker = "2.1"
 kotlin = "1.9.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -55,6 +59,9 @@ runtimeLivedata = "1.7.5"
 
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
+androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraLifecycle" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
@@ -71,6 +78,7 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 google-firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 hilt-android-compiler-v2405 = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 hilt-android-v2405 = { module = "com.google.dagger:hilt-android", version.ref = "googleHiltAndroid" }
+imagepicker = { module = "com.github.dhaval2404:imagepicker", version.ref = "imagepicker" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

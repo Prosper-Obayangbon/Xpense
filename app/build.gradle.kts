@@ -123,6 +123,16 @@ dependencies {
 
     implementation(libs.mpandroidchart)
 
+    // Camera Dependencies
+    implementation(libs.androidx.activity.compose.v172)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.imagepicker)
+    implementation(libs.accompanist.permissions)  // Use the latest stable version
+
+
+
+
+
 
 
 
