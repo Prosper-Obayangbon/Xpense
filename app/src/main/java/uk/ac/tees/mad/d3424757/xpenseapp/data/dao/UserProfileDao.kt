@@ -13,4 +13,5 @@ interface UserProfileDao {
 
     @Query("UPDATE user_profile SET profilePicture = :uri WHERE id = :userId")
     suspend fun updateProfilePicture(userId: Int, uri: String)
+
 }

@@ -6,9 +6,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.kapt)
     alias(libs.plugins.kotlin.compose)
-    //alias(libs.plugins.hilt.android)
+   // alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.room)
+
 
 
 }
@@ -71,15 +72,8 @@ dependencies {
     implementation(libs.firebase.auth)
 
 
-//    //Dagger - Hilt
-//    implementation(libs.hilt.android.v2405)
-//    kapt(libs.hilt.android.compiler.v2405)
-//    implementation(libs.androidx.hilt.lifecycle.viewmodel)
-//    kapt(libs.androidx.hilt.compiler.v100)
-//    implementation(libs.androidx.hilt.navigation.compose.v100)
 
-    //material icons - use with caution!
-    // implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)

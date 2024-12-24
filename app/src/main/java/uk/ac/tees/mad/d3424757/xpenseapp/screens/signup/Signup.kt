@@ -65,7 +65,7 @@ fun Signup(navController: NavController, viewModel: AuthViewModel, context: Cont
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = tealGreen.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(24.dp)

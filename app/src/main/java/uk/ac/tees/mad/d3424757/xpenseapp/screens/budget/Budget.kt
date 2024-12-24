@@ -152,8 +152,8 @@ fun BudgetScreen(modifier: Modifier = Modifier, navController : NavController, b
                         handleClick = {
                             val isEdit = false
                             val budgetId = -1
-
-                            navController.navigate("addBudget/$isEdit/$budgetId")
+                            val route = "addBudget/$isEdit/$budgetId"
+                            navController.navigate(route)
                         }
                     )
                 }) {

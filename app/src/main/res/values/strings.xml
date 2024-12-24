@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">XpenseApp</string>
     <string name="default_web_client_id">260397992523-2er3plaipv6pja97kcgl4924krg9dqea.apps.googleusercontent.com</string>
+    <string name="profile_information">Profile Information</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
 </resources>

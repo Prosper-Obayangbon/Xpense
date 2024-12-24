@@ -107,7 +107,7 @@ fun ProfileScreen(
                     navController.navigate("profileInfo")
                 }
                 ProfileOptionItem(icon = Icons.Default.Lock, label = "Change Password") {
-                    navController.navigate("change_password_screen")
+                    navController.navigate("changePassword")
                 }
                 ProfileOptionItem(Icons.Default.ExitToApp, label = "Logout") {
                     showLogoutDialog = true
@@ -231,9 +231,4 @@ fun ProfileOptionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    val navController = rememberNavController()
-    ProfileScreen(navController = navController, userId = 0, viewModel = UserProfileVM(LocalContext.current))
-}
+

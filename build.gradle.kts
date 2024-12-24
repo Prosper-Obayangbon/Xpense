@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.android.kapt) apply false
     alias(libs.plugins.google.gms.google.services) apply false
     alias(libs.plugins.room) apply false
+    alias(libs.plugins.hilt.android) apply false
 
 
 

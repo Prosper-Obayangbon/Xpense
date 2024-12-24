@@ -109,6 +109,7 @@ fun ProfileInfoScreen(
                 handleClick = {
                     // Call the ViewModel to save the updated profile
                     name?.let { email?.let { it1 -> viewModel.updateUserProfile(it, it1) } }
+                    navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 text = "Save Changes"
@@ -151,13 +152,7 @@ fun EditableField(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ProfileInfoScreenPreview() {
-    val navController = rememberNavController()
-    val mockViewModel = UserProfileVM(LocalContext.current)
-    ProfileInfoScreen(navController = navController, viewModel = mockViewModel)
-}
+
 
 
 

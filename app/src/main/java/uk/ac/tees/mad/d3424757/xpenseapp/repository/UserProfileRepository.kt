@@ -4,7 +4,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.data.dao.UserProfileDao
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.UserProfile
 
-class UserProfileRepository(private val dao: XpenseDatabase) {
+class UserProfileRepository (private val dao: XpenseDatabase) {
 
     // Fetch user profile
     suspend fun getUserProfile(userId: Int): UserProfile? {
@@ -20,4 +20,10 @@ class UserProfileRepository(private val dao: XpenseDatabase) {
     suspend fun updateProfilePicture(userId: Int, uri: String) {
         dao.userProfileDao().updateProfilePicture(userId, uri)
     }
+
+    // Update user profile details
+    suspend fun updateUserProfile(userProfile: UserProfile) {
+        dao.userProfileDao().insertUserProfile(userProfile)
+    }
+
 }

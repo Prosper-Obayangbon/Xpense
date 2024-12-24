@@ -61,7 +61,7 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        color = tealGreen.copy(alpha = 0.2f),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .padding(24.dp)

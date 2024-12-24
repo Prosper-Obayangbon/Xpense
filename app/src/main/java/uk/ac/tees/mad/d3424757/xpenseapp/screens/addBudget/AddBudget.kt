@@ -57,7 +57,6 @@ fun AddBudget(modifier: Modifier = Modifier, context : Context, navController: N
 
 
     Scaffold(
-        modifier = modifier,
         topBar = {
             XTopBar(
                 modifier = Modifier.padding(top = 30.dp),
@@ -76,7 +75,9 @@ fun AddBudget(modifier: Modifier = Modifier, context : Context, navController: N
             )
         }
     ) {
-        BudgetContent(viewModel = viewModel)
+        Column(modifier = modifier) {
+            BudgetContent(viewModel = viewModel)
+        }
     }
 
 }

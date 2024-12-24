@@ -6,6 +6,7 @@ import TransactionScreen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addBudget.AddBudget
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetDetailScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetScreen
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.changePassword.ChangePasswordScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
@@ -133,22 +135,17 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
     }
 
     composable(
-        route = XpenseScreens.AddBudget.route,
+        route = "addBudget/{isEditing}/{budgetId}",
         arguments = listOf(
-            navArgument("isEdit") { type = NavType.BoolType },
-            navArgument("budgetId") { type = NavType.IntType; defaultValue = -1 }
+            navArgument("isEditing") { type = NavType.BoolType },
+            navArgument("budgetId") { type = NavType.IntType }
         )
-    ) { backStackEntry ->
-        val isEdit = backStackEntry.arguments?.getBoolean("isEdit") ?: false
-        val budgetId = backStackEntry.arguments?.getInt("budgetId") ?: -1
-
-        AddBudget(
-            navController = navController,
-            isEdit = isEdit,
-            budgetId = budgetId,
-            context = context
-        )
+    ) {
+        val isEditing = it.arguments?.getBoolean("isEditing") ?: false
+        val budgetId = it.arguments?.getInt("budgetId") ?: -1
+        AddBudget(modifier= modifier, context = context, isEdit = isEditing, budgetId = budgetId, navController = navController)
     }
+
 
     composable(
         XpenseScreens.BudgetDetailScreen.route ,
@@ -165,11 +162,19 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: NavController, context: Context) {
+    val viewModel = UserProfileVM(
+        context = context,
+        showToast = { message -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
+    )
+
 
     composable(XpenseScreens.Profile.route) {
-        ProfileScreen(navController = navController, modifier = modifier, viewModel = UserProfileVM(context), userId = 0)
+        ProfileScreen(navController = navController, modifier = modifier, viewModel = viewModel, userId = 0)
     }
     composable(XpenseScreens.ProfileInfoScreen.route) {
-        ProfileInfoScreen(navController = navController, modifier = modifier, viewModel = UserProfileVM(context))
+        ProfileInfoScreen(navController = navController, modifier = modifier, viewModel = viewModel)
+    }
+    composable(XpenseScreens.ChangePasswordScreen.route) {
+        ChangePasswordScreen(navController = navController, modifier = modifier,viewModel = viewModel)
     }
 }
