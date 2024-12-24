@@ -14,6 +14,7 @@ enum class XpenseScreens(val route: String) {
     Budget("budget"),
     AddBudget("addBudget/{isEdit}/{budgetId"),
     BudgetDetailScreen("budget/{budgetId}"),
-    Profile("profile")
+    Profile("profile"),
+    ProfileInfoScreen("profileInfo")
 
 }

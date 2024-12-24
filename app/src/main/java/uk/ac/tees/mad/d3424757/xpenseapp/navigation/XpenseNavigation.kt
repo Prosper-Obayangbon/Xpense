@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
+import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction.AddTransaction
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.addBudget.AddBudget
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.budget.BudgetDetailScreen
@@ -26,6 +27,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.signup.Signup
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.home.Home
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.login.Login
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding.Onboarding
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.profileInfo.ProfileInfoScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.splash.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.stats.StatsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction.TransactionDetailsScreen
@@ -34,6 +36,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -64,10 +67,10 @@ private fun NavGraphBuilder.authNavGraph(navController: NavController, context: 
         Onboarding(navController = navController)
     }
     composable(XpenseScreens.Signup.route) {
-        Signup(navController = navController, viewModel = AuthViewModel(), context = context)
+        Signup(navController = navController, viewModel = AuthViewModel(context), context = context)
     }
     composable(XpenseScreens.Login.route) {
-        Login(navController = navController, viewModel = AuthViewModel())
+        Login(navController = navController, viewModel = AuthViewModel(context))
     }
 }
 
@@ -164,6 +167,9 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
 private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: NavController, context: Context) {
 
     composable(XpenseScreens.Profile.route) {
-        ProfileScreen(navController = navController, modifier = modifier)
+        ProfileScreen(navController = navController, modifier = modifier, viewModel = UserProfileVM(context), userId = 0)
+    }
+    composable(XpenseScreens.ProfileInfoScreen.route) {
+        ProfileInfoScreen(navController = navController, modifier = modifier, viewModel = UserProfileVM(context))
     }
 }

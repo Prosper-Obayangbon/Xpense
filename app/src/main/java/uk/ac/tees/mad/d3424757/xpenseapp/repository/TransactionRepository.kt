@@ -19,7 +19,7 @@ class TransactionRepository(private val dao: XpenseDatabase) {
      * @return A Flow of a list of transactions.
      */
      fun loadTransactions(): Flow<List<TransactionData>> {
-        return dao.TransactionDao().getTransactions()
+        return dao.transactionDao().getTransactions()
     }
 
     /**
@@ -28,11 +28,11 @@ class TransactionRepository(private val dao: XpenseDatabase) {
      * @param transaction The transaction object to be inserted.
      */
     suspend fun insertTransaction(transaction: TransactionData) {
-        dao.TransactionDao().insertTransaction(transaction)
+        dao.transactionDao().insertTransaction(transaction)
     }
 
     suspend fun loadTotalSpent(category : String, month: String): Double {
-        return dao.TransactionDao().getTotalSpentForCategoryAndMonth(category, month)
+        return dao.transactionDao().getTotalSpentForCategoryAndMonth(category, month)
     }
 
 

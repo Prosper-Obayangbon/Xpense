@@ -5,11 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
+import uk.ac.tees.mad.d3424757.xpenseapp.data.model.UserProfile
 import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.UserPreferences
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.AuthRepository
+import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(context: Context) : ViewModel() {
     private val authRepository = AuthRepository()
+    val dao = XpenseDatabase.getDatabase(context)
+    val repository = UserProfileRepository(dao)
 
     // Backing properties with mutable state
     private var _name = mutableStateOf("")
@@ -28,6 +33,9 @@ class AuthViewModel : ViewModel() {
 
     /**
      * Initiates the sign-up process if all validation checks pass.
+     * @param name The name of the user
+     * @param username The username of the user
+     * @param profilePicture The profile picture URI (can be null)
      * @param onComplete Callback indicating the success or failure of sign-up
      */
     fun signUpUser(onComplete: (Boolean) -> Unit) {
@@ -35,7 +43,7 @@ class AuthViewModel : ViewModel() {
             _error.value = errorMessage
             onComplete(false)
         } ?: run {
-            executeSignUp(onComplete)
+            executeSignUp(name, email, "", onComplete)
         }
     }
 
@@ -54,21 +62,58 @@ class AuthViewModel : ViewModel() {
     }
 
     /**
-     * Executes the sign-up process by calling AuthRepository.
+     * Executes the sign-up process by calling AuthRepository and saving user profile to the database.
+     * @param name The name of the user
+     * @param username The username of the user
+     * @param profilePicture The profile picture URI (can be null)
      * @param onComplete Callback indicating the success or failure of the sign-up
      */
-    private fun executeSignUp(onComplete: (Boolean) -> Unit) {
+    private fun executeSignUp(name: String, username: String, profilePicture: String?, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
+            // Perform sign-up with the AuthRepository
             authRepository.signUpWithEmail(email, password) { success, errorMessage ->
                 if (success) {
-                    _error.value = null // Clear any existing errors
-                    onComplete(true)
+                    // Clear any existing errors
+                    _error.value = null
+
+                    // After sign-up is successful, create the UserProfile
+                    val userId = authRepository.getCurrentUserId() // Get the user ID after successful sign-up
+                    val userProfile = UserProfile(
+                        name = name,
+                        email = username,
+                        profilePicture = profilePicture ?: ""
+                    )
+
+                    // Save the user profile to the database
+                    try {
+                        saveUserProfileToDatabase(userProfile) // Now inside the coroutine
+                        // Return success
+                        onComplete(true)
+                    } catch (e: Exception) {
+                        // If there is an error saving the profile, return failure
+                        _error.value = "Error saving user profile: ${e.message}"
+                        onComplete(false)
+                    }
                 } else {
+                    // If sign-up failed, set the error message and return failure
                     _error.value = errorMessage ?: "Sign-up failed. Please try again."
                     onComplete(false)
                 }
             }
         }
+    }
+
+
+    /**
+     * Save the user profile to the database.
+     * @param userProfile The user profile to save
+     */
+    private fun saveUserProfileToDatabase(userProfile: UserProfile) {
+
+        viewModelScope.launch {
+            repository.saveUserProfile(userProfile)        }
+
+
     }
 
     /**
@@ -81,7 +126,7 @@ class AuthViewModel : ViewModel() {
                 if (success) {
                     onComplete(true)
                 } else {
-                    _error.value =  "Incorrect Email or Password."
+                    _error.value = "Incorrect Email or Password."
                     onComplete(false)
                 }
             }
@@ -92,7 +137,7 @@ class AuthViewModel : ViewModel() {
     fun executeGoogleSignIn(idToken: String, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             authRepository.signInWithGoogle(idToken) { success, errorMessage ->
-                if(success){
+                if (success) {
                     onComplete(true)
                 } else {
                     _error.value = "Failed! Try again later."

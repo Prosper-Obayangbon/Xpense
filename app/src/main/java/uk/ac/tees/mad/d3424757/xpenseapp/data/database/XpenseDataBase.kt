@@ -6,14 +6,17 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.dao.BudgetDao
 import uk.ac.tees.mad.d3424757.xpenseapp.data.dao.TransactionDao
+import uk.ac.tees.mad.d3424757.xpenseapp.data.dao.UserProfileDao
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.BudgetData
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
+import uk.ac.tees.mad.d3424757.xpenseapp.data.model.UserProfile
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.DATABASE_NAME
 
-@Database(entities = [TransactionData::class, BudgetData::class], version = 1)
+@Database(entities = [TransactionData::class, BudgetData::class, UserProfile::class], version = 1)
 abstract  class XpenseDatabase : RoomDatabase() {
-    abstract fun TransactionDao(): TransactionDao
+    abstract fun transactionDao(): TransactionDao
     abstract fun budgetDao(): BudgetDao
+    abstract fun userProfileDao() : UserProfileDao
 
     companion object {
         @Volatile
