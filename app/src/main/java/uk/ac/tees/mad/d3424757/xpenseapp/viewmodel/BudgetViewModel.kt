@@ -34,8 +34,6 @@ class BudgetViewModel(context: Context) : ViewModel() {
     private val _calculatedBudgets = MutableStateFlow<List<BudgetWithSpent>>(emptyList())
     val calculatedBudgets: StateFlow<List<BudgetWithSpent>> = _calculatedBudgets
 
-
-
     var budgetAmount: Double by mutableDoubleStateOf(0.0)
     var currentId: Int by mutableIntStateOf(0)
 
@@ -44,7 +42,6 @@ class BudgetViewModel(context: Context) : ViewModel() {
 
     private var _selectedCategory = MutableStateFlow("Category")
     val selectedCategory: StateFlow<String> = _selectedCategory
-
 
     private val _errorMessage = MutableStateFlow("")
     val errorMessage: StateFlow<String> = _errorMessage
@@ -139,7 +136,7 @@ class BudgetViewModel(context: Context) : ViewModel() {
         }
     }
 
-    fun deleteBudget(id :Int){
+    fun deleteBudget(id: Int) {
         viewModelScope.launch {
             budgetRepository.deleteBudget(id)
         }
@@ -150,20 +147,28 @@ class BudgetViewModel(context: Context) : ViewModel() {
             budgetRepository.updateBudget(budget)
         }
     }
+
     suspend fun getBudgetById(budgetId: Int): BudgetData {
         return budgetRepository.getBudgetById(budgetId)
     }
 
-
-
-    fun initializeBudget(budget: BudgetData) {
-        currentId = budget.id
-        budgetAmount = budget.amount
-        _selectedCategory.value = budget.category
-        isAlertEnabled = budget.alertEnabled
-        alertThreshold = budget.alertThreshold
+    fun initializeBudget(budgetId: Int) {
+        if (budgetId != -1) { // If the budget ID is not -1, we are editing an existing budget
+            viewModelScope.launch {
+                try {
+                    // Fetch the budget by ID from the repository
+                    val budget = budgetRepository.getBudgetById(budgetId)
+                    currentId = budget.id
+                    budgetAmount = budget.amount
+                    _selectedCategory.value = budget.category
+                    isAlertEnabled = budget.alertEnabled
+                    alertThreshold = budget.alertThreshold
+                } catch (e: Exception) {
+                    Log.e("BudgetViewModel", "Error initializing budget", e)
+                }
+            }
+        }
     }
-
 
     fun validateBudget(): Boolean {
         return when {
@@ -181,5 +186,4 @@ class BudgetViewModel(context: Context) : ViewModel() {
             }
         }
     }
-
 }

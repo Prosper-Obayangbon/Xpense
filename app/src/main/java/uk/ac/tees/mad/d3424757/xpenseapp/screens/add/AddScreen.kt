@@ -39,7 +39,6 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.IconColor
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.IncomeBackground
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 
 /**
@@ -60,7 +59,7 @@ fun AddScreen(
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding()
             .background(mintCream)

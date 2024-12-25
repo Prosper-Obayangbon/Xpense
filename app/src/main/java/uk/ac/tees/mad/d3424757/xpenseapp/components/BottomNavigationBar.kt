@@ -71,6 +71,8 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
                         // Avoid multiple copies of the same screen in the back stack
                         launchSingleTop = true
                         restoreState = true
+
+                        popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
                     }
                 }
             )
@@ -94,6 +96,8 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
                     navController.navigate(XpenseScreens.TransactionScreen.route){
                         launchSingleTop = true
                         restoreState = true
+                        popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+
                     }
                 }
             )
@@ -117,6 +121,8 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
                     navController.navigate(XpenseScreens.Budget.route){
                         launchSingleTop = true
                         restoreState = true
+                        popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+
                     }
                 }
             )
@@ -125,7 +131,7 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
             NavigationBarItem(
                 icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
                 label = { Text("Profile") },
-                selected = false,
+                selected = (currentRoute == XpenseScreens.Profile.route),
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = tealGreen,
                     selectedTextColor = tealGreen,
@@ -135,6 +141,8 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
                     navController.navigate(XpenseScreens.Profile.route){
                         launchSingleTop = true
                         restoreState = true
+                        popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+
                     }
                 }
             )
@@ -142,7 +150,11 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
 
         // Floating Action Button centered above the navigation bar
         FloatingActionButton(
-            onClick =  {navController.navigate(XpenseScreens.AddScreen.route) },
+            onClick =  {
+                navController.navigate(XpenseScreens.AddScreen.route) {
+                    popUpTo(XpenseScreens.SplashScreen.route) { inclusive = true }
+                }
+            },
             shape = CircleShape,
             containerColor = tealGreen,
             contentColor = Color.White,

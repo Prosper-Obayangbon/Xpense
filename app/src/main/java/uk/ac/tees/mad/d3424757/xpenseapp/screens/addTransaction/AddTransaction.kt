@@ -28,7 +28,6 @@ import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.*
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Category
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale

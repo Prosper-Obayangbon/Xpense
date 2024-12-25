@@ -1,7 +1,7 @@
-package uk.ac.tees.mad.d3424757.xpenseapp.viewmodel
-
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,15 +10,16 @@ import kotlinx.coroutines.launch
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
+import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionType
+import java.time.LocalTime
 
-/**
- * ViewModel for the Home screen, responsible for managing transactions.
- * Uses the TransactionRepository to load and insert data.
- */
 class HomeViewModel(context: Context) : ViewModel() {
+    private val _userName = MutableStateFlow<String>("")
+    val userName: StateFlow<String> = _userName
 
-    private val repository: TransactionRepository
+    private val transactionRepository: TransactionRepository
+    private val userRepository: UserProfileRepository
 
     // StateFlow to hold the list of transactions.
     private val _transactions = MutableStateFlow<List<TransactionData>>(emptyList())
@@ -27,7 +28,13 @@ class HomeViewModel(context: Context) : ViewModel() {
     // Initialize the repository with the DAO from the database.
     init {
         val dao = XpenseDatabase.getDatabase(context)
-        repository = TransactionRepository(dao)
+        transactionRepository = TransactionRepository(dao)
+        userRepository = UserProfileRepository(dao)
+
+        // Get the username from the database
+        getUserName()
+
+        // Load the transactions
         getTransactions()
     }
 
@@ -37,21 +44,19 @@ class HomeViewModel(context: Context) : ViewModel() {
      */
     private fun getTransactions() {
         viewModelScope.launch {
-            repository.loadTransactions().collect { transactionList ->
+            transactionRepository.loadTransactions().collect { transactionList ->
                 _transactions.value = transactionList
             }
         }
     }
 
-
     /**
-     * Adds a new transaction to the database using the repository.
-     *
-     * @param transaction The transaction to be added.
+     * Fetches the user's name from the repository.
+     * If the name is not found, it sets it as an empty string.
      */
-    fun addTransaction(transaction: TransactionData) {
+    private fun getUserName() {
         viewModelScope.launch {
-            repository.insertTransaction(transaction)
+            _userName.value = userRepository.getUserProfile(0)?.name ?: ""
         }
     }
 
@@ -63,6 +68,10 @@ class HomeViewModel(context: Context) : ViewModel() {
     @SuppressLint("DefaultLocale")
     fun getBalance(list: List<TransactionData>): String {
         val total = list.sumOf { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
+
+        if(total < 0){
+            return String.format("£ %.2f", 0.0)
+        }
         return String.format("£ %.2f", total)
     }
 
@@ -86,5 +95,19 @@ class HomeViewModel(context: Context) : ViewModel() {
     fun getTotalIncome(list: List<TransactionData>): String {
         val total = list.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
         return String.format("£ %.2f", total)
+    }
+
+    /**
+     * Determines the greeting based on the current time of day.
+     * @return The greeting message ("Good Morning", "Good Afternoon", or "Good Night").
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getGreeting(): String {
+        val hourOfDay = LocalTime.now().hour
+        return when {
+            hourOfDay in 5..11 -> "Good Morning"
+            hourOfDay in 12..17 -> "Good Afternoon"
+            else -> "Good Night"
+        }
     }
 }

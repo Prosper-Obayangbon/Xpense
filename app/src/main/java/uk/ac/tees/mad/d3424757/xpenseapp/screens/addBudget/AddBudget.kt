@@ -48,18 +48,16 @@ fun AddBudget(modifier: Modifier = Modifier, context : Context, navController: N
     val selectedCategory by viewModel.selectedCategory.collectAsState()
 
 
-    // Initialize ViewModel with existing budget details if in edit mode
-    LaunchedEffect(isEdit) {
-        if (isEdit && budgetId >= 0) {
-            viewModel.initializeBudget(viewModel.getBudgetById(budgetId))
-        }
+    // Initialize the budget for editing if isEdit is true
+    if (isEdit) {
+        viewModel.initializeBudget(budgetId)
     }
 
 
     Scaffold(
         topBar = {
             XTopBar(
-                modifier = Modifier.padding(top = 30.dp),
+                modifier = modifier,
                 text = if(isEdit) "Edit Budget" else "Create Budget",
                 backClick = {navController.popBackStack()}
             )
@@ -75,9 +73,9 @@ fun AddBudget(modifier: Modifier = Modifier, context : Context, navController: N
             )
         }
     ) {
-        Column(modifier = modifier) {
-            BudgetContent(viewModel = viewModel)
-        }
+
+        BudgetContent(viewModel = viewModel)
+
     }
 
 }

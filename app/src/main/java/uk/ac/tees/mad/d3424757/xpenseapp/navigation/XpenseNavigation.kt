@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.navigation
 
 import AddScreen
+import HomeViewModel
 import ProfileScreen
 import TransactionScreen
 import android.annotation.SuppressLint
@@ -37,7 +38,6 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
 import javax.inject.Inject
 
@@ -77,6 +77,7 @@ private fun NavGraphBuilder.authNavGraph(navController: NavController, context: 
 }
 
 // Separate main graph for main app screens
+@RequiresApi(Build.VERSION_CODES.O)
 private fun NavGraphBuilder.mainNavGraph(modifier: Modifier, navController: NavController, context: Context) {
     composable(XpenseScreens.Home.route) {
         val hVM = HomeViewModel(context)

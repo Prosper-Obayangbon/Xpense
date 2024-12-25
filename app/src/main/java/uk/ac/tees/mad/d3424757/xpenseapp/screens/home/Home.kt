@@ -1,7 +1,9 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.home
 
+import HomeViewModel
 import android.annotation.SuppressLint
-import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.HomeViewModel
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,10 +32,12 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.formatAmount
+import java.time.LocalTime
 
 /**
  * Home Screen Composable displaying the dashboard, transactions, and other key details.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Home(
@@ -43,6 +47,7 @@ fun Home(
 ) {
     // Observe transactions from the ViewModel
     val transactions by viewModel.transactions.collectAsState(emptyList())
+    val userName by viewModel.userName.collectAsState()
 
     // Background composable wrapping the entire screen content
 
@@ -60,7 +65,7 @@ fun Home(
             ) {
                 Box(modifier = Modifier.size(755.dp)) {
                     Column {
-                        HeaderSection()
+                        HeaderSection(viewModel)
                         BalanceCard(viewModel, transactions)
 
                         Column {
@@ -98,17 +103,24 @@ fun Home(
 /**
  * Header section displaying a greeting message and notification button.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HeaderSection() {
+fun HeaderSection(viewModel: HomeViewModel ) {
+    val userName by viewModel.userName.collectAsState()
+    val greeting = viewModel.getGreeting()
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 50.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
     ) {
         Column {
-            Text(text = "Good Morning", fontSize = 16.sp, color = Color.White)
+            // Display greeting message based on the time of day
+            Text(text = greeting, fontSize = 16.sp, color = Color.White)
+
+            // Display user's name from the Room database
             Text(
-                text = "Prosper",
+                text = userName.ifEmpty { "User" }, // If no name is fetched, default to "User"
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -129,6 +141,7 @@ fun HeaderSection() {
         }
     }
 }
+
 
 /**
  * Balance card showing the total balance and a summary of income and expenses.
@@ -220,6 +233,9 @@ fun CardRowItem(title: String, amount: String, image: Int) {
         )
     }
 }
+
+
+
 
 
 
