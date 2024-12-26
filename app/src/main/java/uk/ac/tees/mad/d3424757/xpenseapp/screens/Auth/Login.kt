@@ -1,6 +1,8 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth
 
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +31,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.GoogleSignButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
@@ -64,6 +69,27 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 @Composable
 fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController: NavController, context : Context){
 
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            account?.idToken?.let { idToken ->
+                viewModel.executeGoogleSignIn(idToken) { success ->
+                    if (success) {
+                        navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
+                            popUpTo(XpenseScreens.Login.route) { inclusive = true }
+                        }
+                    } else {
+                        // Show error in UI
+                    }
+                }
+            }
+        } catch (e: ApiException) {
+            //viewModel.setError("Google Sign-In failed: ${e.localizedMessage}")
+        }
+    }
 
 
     Surface(modifier.fillMaxSize(),
@@ -170,13 +196,24 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
 
 
                     /*--------------------Google Sign-In Button-------------------*/
+                    // Google Sign-In Button
                     GoogleSignButton(
                         text = "Sign In with Google",
-                        context = context,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
+                        onSignInResult = { idToken ->
+                            viewModel.executeGoogleSignIn(idToken) { success ->
+                                if (success) {
+                                    navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
+                                        popUpTo(XpenseScreens.Login.route) { inclusive = true }
+
+                                    }
+                                } else {
+                                    // Show error message
+                                }
+                            }
+                        },
+                        context = context
                     )
+
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))

@@ -179,7 +179,22 @@ fun Signup(navController: NavController, viewModel: AuthViewModel, context: Cont
 
 
                         /*------------------Google Sign-Up Button-----------------*/
-                        GoogleSignButton(text = "Sign Up with Google", context = context)
+                    GoogleSignButton(
+                        text = "Sign In with Google",
+                        onSignInResult = { idToken ->
+                            viewModel.executeGoogleSignIn(idToken) { success ->
+                                if (success) {
+                                    navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
+                                        popUpTo(XpenseScreens.Login.route) { inclusive = true }
+
+                                    }
+                                } else {
+                                    // Show error message
+                                }
+                            }
+                        },
+                        context = context
+                    )
 
                         Spacer(modifier = Modifier.height(16.dp))
 

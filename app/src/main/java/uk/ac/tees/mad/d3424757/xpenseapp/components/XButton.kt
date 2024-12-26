@@ -2,6 +2,8 @@ package uk.ac.tees.mad.d3424757.xpenseapp.components
 
 import android.app.Activity
 import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,8 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignIn.*
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
@@ -76,21 +79,35 @@ fun XButton(
 @Composable
 fun GoogleSignButton(
     text: String,
-    context: Context,
-    modifier: Modifier = Modifier
+    onSignInResult: (String?) -> Unit, // Callback for the result
+    modifier: Modifier = Modifier,
+    context: Context
 ) {
-    Button(
-        onClick = {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
 
-            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-            val signInIntent = googleSignInClient.signInIntent
-            (context as Activity).startActivityForResult(signInIntent, Constants.RC_SIGN_IN)
-        },
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
+
+    val googleSignInClient = getClient(context, gso)
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val idToken = account?.idToken
+            onSignInResult(idToken) // Pass the ID token
+        } catch (e: ApiException) {
+            onSignInResult(null) // Handle failure
+        }
+    }
+
+    Button(
+        onClick = { launcher.launch(googleSignInClient.signInIntent) },
         colors = ButtonDefaults.buttonColors(mintCream),
+        modifier = modifier
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_google_icon),
@@ -100,12 +117,10 @@ fun GoogleSignButton(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(
-            text = text,
-            color = Color.Black
-        )
+        Text(text = text, color = Color.Black)
     }
 }
+
 
 /**
  * Preview composable to display the custom button in the UI.

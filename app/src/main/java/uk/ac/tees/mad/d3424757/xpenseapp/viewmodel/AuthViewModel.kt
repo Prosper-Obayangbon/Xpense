@@ -139,18 +139,26 @@ class AuthViewModel(context: Context) : ViewModel() {
     }
 
     // Function to handle Google Sign-In
-    fun executeGoogleSignIn(idToken: String, onComplete: (Boolean) -> Unit) {
+    fun executeGoogleSignIn(idToken: String?, onComplete: (Boolean) -> Unit) {
+        if (idToken == null) {
+            _error.value = ERROR_GOOGLE_SIGNIN_FAILED
+            onComplete(false)
+            return
+        }
+
         viewModelScope.launch {
             authRepository.signInWithGoogle(idToken) { success, errorMessage ->
                 if (success) {
+                    _error.value = null
                     onComplete(true)
                 } else {
-                    _error.value = ERROR_GOOGLE_SIGNIN_FAILED
+                    _error.value = errorMessage ?: ERROR_GOOGLE_SIGNIN_FAILED
                     onComplete(false)
                 }
             }
         }
     }
+
 
     /**
      * Updates the user's registration status in preferences.
