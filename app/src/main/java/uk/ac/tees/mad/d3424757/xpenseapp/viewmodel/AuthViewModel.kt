@@ -10,6 +10,15 @@ import uk.ac.tees.mad.d3424757.xpenseapp.data.model.UserProfile
 import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.UserPreferences
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.AuthRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_EMAIL_EMPTY
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_GOOGLE_SIGNIN_FAILED
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_INCORRECT_CREDENTIALS
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_NAME_EMPTY
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_PASSWORD_COMPLEXITY
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_PASSWORD_EMPTY
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_SAVE_PROFILE_FAILED
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_SIGNUP_FAILED
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.PASSWORD_PATTERN
 
 class AuthViewModel(context: Context) : ViewModel() {
     private val authRepository = AuthRepository()
@@ -28,8 +37,6 @@ class AuthViewModel(context: Context) : ViewModel() {
     val password: String get() = _password.value
     val error: String? get() = _error.value
 
-    // Regular expression for password complexity requirements
-    private val passwordPattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$")
 
     /**
      * Initiates the sign-up process if all validation checks pass.
@@ -53,10 +60,10 @@ class AuthViewModel(context: Context) : ViewModel() {
      */
     private fun validateInputs(): String? {
         return when {
-            name.isBlank() -> "Name cannot be empty."
-            email.isBlank() -> "Email cannot be empty."
-            password.isBlank() -> "Password cannot be empty."
-            !password.matches(passwordPattern) -> "Password must contain at least 8 characters, including uppercase, lowercase, number, and symbol."
+            name.isBlank() -> ERROR_NAME_EMPTY
+            email.isBlank() -> ERROR_EMAIL_EMPTY
+            password.isBlank() -> ERROR_PASSWORD_EMPTY
+            !password.matches(PASSWORD_PATTERN) -> ERROR_PASSWORD_COMPLEXITY
             else -> null
         }
     }
@@ -91,12 +98,12 @@ class AuthViewModel(context: Context) : ViewModel() {
                         onComplete(true)
                     } catch (e: Exception) {
                         // If there is an error saving the profile, return failure
-                        _error.value = "Error saving user profile: ${e.message}"
+                        _error.value = "$ERROR_SAVE_PROFILE_FAILED ${e.message}"
                         onComplete(false)
                     }
                 } else {
                     // If sign-up failed, set the error message and return failure
-                    _error.value = errorMessage ?: "Sign-up failed. Please try again."
+                    _error.value = errorMessage ?: ERROR_SIGNUP_FAILED
                     onComplete(false)
                 }
             }
@@ -109,11 +116,9 @@ class AuthViewModel(context: Context) : ViewModel() {
      * @param userProfile The user profile to save
      */
     private fun saveUserProfileToDatabase(userProfile: UserProfile) {
-
         viewModelScope.launch {
-            repository.saveUserProfile(userProfile)        }
-
-
+            repository.saveUserProfile(userProfile)
+        }
     }
 
     /**
@@ -126,7 +131,7 @@ class AuthViewModel(context: Context) : ViewModel() {
                 if (success) {
                     onComplete(true)
                 } else {
-                    _error.value = "Incorrect Email or Password."
+                    _error.value = ERROR_INCORRECT_CREDENTIALS
                     onComplete(false)
                 }
             }
@@ -140,7 +145,7 @@ class AuthViewModel(context: Context) : ViewModel() {
                 if (success) {
                     onComplete(true)
                 } else {
-                    _error.value = "Failed! Try again later."
+                    _error.value = ERROR_GOOGLE_SIGNIN_FAILED
                     onComplete(false)
                 }
             }

@@ -15,6 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 
+/**
+ * A composable that displays the "X" and "PENSE" text in a styled row.
+ *
+ * The "X" and "PENSE" texts are styled with different font families and sizes to give the title a unique look.
+ *
+ * @param modifier Modifier to customize the layout and appearance of the component.
+ * @param color The color of the text. Default is white.
+ */
 @Composable
 fun XTitle(modifier: Modifier = Modifier, color: Color = Color.White) {
     Row(

@@ -1,13 +1,4 @@
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues
-import android.content.Context
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,18 +16,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,12 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import uk.ac.tees.mad.d3424757.xpenseapp.R
@@ -60,6 +45,17 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
 
+/**
+ * ProfileScreen Composable:
+ * This composable displays the user's profile screen, showing their profile picture, name, and email,
+ * along with options to change account settings such as password or log out.
+ * It also provides the ability to change the profile picture and displays a logout confirmation dialog.
+ *
+ * @param navController Navigation controller to handle navigation between screens.
+ * @param userId User ID associated with the profile.
+ * @param viewModel ViewModel that provides the user profile data.
+ * @param modifier Modifier to customize the layout.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(
@@ -93,7 +89,6 @@ fun ProfileScreen(
                     defaultProfilePicture = R.drawable.default_profile,
                     onChangePicture = { showImagePickerDialog = true }
                 )
-
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -142,6 +137,16 @@ fun ProfileScreen(
     }
 }
 
+/**
+ * ProfilePictureSection Composable:
+ * This composable displays the user's profile picture. If the user has a profile picture,
+ * it will show it; otherwise, it shows the default profile picture.
+ * The user can click the icon to change the profile picture.
+ *
+ * @param profilePicture URI of the profile picture, if available.
+ * @param defaultProfilePicture Resource ID of the default profile picture.
+ * @param onChangePicture Lambda function triggered when the user wants to change their picture.
+ */
 @Composable
 fun ProfilePictureSection(
     profilePicture: String?, // URI as String or null
@@ -177,7 +182,14 @@ fun ProfilePictureSection(
     }
 }
 
-
+/**
+ * UserInfoSection Composable:
+ * This composable displays the user's name and email. If the data is unavailable,
+ * it will display placeholder text ("Loading...").
+ *
+ * @param name The user's name to display.
+ * @param email The user's email to display.
+ */
 @Composable
 fun UserInfoSection(name: String?, email: String?) {
     Column(
@@ -197,6 +209,13 @@ fun UserInfoSection(name: String?, email: String?) {
     }
 }
 
+/**
+ * LogoutConfirmationDialog Composable:
+ * This composable displays a dialog asking the user to confirm if they want to log out.
+ *
+ * @param onConfirm Lambda function to execute when the user confirms the logout.
+ * @param onDismiss Lambda function to execute when the dialog is dismissed.
+ */
 @Composable
 fun LogoutConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
@@ -216,6 +235,16 @@ fun LogoutConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     )
 }
 
+/**
+ * ProfileOptionItem Composable:
+ * This composable displays a row with an icon and a label. It is used for profile options such as
+ * "Account Info," "Change Password," and "Logout." The user can click on the row to navigate
+ * to the corresponding screen.
+ *
+ * @param icon The icon to display beside the label.
+ * @param label The text label for the option.
+ * @param onClick Lambda function to handle the click event.
+ */
 @Composable
 fun ProfileOptionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
     Row(
@@ -230,5 +259,3 @@ fun ProfileOptionItem(icon: ImageVector, label: String, onClick: () -> Unit) {
         Text(text = label, style = MaterialTheme.typography.bodyLarge)
     }
 }
-
-

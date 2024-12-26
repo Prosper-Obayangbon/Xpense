@@ -85,11 +85,3 @@ fun XInputField(
     )
 }
 
-//@Preview
-//@Composable
-//fun InputPreview(){
-//        XpenseAppTheme{
-//            XInputField(value = "heh" , onValueChange = {"hello"}, label = "hello")
-//        }
-//
-//}

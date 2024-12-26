@@ -11,13 +11,21 @@ import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.AFTERNOON_START_HOUR
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.EVENING_START_HOUR
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.MORNING_START_HOUR
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.NIGHT_END_HOUR
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.NIGHT_START_HOUR
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionType
 import java.time.LocalTime
 
 class HomeViewModel(context: Context) : ViewModel() {
+
+    // State to hold the user's name.
     private val _userName = MutableStateFlow<String>("")
     val userName: StateFlow<String> = _userName
 
+    // Repositories to fetch data.
     private val transactionRepository: TransactionRepository
     private val userRepository: UserProfileRepository
 
@@ -25,29 +33,16 @@ class HomeViewModel(context: Context) : ViewModel() {
     private val _transactions = MutableStateFlow<List<TransactionData>>(emptyList())
     val transactions: StateFlow<List<TransactionData>> get() = _transactions
 
-    // Initialize the repository with the DAO from the database.
+
+    // Initialize repositories with database.
     init {
         val dao = XpenseDatabase.getDatabase(context)
         transactionRepository = TransactionRepository(dao)
         userRepository = UserProfileRepository(dao)
 
-        // Get the username from the database
+        // Fetch the user's name and transactions.
         getUserName()
-
-        // Load the transactions
         getTransactions()
-    }
-
-    /**
-     * Loads the transactions from the repository.
-     * It collects the Flow from the repository and updates the state with the list of transactions.
-     */
-    private fun getTransactions() {
-        viewModelScope.launch {
-            transactionRepository.loadTransactions().collect { transactionList ->
-                _transactions.value = transactionList
-            }
-        }
     }
 
     /**
@@ -61,40 +56,65 @@ class HomeViewModel(context: Context) : ViewModel() {
     }
 
     /**
-     * Calculates the total balance based on transaction types (income or expense).
-     * @param list The list of transactions to calculate the balance from.
+     * Loads transactions from the repository and updates the state.
+     */
+    private fun getTransactions() {
+        viewModelScope.launch {
+            transactionRepository.loadTransactions().collect { transactionList ->
+                _transactions.value = transactionList
+            }
+        }
+    }
+
+    /**
+     * Calculates the balance based on transaction types (income or expense).
+     * @param transactions The list of transactions to calculate the balance from.
      * @return A formatted balance string with the currency symbol.
      */
-    @SuppressLint("DefaultLocale")
-    fun getBalance(list: List<TransactionData>): String {
-        val total = list.sumOf { if (it.type == TransactionType.INCOME) it.amount else -it.amount }
-
-        if(total < 0){
-            return String.format("£ %.2f", 0.0)
+    fun calculateBalance(transactions: List<TransactionData>): String {
+        val total = transactions.sumOf {
+            if (it.type == TransactionType.INCOME) it.amount else -it.amount
         }
-        return String.format("£ %.2f", total)
+
+        return formatCurrency(total)
+    }
+
+    /**
+     * Generalized method to calculate total amount for either income or expense.
+     * @param transactions The list of transactions to calculate from.
+     * @param type The type of transaction (income or expense).
+     * @return A formatted string with the total amount.
+     */
+    private fun calculateTotalByType(transactions: List<TransactionData>, type: TransactionType): String {
+        val total = transactions.filter { it.type == type }.sumOf { it.amount }
+        return formatCurrency(total)
+    }
+
+    /**
+     * Helper function to format the amount as currency.
+     * @param amount The amount to format.
+     * @return A string formatted as currency.
+     */
+    private fun formatCurrency(amount: Double): String {
+        return String.format("£ %.2f", amount)
     }
 
     /**
      * Calculates the total expense from the list of transactions.
-     * @param list The list of transactions to calculate the total expense from.
+     * @param transactions The list of transactions to calculate from.
      * @return A formatted expense string with the currency symbol.
      */
-    @SuppressLint("DefaultLocale")
-    fun getTotalExpense(list: List<TransactionData>): String {
-        val total = list.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
-        return String.format("£ %.2f", total)
+    fun getTotalExpense(transactions: List<TransactionData>): String {
+        return calculateTotalByType(transactions, TransactionType.EXPENSE)
     }
 
     /**
      * Calculates the total income from the list of transactions.
-     * @param list The list of transactions to calculate the total income from.
+     * @param transactions The list of transactions to calculate from.
      * @return A formatted income string with the currency symbol.
      */
-    @SuppressLint("DefaultLocale")
-    fun getTotalIncome(list: List<TransactionData>): String {
-        val total = list.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
-        return String.format("£ %.2f", total)
+    fun getTotalIncome(transactions: List<TransactionData>): String {
+        return calculateTotalByType(transactions, TransactionType.INCOME)
     }
 
     /**
@@ -105,8 +125,9 @@ class HomeViewModel(context: Context) : ViewModel() {
     fun getGreeting(): String {
         val hourOfDay = LocalTime.now().hour
         return when {
-            hourOfDay in 5..11 -> "Good Morning"
-            hourOfDay in 12..17 -> "Good Afternoon"
+            hourOfDay in MORNING_START_HOUR..AFTERNOON_START_HOUR - 1 -> "Good Morning"
+            hourOfDay in AFTERNOON_START_HOUR..EVENING_START_HOUR - 1 -> "Good Afternoon"
+            hourOfDay in NIGHT_START_HOUR downTo NIGHT_END_HOUR -> "Good Night"
             else -> "Good Night"
         }
     }

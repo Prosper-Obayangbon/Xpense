@@ -36,6 +36,10 @@ import java.time.LocalTime
 
 /**
  * Home Screen Composable displaying the dashboard, transactions, and other key details.
+ *
+ * @param modifier Modifier to apply additional customizations to the layout.
+ * @param viewModel HomeViewModel instance to manage the app's state and data.
+ * @param navController NavController instance for managing navigation within the app.
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -45,18 +49,14 @@ fun Home(
     viewModel: HomeViewModel,
     navController: NavController
 ) {
-    // Observe transactions from the ViewModel
     val transactions by viewModel.transactions.collectAsState(emptyList())
     val userName by viewModel.userName.collectAsState()
-
-    // Background composable wrapping the entire screen content
 
     Scaffold(
         bottomBar = {
             BottomNavigationBar(
                 navController = navController,
-
-                )
+            )
         }
     ) {
         XHomeBackground {
@@ -67,7 +67,6 @@ fun Home(
                     Column {
                         HeaderSection(viewModel)
                         BalanceCard(viewModel, transactions)
-
                         Column {
                             Row(
                                 modifier = Modifier
@@ -81,8 +80,9 @@ fun Home(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
                                 )
+
                                 Button(
-                                    onClick  = {navController.navigate(XpenseScreens.TransactionScreen.route)},
+                                    onClick  = { navController.navigate(XpenseScreens.TransactionScreen.route) },
                                     colors = ButtonDefaults.buttonColors(mintCream),
                                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                                     elevation = ButtonDefaults.buttonElevation(0.dp)
@@ -97,15 +97,16 @@ fun Home(
             }
         }
     }
-    }
-
+}
 
 /**
  * Header section displaying a greeting message and notification button.
+ *
+ * @param viewModel HomeViewModel instance to access user data and greetings.
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HeaderSection(viewModel: HomeViewModel ) {
+fun HeaderSection(viewModel: HomeViewModel) {
     val userName by viewModel.userName.collectAsState()
     val greeting = viewModel.getGreeting()
 
@@ -115,12 +116,9 @@ fun HeaderSection(viewModel: HomeViewModel ) {
             .padding(top = 50.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
     ) {
         Column {
-            // Display greeting message based on the time of day
             Text(text = greeting, fontSize = 16.sp, color = Color.White)
-
-            // Display user's name from the Room database
             Text(
-                text = userName.ifEmpty { "User" }, // If no name is fetched, default to "User"
+                text = userName.ifEmpty { "User" },
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -128,7 +126,6 @@ fun HeaderSection(viewModel: HomeViewModel ) {
         }
         Spacer(modifier = Modifier.weight(1f))
 
-        // Notification icon button
         IconButton(
             onClick = {},
             modifier = Modifier.align(Alignment.CenterVertically)
@@ -142,9 +139,11 @@ fun HeaderSection(viewModel: HomeViewModel ) {
     }
 }
 
-
 /**
  * Balance card showing the total balance and a summary of income and expenses.
+ *
+ * @param viewModel HomeViewModel instance to access balance calculation methods.
+ * @param list List of transactions to calculate the total balance, income, and expenses.
  */
 @Composable
 fun BalanceCard(viewModel: HomeViewModel, list: List<TransactionData>) {
@@ -165,7 +164,7 @@ fun BalanceCard(viewModel: HomeViewModel, list: List<TransactionData>) {
                 Column {
                     Text(text = "Total Balance", color = Color.White, fontSize = 14.sp)
                     Text(
-                        text = viewModel.getBalance(list),
+                        text = viewModel.calculateBalance(list),
                         color = Color.White,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
@@ -189,9 +188,8 @@ fun BalanceCard(viewModel: HomeViewModel, list: List<TransactionData>) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Display income and expenses
                 CardRowItem(title = "Income",
-                    amount = viewModel.getTotalIncome(list) ,
+                    amount = viewModel.getTotalIncome(list),
                     image = R.drawable.arrow_downward)
                 CardRowItem(title = "Expenses",
                     amount = viewModel.getTotalExpense(list),
@@ -203,6 +201,10 @@ fun BalanceCard(viewModel: HomeViewModel, list: List<TransactionData>) {
 
 /**
  * A row item for displaying a single card value (e.g., Income or Expenses).
+ *
+ * @param title The title for the row item (either "Income" or "Expenses").
+ * @param amount The amount associated with the title (calculated value).
+ * @param image The image resource representing the type (e.g., income or expense icon).
  */
 @Composable
 fun CardRowItem(title: String, amount: String, image: Int) {
@@ -233,9 +235,3 @@ fun CardRowItem(title: String, amount: String, image: Int) {
         )
     }
 }
-
-
-
-
-
-

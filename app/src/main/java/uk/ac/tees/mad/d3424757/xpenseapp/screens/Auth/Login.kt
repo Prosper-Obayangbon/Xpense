@@ -1,5 +1,6 @@
-package uk.ac.tees.mad.d3424757.xpenseapp.screens.login
+package uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,8 +40,31 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 
+/**
+ * Login screen for the Xpense app.
+ *
+ * This composable provides a user interface for signing into the app with email and password.
+ * It includes a sign-in form, with fields for entering an email and password, a button to submit the credentials,
+ * and an option to sign in using Google. The screen also includes links for password recovery and fingerprint authentication,
+ * as well as a link to the sign-up screen for new users.
+ *
+ * The layout is organized in a column with centered elements and includes the following components:
+ * - A title at the top of the screen.
+ * - Email and password input fields with appropriate icons and validation.
+ * - An error message display for failed sign-in attempts.
+ * - A "Login" button that attempts sign-in and navigates to the home screen upon success.
+ * - A Google Sign-In button for signing in with Google.
+ * - Links for forgotten password, fingerprint login, and signing up for new users.
+ *
+ * @param modifier Modifier for the UI elements.
+ * @param viewModel AuthViewModel instance to manage the sign-in logic and handle user data.
+ * @param navController Navigation controller to manage screen transitions.
+ */
+
 @Composable
-fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController: NavController){
+fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController: NavController, context : Context){
+
+
 
     Surface(modifier.fillMaxSize(),
         color = mintCream
@@ -135,7 +159,7 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
                     ) {
                         viewModel.executeSignIn { success ->
                             if (success) {
-                                navController.navigate(XpenseScreens.Home.route) {
+                                navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
                                     popUpTo(XpenseScreens.Login.route) { inclusive = true }
 
                                 }
@@ -148,7 +172,7 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
                     /*--------------------Google Sign-In Button-------------------*/
                     GoogleSignButton(
                         text = "Sign In with Google",
-                        context = LocalContext.current,
+                        context = context,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)

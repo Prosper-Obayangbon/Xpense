@@ -31,33 +31,34 @@ import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
 
 /**
-* A composable button with customizable text and click handling.
-*
-* @param modifier Modifier to be applied to the button.
-* @param text The text to display on the button.
-* @param handleClick A lambda function to handle click events.
-*/
+ * A custom button composable that takes text and a click handler.
+ *
+ * This composable creates a button with a customizable text label and provides a click
+ * handler to execute custom actions when the button is pressed.
+ *
+ * @param modifier Modifier to be applied to the button.
+ * @param text The text to display on the button.
+ * @param handleClick A lambda function to handle the button click event.
+ */
 @Composable
 fun XButton(
     modifier: Modifier = Modifier,
     text: String,
     handleClick: () -> Unit
 ) {
-    // Custom button
     Button(
         onClick = handleClick,
         colors = ButtonDefaults.buttonColors(containerColor = tealGreen),
-        shape = RoundedCornerShape(16.dp), // Rounded corners
+        shape = RoundedCornerShape(16.dp),
         modifier = modifier
-            .fillMaxWidth() // Full width button
-            .height(48.dp) // Fixed height
+            .fillMaxWidth()
+            .height(48.dp)
     ) {
-        // Button text
         Text(
             text = text,
-            color = Color.White, // White text
-            fontSize = 16.sp, // Font size
-            fontWeight = FontWeight.Medium // Font weight
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -65,18 +66,21 @@ fun XButton(
 /**
  * A composable button for signing up with Google.
  *
- * @param onClick A lambda function to be executed when the button is clicked.
+ * This button configures the Google Sign-In flow, triggering the authentication process
+ * when clicked and starting the appropriate sign-in intent.
+ *
+ * @param text The text to display on the button.
+ * @param context The context used to start the sign-in intent (Activity context).
+ * @param modifier Modifier to be applied to the button.
  */
 @Composable
 fun GoogleSignButton(
-    text : String,
+    text: String,
     context: Context,
     modifier: Modifier = Modifier
 ) {
-    // Button with Google Sign Up action
     Button(
         onClick = {
-
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -87,31 +91,32 @@ fun GoogleSignButton(
             (context as Activity).startActivityForResult(signInIntent, Constants.RC_SIGN_IN)
         },
         colors = ButtonDefaults.buttonColors(mintCream),
-
     ) {
-        // Google icon
         Icon(
             painter = painterResource(id = R.drawable.ic_google_icon),
             contentDescription = "Google",
-            tint = Color.Unspecified, // Use Unspecified to keep the original icon color
+            tint = Color.Unspecified
         )
 
-        // Spacer between icon and text
         Spacer(modifier = Modifier.width(8.dp))
 
-        // Button text
         Text(
             text = text,
-            color = Color.Black // Text color
+            color = Color.Black
         )
     }
 }
 
-
+/**
+ * Preview composable to display the custom button in the UI.
+ *
+ * This is used for previewing the XButton composable with sample text to visualize
+ * how it looks within the app.
+ */
 @Preview
 @Composable
-fun ButtonPreview(){
-    XpenseAppTheme{
+fun ButtonPreview() {
+    XpenseAppTheme {
         XButton(text = "heh") { }
     }
 }

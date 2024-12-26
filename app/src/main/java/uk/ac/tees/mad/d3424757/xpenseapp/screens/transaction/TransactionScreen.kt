@@ -1,3 +1,5 @@
+package uk.ac.tees.mad.d3424757.xpenseapp.screens
+
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -25,7 +27,8 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
-import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.monthFilter
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.MONTH_FILTER
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getIconAndColor
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionFilters
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionType
@@ -34,12 +37,12 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.groupTransactionsByDate
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 
 /**
- * Composable function that represents the Transaction Screen where users can view their transactions,
- * apply filters (by month and type), and navigate to other parts of the app like the financial report.
+ * TransactionScreen composable function for displaying user transactions.
+ * Allows applying filters like month and transaction type.
  *
  * @param modifier Modifier for styling the composable.
- * @param viewModel The ViewModel for managing and providing transaction data.
- * @param navController The NavController for navigating between screens.
+ * @param viewModel The ViewModel providing transaction data.
+ * @param navController The NavController for navigation between screens.
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -49,33 +52,32 @@ fun TransactionScreen(
     viewModel: TransactionViewModel,
     navController: NavController
 ) {
-    // Fetch transactions from the viewModel
+    // Fetch the list of transactions from the ViewModel
     val transactions by viewModel.transactions.collectAsState(emptyList())
 
-    // Month and type filter options
-    val types = listOf("All", "Income", "Expense")
+    // Filter options for transaction type and month
+    val types = Constants.TRANSACTION_TYPES
 
-
+    // State variables for managing the filter UI and selected values
     var filterExpanded by remember { mutableStateOf(false) }
-    var selectedMonth by remember { mutableStateOf(monthFilter.first()) }
+    var selectedMonth by remember { mutableStateOf(MONTH_FILTER.first()) }
     var selectedType by remember { mutableStateOf(types.first()) }
 
-    // Grouped transactions by date (initially done here without filters)
+    // Group transactions by date, initializing the grouped data
     val groupedTransactions = remember(transactions) {
         groupTransactionsByDate(transactions)
     }
 
-    // Apply filters whenever selectedMonth or selectedType changes
     val filteredTransactions = remember(selectedMonth, selectedType, transactions) {
         var result = groupedTransactions // Start with grouped transactions
 
-        // Apply month filter if it's not "All"
+        // Apply month filter if selectedMonth is not "All"
         if (selectedMonth != "All") {
-            val monthIndex = monthFilter.indexOf(selectedMonth)  // Get the month index (1-based)
+            val monthIndex = Constants.MONTH_FILTER.indexOf(selectedMonth)  // Get the month index (1-based)
             result = TransactionFilters.filterByMonth(transactions, monthIndex)  // Filter by month
         }
 
-        // Apply type filter if it's not "All"
+        // Apply type filter if selectedType is not "All"
         if (selectedType != "All") {
             val type = when (selectedType) {
                 "Income" -> TransactionType.INCOME
@@ -90,29 +92,31 @@ fun TransactionScreen(
     }
 
     Scaffold(bottomBar = {
-        // Bottom navigation
+        // Bottom navigation bar
         BottomNavigationBar(navController = navController)
-    },
-        ) {
-        // UI Layout for the Transaction Screen
+    }) {
+        // Layout for the Transaction Screen
         Column(modifier = Modifier
-            .background(color = mintCream)){
+            .background(color = mintCream)) {
 
-            Box(modifier.fillMaxSize()
-            ){
+            Box(modifier.fillMaxSize()) {
                 Column {
-                    // Filter Dropdowns (Month and Type)
+                    // Filter Dropdowns for Month and Type
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp),
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Month Dropdown selector
                         XDropDownSelector(
                             selectedItem = selectedMonth,
-                            options = monthFilter,
-                            onOptionSelected = {selectedMonth = it}
+                            options = Constants.MONTH_FILTER,
+                            onOptionSelected = { selectedMonth = it }
                         )
 
+                        // Transaction Type filter dropdown
                         FilterDropdownMenu(
                             types = types,
                             onTypeSelected = { selectedType = it },
@@ -123,10 +127,11 @@ fun TransactionScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Financial report link
+                    // Link to financial report screen
                     Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .clickable {navController.navigate(XpenseScreens.StatsScreen.route) }
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { navController.navigate(XpenseScreens.StatsScreen.route) }
                             .padding(16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
@@ -136,31 +141,23 @@ fun TransactionScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Display the grouped transactions
+                    // Display the filtered and grouped transactions
                     GroupedTransactionList(groupedTransactions = filteredTransactions, navController = navController)
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }
-
-
-
-
-
         }
     }
-
 }
 
-
 /**
- * Composable function for displaying the transaction type filter dropdown menu in the TransactionScreen.
+ * Composable function for displaying the transaction type filter dropdown menu.
  *
- * @param types The list of available transaction types (e.g., "All", "Income", "Expense").
- * @param selectedType The currently selected transaction type.
- * @param onTypeSelected A callback for handling the type selection.
+ * @param types List of transaction types (e.g., "All", "Income", "Expense").
+ * @param onTypeSelected Callback for handling the type selection.
  * @param expanded State of the dropdown (whether it's expanded or not).
- * @param onExpandedChange A callback to change the expanded state of the dropdown.
+ * @param onExpandedChange Callback to change the expanded state of the dropdown.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,7 +171,7 @@ fun FilterDropdownMenu(
         expanded = expanded,
         onExpandedChange = onExpandedChange
     ) {
-        // Icon for the dropdown
+        // Icon for the dropdown menu
         Icon(
             painter = painterResource(id = R.drawable.filter_list),
             contentDescription = "Filter dropdown",
@@ -183,7 +180,7 @@ fun FilterDropdownMenu(
                 .menuAnchor() // Position the icon correctly within the ExposedDropdownMenuBox
         )
 
-        // Dropdown menu containing the filter options
+        // Dropdown menu containing filter options
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) } // Close the menu when dismissed
@@ -196,7 +193,7 @@ fun FilterDropdownMenu(
                         onExpandedChange(false) // Close the dropdown menu
                     },
                     text = {
-                        Text(text = filter) // Display each filter type in the menu
+                        Text(text = filter) // Display each filter option
                     }
                 )
             }
@@ -204,11 +201,11 @@ fun FilterDropdownMenu(
     }
 }
 
-
 /**
- * Composable function for displaying a list of grouped transactions based on the selected filters.
+ * Composable function for displaying a list of grouped transactions.
  *
- * @param groupedTransactions The transactions grouped by categories such as "Today", "Yesterday", etc.
+ * @param groupedTransactions Transactions grouped by categories like "Today", "Yesterday", etc.
+ * @param navController The NavController for navigation between transaction details.
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -219,16 +216,15 @@ fun GroupedTransactionList(groupedTransactions: Map<String, List<TransactionData
         // Iterate over the grouped transactions and display each group
         groupedTransactions.forEach { (header, transactionList) ->
             item {
-                // Add the category header
+                // Display category header for each group (Today, Yesterday, etc.)
                 if (transactionList.isNotEmpty()) {
-                    // Display the category header
                     Text(
-                        text = header, // The header for each group (Today, Yesterday, etc.)
+                        text = header,
                         style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
-                    // Display the transactions for this group
+                    // Display the transactions in this group
                     transactionList.reversed().forEach { transaction ->
                         val image = getIconAndColor(categoryName = transaction.category)
 
@@ -258,12 +254,10 @@ fun GroupedTransactionList(groupedTransactions: Map<String, List<TransactionData
 fun Preview() {
     // Mock ViewModel to simulate data for the preview.
     val mockViewModel = TransactionViewModel(LocalContext.current)
-    // Add mock transaction data here if needed.
 
     val navController = rememberNavController()
 
     XpenseAppTheme {
-        // Displaying the AddScreen with mock data and a theme.
         TransactionScreen(
             modifier = Modifier,
             viewModel = mockViewModel,

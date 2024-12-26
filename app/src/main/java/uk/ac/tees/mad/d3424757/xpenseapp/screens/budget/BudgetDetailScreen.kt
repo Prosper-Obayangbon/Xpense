@@ -50,6 +50,15 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getIconAndC
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.getCurrentDate
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
 
+/**
+ * BudgetDetailScreen displays detailed information about a specific budget,
+ * including remaining amount, progress, and the ability to delete the budget.
+ *
+ * @param modifier Modifier to customize the appearance and behavior of the screen.
+ * @param budgetId The ID of the budget to display details for.
+ * @param navController The navigation controller to navigate between screens.
+ * @param budgetViewModel The ViewModel responsible for managing budget-related data.
+ */
 @Composable
 fun BudgetDetailScreen(
     modifier: Modifier = Modifier,
@@ -57,25 +66,26 @@ fun BudgetDetailScreen(
     navController: NavController,
     budgetViewModel: BudgetViewModel
 ) {
+    // Collecting the list of budgets from the ViewModel
     val budgets by budgetViewModel.calculatedBudgets.collectAsState()
 
-    // Filter the specific budget using the budgetId
+    // Filtering the specific budget based on the provided budgetId
     val budget = budgets.find { it.id.toString() == budgetId }
 
-    // Dialog State
+    // Dialog state to show confirmation before deleting the budget
     var showDialog by remember { mutableStateOf(false) }
 
-    // Safe handling of null budget
+    // If the budget is not found, return early
     if (budget == null) {
-        // Handle the case where the budget is not found (e.g., show a loading indicator or an error message)
         return
     }
 
+    // Layout for the Budget Detail screen
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(mintCream)
-            .padding(16.dp) // Added padding here
+            .padding(16.dp)
     ) {
         Column(
             modifier = modifier
@@ -90,6 +100,7 @@ fun BudgetDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Back button to navigate to the previous screen
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -97,6 +108,7 @@ fun BudgetDetailScreen(
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
+                // Title text in the center of the top row
                 Text(
                     text = "Detail Budget",
                     style = MaterialTheme.typography.titleMedium,
@@ -104,7 +116,8 @@ fun BudgetDetailScreen(
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center
                 )
-                IconButton(onClick = {showDialog =  true}) {
+                // Delete button to show a confirmation dialog before deletion
+                IconButton(onClick = { showDialog = true }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete Budget",
@@ -113,12 +126,14 @@ fun BudgetDetailScreen(
                 }
             }
 
+            // Confirmation dialog to confirm or cancel the delete action
             if (showDialog) {
                 SaveCancelDialog(
                     openDialog = showDialog,
                     onSave = {
+                        // Delete the budget and navigate back
                         budgetViewModel.deleteBudget(budgetId.toInt())
-                        navController.popBackStack() // Navigate back after saving
+                        navController.popBackStack()
                     },
                     onCancel = { showDialog = false },
                     onDismiss = { showDialog = false }
@@ -127,10 +142,10 @@ fun BudgetDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val categoryIcon = getIconAndColor(budget.category) // Get icon and color for category
+            // Get icon and color for the category
+            val categoryIcon = getIconAndColor(budget.category)
 
-
-            // Category with Icon
+            // Category icon and background
             if (categoryIcon != null) {
                 Box(
                     modifier = Modifier
@@ -139,6 +154,7 @@ fun BudgetDetailScreen(
                         .background(categoryIcon.second.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center
                 ) {
+                    // Display the category icon
                     Icon(
                         painter = painterResource(id = categoryIcon.first),
                         contentDescription = budget.category,
@@ -150,6 +166,7 @@ fun BudgetDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Display the category name
             Text(
                 text = budget.category,
                 fontSize = 30.sp
@@ -157,7 +174,7 @@ fun BudgetDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Remaining Amount
+            // Display remaining budget amount
             Text(
                 text = "Remaining",
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
@@ -171,20 +188,20 @@ fun BudgetDetailScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            // Progress Bar
+            // Progress bar showing how much of the budget has been spent
             if (categoryIcon != null) {
                 LinearProgressIndicator(
-                    progress = { (budget.spent / budget.amount).toFloat().coerceIn(0f, 1f) },
+                    progress = (budget.spent / budget.amount).toFloat().coerceIn(0f, 1f),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(15.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    color = categoryIcon.second,
+                    color = categoryIcon.second
                 )
             }
 
-            // Exceeded Warning
-            if ( budget.spent > budget.amount || budget.spent == budget.amount) {
+            // Warning if the budget has been exceeded or is exactly equal to the total amount
+            if (budget.spent > budget.amount || budget.spent == budget.amount) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -193,6 +210,7 @@ fun BudgetDetailScreen(
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Warning icon
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = "Warning",
@@ -200,6 +218,7 @@ fun BudgetDetailScreen(
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
+                    // Warning message
                     Text(
                         text = "You've exceeded the limit",
                         color = MaterialTheme.colorScheme.error,
@@ -210,11 +229,17 @@ fun BudgetDetailScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            XButton(text = "Edit") { navController.navigate("addBudget/${true}/${budget.id}")}
+            // Button to navigate to the "Edit" screen for this budget
+            XButton(text = "Edit") { navController.navigate("addBudget/${true}/${budget.id}") }
         }
     }
 }
 
+/**
+ * Preview of the BudgetDetailScreen for design-time visualization.
+ *
+ * @param modifier Modifier to customize the appearance of the preview screen.
+ */
 @Preview(showBackground = true)
 @Composable
 fun PreviewBudgetDetailScreen() {
@@ -226,4 +251,3 @@ fun PreviewBudgetDetailScreen() {
         budgetViewModel = BudgetViewModel(context)
     )
 }
-

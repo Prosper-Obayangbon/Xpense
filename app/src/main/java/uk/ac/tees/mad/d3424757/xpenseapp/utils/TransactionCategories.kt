@@ -12,16 +12,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 
+// Data class representing a Category with a name, icon, and color.
 data class Category(
-    val name: String,
-    val icon: Int,
-    val color: Color
+    val name: String,  // The name of the category (e.g., "Salary", "Food")
+    val icon: Int,     // Resource ID for the icon associated with this category
+    val color: Color   // The color associated with this category
 )
 
+// Object to store predefined lists of income and expense categories.
 object TransactionCategories {
+
+    // List of income categories, each having a name, icon, and color.
     private val incomeCategories = listOf(
         Category(name = "Salary", icon = R.drawable.salary, color = Color.Blue),
-        Category(name = "Investments Returns", icon = R.drawable.trendup,color = Color(0xFF009688)),
+        Category(name = "Investments Returns", icon = R.drawable.trendup, color = Color(0xFF009688)),
         Category(name = "Bonus", icon = R.drawable.gift, color = Color.Green),
         Category(name = "Interest Income", icon = R.drawable.money, color = Color(0xffFFC107)),
         Category(name = "Rental Income", icon = R.drawable.home, color = Color(0xFF795548)),
@@ -30,6 +34,7 @@ object TransactionCategories {
         Category(name = "Other Income", icon = R.drawable.add, color = Color.Gray),
     )
 
+    // List of expense categories, each having a name, icon, and color.
     private val expenseCategories = listOf(
         Category(name = "Food", icon = R.drawable.restaurant, color = Color(0xFFFF5722)),
         Category(name = "Transportation", icon = R.drawable.car, color = Color.Blue),
@@ -47,26 +52,37 @@ object TransactionCategories {
         Category(name = "Other Expenses", icon = R.drawable.remove, color = Color.Gray)
     )
 
-
-     /** Returns an icon and color based on the transaction category.
-     * @param category The category of the transaction (e.g., "Food", "Shopping").
-     * @return A Pair consisting of the icon resource ID and the color associated with the category.
+    /**
+     * Returns the icon and color for a given category.
+     * @param categoryName The name of the category (e.g., "Food", "Salary").
+     * @return A Pair containing the icon resource ID and the color for the category, or null if the category is not found.
      */
     fun getIconAndColor(categoryName: String): Pair<Int, Color>? {
-        incomeCategories.forEach{
-            if(categoryName == it.name){
+        // Check if the category name matches any income categories
+        incomeCategories.forEach {
+            if (categoryName == it.name) {
                 return Pair(it.icon, it.color)
             }
         }
-        expenseCategories.forEach{
-            if(categoryName == it.name){
+
+        // Check if the category name matches any expense categories
+        expenseCategories.forEach {
+            if (categoryName == it.name) {
                 return Pair(it.icon, it.color)
             }
         }
+
+        // Return null if no matching category was found
         return null
     }
 
+    /**
+     * Returns a list of categories based on whether the transaction is income or expense.
+     * @param isIncome A Boolean indicating if the transaction is income (`true`) or expense (`false`).
+     * @return A list of Category objects either from income or expense categories.
+     */
     fun getCategoriesForTransactionType(isIncome: Boolean): List<Category> {
+        // Return income categories if isIncome is true, otherwise return expense categories
         return if (isIncome) incomeCategories else expenseCategories
     }
 }

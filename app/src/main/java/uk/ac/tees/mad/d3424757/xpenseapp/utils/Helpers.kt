@@ -14,120 +14,104 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * Formats the amount based on the transaction type (INCOME/EXPENSE).
- * @param amount The amount to be formatted.
- * @param type The type of transaction, either "INCOME" or "EXPENSE".
- * @return A string representing the formatted amount with the currency symbol.
+ * Formats the transaction amount based on the transaction type.
+ * @param amount The transaction amount to format.
+ * @param type The type of the transaction, either "INCOME" or "EXPENSE".
+ * @return A string representing the formatted amount with the appropriate currency symbol.
  */
 fun formatAmount(amount: Double, type: String): String {
-    return if (type == "INCOME") {
-        // If income, format as positive value
-        "£ $amount"
+    return if (type == "Income") {
+        // If the transaction is income, format it as a positive value with a currency symbol.
+        "£ %.2f".format(amount)
     } else {
-        // If expense, format as negative value
-        "- £$amount"
+        // If the transaction is an expense, format it as a negative value with a currency symbol.
+        "- £%.2f".format(amount)
     }
 }
 
-
+/**
+ * Groups transactions by date into different categories such as "Today", "Yesterday", "Last Week", etc.
+ * @param transactions The list of transactions to group.
+ * @return A map where the keys are date group labels (e.g., "TODAY", "LAST WEEK") and the values are lists of transactions in each group.
+ */
 @RequiresApi(Build.VERSION_CODES.O)
 fun groupTransactionsByDate(transactions: List<TransactionData>): Map<String, List<TransactionData>> {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    // Date format pattern for parsing transaction dates.
+    val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
+
+    // Current date and calculated dates for categorizing the transactions.
     val today = LocalDate.now()
     val yesterday = today.minusDays(1)
     val lastWeekStart = today.minusWeeks(1)
     val lastMonthStart = today.minusMonths(1)
 
-    // Helper to parse String to LocalDate
+    // Helper function to parse a date string into a LocalDate object.
     fun parseDate(dateString: String): LocalDate? {
         return try {
+            // Attempt to parse the date string to a LocalDate object
             LocalDate.parse(dateString, formatter)
         } catch (e: DateTimeParseException) {
             null // Return null if parsing fails
         }
     }
 
-    val remainingTransactions = transactions.toMutableList()
+    // Map to store the grouped transactions by date.
     val groupedTransactions = mutableMapOf<String, List<TransactionData>>()
 
-    // Group "Today"
-    groupedTransactions["TODAY"] = remainingTransactions.filter {
-        parseDate(it.date)?.isEqual(today) == true
-    }.also { remainingTransactions.removeAll(it) }
+    // Iterate through each transaction and group them by the respective dates.
+    val transactionGroups = mapOf(
+        "TODAY" to today,
+        "YESTERDAY" to yesterday,
+        "LAST FEW DAYS" to lastWeekStart,
+        "LAST WEEK" to lastWeekStart,
+        "2 WEEKS AGO" to lastWeekStart.minusWeeks(1),
+        "3 WEEKS AGO" to lastWeekStart.minusWeeks(2),
+        "LAST MONTH" to lastMonthStart,
+        "OLDER" to lastMonthStart.minusMonths(1)
+    )
 
-    // Group "Yesterday"
-    groupedTransactions["YESTERDAY"] = remainingTransactions.filter {
-        parseDate(it.date)?.isEqual(yesterday) == true
-    }.also { remainingTransactions.removeAll(it) }
+    // Iterate through each group and filter transactions accordingly
+    transactionGroups.forEach { (groupName, dateThreshold) ->
+        val filteredTransactions = transactions.filter {
+            val transactionDate = parseDate(it.date)
+            when (groupName) {
+                "TODAY" -> transactionDate?.isEqual(today) == true
+                "YESTERDAY" -> transactionDate?.isEqual(yesterday) == true
+                "LAST FEW DAYS" -> transactionDate != null && transactionDate.isBefore(yesterday) && transactionDate.isAfter(lastWeekStart)
+                "LAST WEEK" -> transactionDate != null && !transactionDate.isBefore(lastWeekStart) && transactionDate.isBefore(today)
+                "2 WEEKS AGO" -> transactionDate != null && transactionDate.isBefore(lastWeekStart) && transactionDate.isAfter(lastWeekStart.minusWeeks(1))
+                "3 WEEKS AGO" -> transactionDate != null && transactionDate.isBefore(lastWeekStart.minusWeeks(1)) && transactionDate.isAfter(lastWeekStart.minusWeeks(2))
+                "LAST MONTH" -> transactionDate != null && !transactionDate.isBefore(lastMonthStart) && transactionDate.isBefore(lastMonthStart.minusMonths(1))
+                "OLDER" -> transactionDate != null && transactionDate.isBefore(lastMonthStart.minusMonths(1))
+                else -> false
+            }
+        }
 
-    // Group "Last Few Days" (2–6 days ago, between Yesterday and Last Week)
-    groupedTransactions["LAST FEW DAYS"] = remainingTransactions.filter {
-        val date = parseDate(it.date)
-        date != null && date.isBefore(yesterday) && date.isAfter(lastWeekStart)
-    }.also { remainingTransactions.removeAll(it) }
-
-    // Group "Last Week" (7–13 days ago)
-    groupedTransactions["LAST WEEK"] = remainingTransactions.filter {
-        val date = parseDate(it.date)
-        date != null && !date.isBefore(lastWeekStart) && date.isBefore(today)
-    }.also { remainingTransactions.removeAll(it) }
-    // Group "Last 2 Weeks" (14–20 days ago)
-    groupedTransactions["2 WEEKS AGO"] = remainingTransactions.filter {
-        val date = parseDate(it.date)
-        date != null && date.isBefore(lastWeekStart) && date.isAfter(lastWeekStart.minusWeeks(1))
-    }.also { remainingTransactions.removeAll(it) }
-
-    // Group "Last 3 Weeks" (21–27 days ago)
-    groupedTransactions["3 WEEKS AGO"] = remainingTransactions.filter {
-        val date = parseDate(it.date)
-        date != null && date.isBefore(lastWeekStart.minusWeeks(1)) && date.isAfter(lastWeekStart.minusWeeks(2))
-    }.also { remainingTransactions.removeAll(it) }
-
-    // Group "Last Month" (28 days ago up to one month)
-    groupedTransactions["LAST MONTH"] = remainingTransactions.filter {
-        val date = parseDate(it.date)
-        date != null && !date.isBefore(lastMonthStart) && date.isBefore(lastMonthStart.minusMonths(1))
-    }.also { remainingTransactions.removeAll(it) }
-
-    // Group "Older" (More than a month ago)
-    groupedTransactions["OLDER"] = remainingTransactions.filter {
-        val date = parseDate(it.date)
-        date != null && date.isBefore(lastMonthStart.minusMonths(1))
-    }.also { remainingTransactions.removeAll(it) }
-
-    // Filter out empty groups
-    return groupedTransactions.filterValues { it.isNotEmpty() }
-}
-
-
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun String.toMonthName(): String {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.getDefault())
-    return try {
-        val date = LocalDate.parse(this, formatter)
-        date.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
-    } catch (e: Exception) {
-        "Invalid Date" // Handle invalid date formats
+        if (filteredTransactions.isNotEmpty()) {
+            groupedTransactions[groupName] = filteredTransactions
+        }
     }
 
-
-
-
+    // Return the grouped transactions, filtering out empty groups.
+    return groupedTransactions
 }
+
+/**
+ * Gets the current month in "MM/yyyy" format.
+ * @return The current month and year in "MM/yyyy" format (e.g., "12/2024").
+ */
 fun getCurrentMonth(): String {
     val dateFormat = SimpleDateFormat("MM/yyyy", Locale.getDefault())
-    return dateFormat.format(Date())
+    return dateFormat.format(Date()) // Format the current date as "MM/yyyy".
 }
 
+/**
+ * Gets the current date in "yyyy-MM-dd" format.
+ * @return The current date in "yyyy-MM-dd" format (e.g., "2024-12-25").
+ */
 fun getCurrentDate(): String {
-    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    return formatter.format(Date())
+    val formatter = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+    return formatter.format(Date()) // Format the current date as "yyyy-MM-dd".
 }
-
-
-
-
 
 

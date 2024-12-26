@@ -1,4 +1,4 @@
-package uk.ac.tees.mad.d3424757.xpenseapp.screens.onboarding
+package uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,22 +14,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.pm.ShortcutInfoCompat.Surface
 import androidx.navigation.NavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XTextLink
@@ -37,7 +32,23 @@ import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
-
+/**
+ * Onboarding screen for the Xpense app.
+ *
+ * This composable displays an onboarding screen with a character image, tagline, description of the app's features,
+ * and buttons for navigation to either the sign-up or login screens.
+ * The screen provides the user with an introduction to the app and offers a clear path to start using it.
+ *
+ * The layout is structured using a Column with vertical arrangement and center alignment.
+ * It includes the following components:
+ * - An image of a 3D character to visually engage users.
+ * - A tagline ("Spend Smarter\nSave More") to communicate the app's core message.
+ * - A brief description of the app's features to give context on what it does.
+ * - A "Get Started" button that navigates to the sign-up screen.
+ * - A "Log In" text link for users who already have an account, navigating to the login screen.
+ *
+ * @param navController Navigation controller to manage screen transitions.
+ */
 @Composable
 fun Onboarding(navController: NavController) {
     Column(

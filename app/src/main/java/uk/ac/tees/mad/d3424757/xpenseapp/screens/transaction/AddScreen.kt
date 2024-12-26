@@ -65,7 +65,7 @@ fun AddScreen(
             .background(mintCream)
     ) {
         XTopBar(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             text = "Add",
             textColor = Color.Black,
             backClick = { navController.popBackStack() }

@@ -15,44 +15,45 @@ import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Category
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getCategoriesForTransactionType
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionType
-import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class TransactionViewModel(context : Context) : ViewModel() {
+class TransactionViewModel(context: Context) : ViewModel() {
+
     private val repository: TransactionRepository
 
-    // StateFlow to hold the list of transactions.
+    // StateFlow to hold the list of transactions
     private val _transactions = MutableStateFlow<List<TransactionData>>(emptyList())
     val transactions: StateFlow<List<TransactionData>> get() = _transactions
 
-
-    // Amount entered by the user, stored as a StateFlow for UI observation.
+    // Amount entered by the user, stored as a StateFlow for UI observation
     private val _amount = MutableStateFlow("")
     val amount = _amount.asStateFlow()
 
-    // Description entered by the user, stored as a StateFlow for UI observation.
+    // Description entered by the user, stored as a StateFlow for UI observation
     private val _description = MutableStateFlow("")
     val description = _description.asStateFlow()
 
-    // Selected category for the transaction (Income/Expense), stored as a StateFlow for UI observation.
+    // Selected category for the transaction (Income/Expense)
     private var _selectedCategory = MutableStateFlow<Category?>(null)
-    var selectedCategory = _selectedCategory.asStateFlow()
+    private var selectedCategory = _selectedCategory.asStateFlow()
 
-    // Selected date for the transaction, stored as a StateFlow for UI observation.
+    // Selected date for the transaction, stored as a StateFlow for UI observation
+    @RequiresApi(Build.VERSION_CODES.O)
     private val _selectedDate = MutableStateFlow(getCurrentDate()) // Default to current date
+    @RequiresApi(Build.VERSION_CODES.O)
     val selectedDate = _selectedDate.asStateFlow()
 
-    // Error message to be displayed in the UI, if any validation fails.
+    // Error message to be displayed in the UI, if any validation fails
     private val _errorMessage = MutableStateFlow("")
     val errorMessage = _errorMessage.asStateFlow()
 
-
-
-    // Initialize the repository with the DAO from the database.
+    // Initialize the repository with the DAO from the database
     init {
         val dao = XpenseDatabase.getDatabase(context)
         repository = TransactionRepository(dao)
@@ -74,7 +75,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
         if (newAmount.toDoubleOrNull() != null && newAmount.toDouble() > 0) {
             _amount.value = newAmount
         } else {
-            _errorMessage.value = "Please enter a valid amount greater than 0."
+            _errorMessage.value = Constants.ERROR_INVALID_AMOUNT
         }
     }
 
@@ -95,6 +96,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
     /**
      * Updates the selected date for the transaction.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun updateDate(newDate: String) {
         Log.d("DateUpdate", "Selected Date: $newDate")
         _selectedDate.value = newDate
@@ -104,20 +106,21 @@ class TransactionViewModel(context : Context) : ViewModel() {
      * Validates the transaction data before submission.
      * Returns true if all fields are valid, false otherwise.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun validateTransaction(): Boolean {
         return when {
             amount.value.isEmpty() -> {
-                _errorMessage.value = "Amount cannot be empty."
+                _errorMessage.value = Constants.ERROR_AMOUNT_EMPTY
                 false
             }
 
             selectedCategory.value == null -> {
-                _errorMessage.value = "Please select a category."
+                _errorMessage.value = Constants.ERROR_CATEGORY_EMPTY
                 false
             }
 
             selectedDate.value.isEmpty() -> {
-                _errorMessage.value = "Date cannot be empty."
+                _errorMessage.value = Constants.ERROR_DATE_EMPTY
                 false
             }
 
@@ -140,28 +143,29 @@ class TransactionViewModel(context : Context) : ViewModel() {
         }
     }
 
-
     /**
      * Adds a new transaction to the database using the repository.
      *
-     * @param transaction The transaction to be added.
+     * @param isIncome Boolean to determine if the transaction is income or expense.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun addTransaction(isIncome: Boolean) {
-        var type = TransactionType.EXPENSE
-        if (isIncome) {
-            type = TransactionType.INCOME
+        val category = selectedCategory.value ?: run {
+            _errorMessage.value = Constants.ERROR_CATEGORY_EMPTY
+            return
         }
+
+        val type = if (isIncome) TransactionType.INCOME else TransactionType.EXPENSE
         viewModelScope.launch {
             repository.insertTransaction(
                 TransactionData(
-                    category = selectedCategory.value!!.name,
+                    category = category.name,
                     description = _description.value,
                     amount = _amount.value.toDouble(),
                     time = getFormattedCurrentTime(),
                     date = _selectedDate.value,
-                    type = type,
-
-                    )
+                    type = type
+                )
             )
         }
     }
@@ -169,6 +173,7 @@ class TransactionViewModel(context : Context) : ViewModel() {
     /**
      * Resets all fields to their initial state after a transaction is saved or canceled.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     fun resetTransaction() {
         _selectedCategory.value = null
         _amount.value = ""
@@ -178,23 +183,21 @@ class TransactionViewModel(context : Context) : ViewModel() {
     }
 
     /**
-     * Helper function to get the current date in the format: Day/Month/Year.
+     * Helper function to get the current date in the format: yyyy-MM-dd.
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun getCurrentDate(): String {
-        val calendar = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        return dateFormat.format(calendar.time)
+        val currentDate = LocalDate.now()  // Use LocalDate for current date
+        return currentDate.format(DateTimeFormatter.ofPattern(Constants.DATE_FORMAT)) // Returns in yyyy-MM-dd format
     }
 
+    /**
+     * Helper function to get the current time in the format: hh:mm a (12-hour format).
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SimpleDateFormat")
     fun getFormattedCurrentTime(): String {
-        val dateFormat = SimpleDateFormat("hh:mm a") // 12-hour format with AM/PM
-        val currentTime = Date() // Get the current date and time
-        return dateFormat.format(currentTime) // Return formatted time (e.g., 02:30 PM)
+        val currentTime = LocalDateTime.now()
+        return currentTime.format(DateTimeFormatter.ofPattern(Constants.TIME_FORMAT)) // 12-hour format
     }
-
 }
-
-
-
-

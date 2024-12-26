@@ -31,9 +31,17 @@ class TransactionRepository(private val dao: XpenseDatabase) {
         dao.transactionDao().insertTransaction(transaction)
     }
 
-    suspend fun loadTotalSpent(category : String, month: String): Double {
+    /**
+     * Suspended function to fetch the total amount spent for a specific category and month.
+     *
+     * @param category The category for which the total spent needs to be calculated (e.g., "Food", "Transport").
+     * @param month The month in "yyyy-MM" format (e.g., "2024-12").
+     * @return A Double value representing the total amount spent in the specified category for the given month.
+     */
+    suspend fun loadTotalSpent(category: String, month: String): Double {
         return dao.transactionDao().getTotalSpentForCategoryAndMonth(category, month)
     }
+
 
 
 }

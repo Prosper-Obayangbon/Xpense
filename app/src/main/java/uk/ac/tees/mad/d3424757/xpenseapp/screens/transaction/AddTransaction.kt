@@ -1,10 +1,11 @@
-package uk.ac.tees.mad.d3424757.xpenseapp.screens.addTransaction
+package uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction
 
 import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import uk.ac.tees.mad.d3424757.xpenseapp.R
@@ -41,6 +41,7 @@ import java.util.Locale
  * @param isIncome Flag to differentiate income and expense.
  * @param context Context for accessing application resources.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddTransaction(
     navController: NavController,
@@ -108,7 +109,7 @@ fun AddTransaction(
                 text = "Save",
                 handleClick = {
                     if (viewModel.validateTransaction()) {
-                            showDialog = true
+                        showDialog = true
                     }
                 }
             )
@@ -148,6 +149,7 @@ fun AddTransaction(
 /**
  * Top bar containing navigation back and menu options.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TopBar(
     navController: NavController,
@@ -188,11 +190,11 @@ fun TopBar(
                 expanded = isMenuExpanded,
                 onDismissRequest = { onMenuExpand(false) }
             ) {
-                    DropdownMenuItem(
-                        text = { Text(text = "Clear") },
-                        onClick = { onMenuExpand(false)
-                             viewModel.resetTransaction()}
-                    )
+                DropdownMenuItem(
+                    text = { Text(text = "Clear") },
+                    onClick = { onMenuExpand(false)
+                        viewModel.resetTransaction()}
+                )
 
             }
         }
@@ -202,6 +204,7 @@ fun TopBar(
 /**
  * Form for entering transaction details (category, amount, date, description).
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TransactionForm(
     viewModel: TransactionViewModel,
@@ -360,12 +363,13 @@ private fun CategoryIcon(category: Category) {
 /**
  * Preview function for development purposes.
  */
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun AddPreview() {
     // Mock ViewModel to simulate data for the preview.
     val mockViewModel = TransactionViewModel(LocalContext.current)
-        // Add mock transaction data here if needed.
+    // Add mock transaction data here if needed.
 
     val navController = rememberNavController()
 

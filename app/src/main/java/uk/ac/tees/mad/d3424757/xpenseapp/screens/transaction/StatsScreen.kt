@@ -1,4 +1,4 @@
-package uk.ac.tees.mad.d3424757.xpenseapp.screens.stats
+package uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction
 
 import LineChart
 import PieChartView
@@ -45,10 +45,14 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.XDropDownSelector
 import uk.ac.tees.mad.d3424757.xpenseapp.components.RecentTransactions
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
-import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.monthFilter
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.CATEGORY_NAME_EXPENSE
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.CATEGORY_NAME_INCOME
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_MSG_NO_DATA
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.MONTH_FILTER
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionCategories.getCategoriesForTransactionType
-import uk.ac.tees.mad.d3424757.xpenseapp.utils.toMonthName
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.TransactionFilters.toMonthName
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
+
 
 /**
  * A composable function that displays the Stats Screen showing financial report with various charts and transaction data.
@@ -70,9 +74,9 @@ fun StatsScreen(
     val transactions by viewModel.transactions.collectAsState(emptyList())
     val selectedMonth = remember { mutableStateOf("All") } // Default to "All"
     val selectedChart = remember { mutableStateOf("Donut") }
-    val selectedCategory = remember { mutableStateOf("Expense") }
+    val selectedCategory = remember { mutableStateOf(CATEGORY_NAME_EXPENSE) }
     var selectedType by remember { mutableStateOf("Transaction") }
-    val isIncome = selectedCategory.value == "Income" // Determine if "Income" is selected
+    val isIncome = selectedCategory.value == CATEGORY_NAME_INCOME // Determine if "Income" is selected
     val categoryColorMap = remember { mutableStateOf(mapOf<String, Color>()) }
 
     // Filter transactions based on the selected month
@@ -110,7 +114,7 @@ fun StatsScreen(
             // Dropdown for selecting month
             XDropDownSelector(
                 selectedItem = selectedMonth.value,
-                options = monthFilter,
+                options = MONTH_FILTER,
                 onOptionSelected = { selectedMonth.value = it }
             )
             // Toggle button for chart type (Donut or Line)
@@ -191,7 +195,7 @@ fun StatsScreen(
             )
             if (transType.isEmpty()) {
                 Text(
-                    text = "No Transaction data available",
+                    text = ERROR_MSG_NO_DATA,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -209,7 +213,7 @@ fun StatsScreen(
 
             if (categories.isEmpty()) {
                 Text(
-                    "No Transaction data available",
+                    ERROR_MSG_NO_DATA,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
