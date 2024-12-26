@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,6 +14,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.data.model.UserProfile
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.AuthRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.PROFILE_LOAD_ERROR
 
 /**
  * ViewModel for managing the user profile and authentication-related operations.
@@ -22,9 +24,10 @@ class UserProfileVM(
     private val showToast: (String) -> Unit // Callback to show toast messages
 ) : ViewModel() {
 
-    val dao = XpenseDatabase.getDatabase(context)
-    private val repository: UserProfileRepository = UserProfileRepository(dao)
-    private val authRepository: AuthRepository = AuthRepository() // Initialize with necessary dependencies if any
+    private val repository: UserProfileRepository
+    private val authRepository: AuthRepository = AuthRepository()
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
 
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> get() = _userProfile
@@ -42,29 +45,35 @@ class UserProfileVM(
     val errorMessage: State<String> get() = _errorMessage
 
     init {
-        loadUserProfile(0) // Load a default profile (you can pass an actual user ID)
+        val dao = XpenseDatabase.getDatabase(context, userId = userId)
+        repository = UserProfileRepository(dao)
+        loadUserProfile() // Load a default profile (you can pass an actual user ID)
     }
 
     /**
      * Loads the user profile based on the user ID.
      * @param userId The ID of the user whose profile needs to be loaded.
      */
-    private fun loadUserProfile(userId: Int) {
+    private fun loadUserProfile() {
         viewModelScope.launch {
-            _userProfile.value = repository.getUserProfile(userId)
+            try {
+                _userProfile.value = repository.getUserProfile() // Get the user profile from the repository
+            } catch (e: Exception) {
+                _userProfile.value = null
+                showToast(PROFILE_LOAD_ERROR)
+            }
         }
     }
 
     /**
      * Saves the profile picture URI for a user.
-     * @param userId The ID of the user whose profile picture is being updated.
      * @param uri The URI of the new profile picture.
      */
-    fun saveProfilePicture(userId: Int, uri: String) {
+    fun saveProfilePicture(uri: String) {
         viewModelScope.launch {
             try {
-                repository.updateProfilePicture(userId, uri)
-                loadUserProfile(userId) // Refresh user profile after update
+                repository.updateProfilePicture(uri)
+                loadUserProfile() // Refresh user profile after update
                 showToast(Constants.PROFILE_UPDATE_SUCCESS)
             } catch (e: Exception) {
                 showToast(Constants.PROFILE_PICTURE_UPDATE_ERROR)
@@ -80,10 +89,10 @@ class UserProfileVM(
     fun updateUserProfile(name: String, email: String) {
         viewModelScope.launch {
             val updatedProfile = _userProfile.value?.copy(name = name, email = email)
-            _userProfile.value = updatedProfile
             updatedProfile?.let {
                 try {
-                    repository.updateUserProfile(it)
+                    repository.updateUserProfile(it) // Update profile in the repository
+                    _userProfile.value = it // Update the user profile in the state
                     showToast(Constants.PROFILE_UPDATE_SUCCESS)
                 } catch (e: Exception) {
                     showToast(Constants.PROFILE_PICTURE_UPDATE_ERROR)
@@ -123,7 +132,7 @@ class UserProfileVM(
     fun onPasswordChange() {
         // Check if the new password and confirm password match
         if (_newPassword.value == _confirmPassword.value) {
-            _errorMessage.value = ""
+            _errorMessage.value = "" // Clear any previous error messages
 
             viewModelScope.launch {
                 try {
@@ -136,7 +145,7 @@ class UserProfileVM(
                         if (success) {
                             showToast(Constants.PASSWORD_CHANGE_SUCCESS)
                         } else {
-                            showToast(Constants.PASSWORD_CHANGE_ERROR)
+                            showToast(error ?: Constants.PASSWORD_CHANGE_ERROR)
                         }
                     }
                 } catch (e: Exception) {

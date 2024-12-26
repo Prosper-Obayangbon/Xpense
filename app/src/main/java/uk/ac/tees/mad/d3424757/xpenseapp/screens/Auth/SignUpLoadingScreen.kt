@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -42,7 +43,8 @@ fun SignUpLoadingScreen(navController: NavController, isLogin: Boolean, context 
         // Launch a coroutine to fetch the username from the Room database
         withContext(Dispatchers.IO) {
             // Fetch the user profile from the database
-            val userProfile = UserProfileRepository(XpenseDatabase.getDatabase(context)).getUserProfile(0)
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"
+            val userProfile = UserProfileRepository(XpenseDatabase.getDatabase(context,userId )).getUserProfile()
             // Update the state with the username
             username = userProfile?.name ?: "User"
         }

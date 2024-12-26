@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.kapt)
     alias(libs.plugins.kotlin.compose)
-   // alias(libs.plugins.hilt.android)
+    // alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.room)
 
@@ -88,6 +88,9 @@ dependencies {
 
 
 
+
+
+
     // Coil
     implementation(libs.coil.compose)
 
@@ -113,6 +116,10 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.ui.test.android)
+    implementation(libs.androidx.ui.test.android)
     kapt(libs.kotlin.annotation.processing.gradle)
 
     implementation(libs.mpandroidchart)
@@ -122,6 +129,19 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.imagepicker)
     implementation(libs.accompanist.permissions)  // Use the latest stable version
+
+
+    // Main biometric dependency
+   // implementation(libs.androidx.biometric)
+
+    // Biometric KTX (if you specifically want KTX extensions)
+    implementation(libs.androidx.biometric.ktx)
+
+    implementation(libs.androidx.biometric.ktx)
+
+
+
+
 
 
 
@@ -170,6 +190,5 @@ kapt {
 room {
     schemaDirectory("$projectDir/schemas")
 }
-
 
 

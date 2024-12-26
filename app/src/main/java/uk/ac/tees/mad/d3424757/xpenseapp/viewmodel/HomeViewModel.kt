@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,7 +37,8 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     // Initialize repositories with database.
     init {
-        val dao = XpenseDatabase.getDatabase(context)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
+        val dao = XpenseDatabase.getDatabase(context, userId = userId)
         transactionRepository = TransactionRepository(dao)
         userRepository = UserProfileRepository(dao)
 
@@ -51,7 +53,7 @@ class HomeViewModel(context: Context) : ViewModel() {
      */
     private fun getUserName() {
         viewModelScope.launch {
-            _userName.value = userRepository.getUserProfile(0)?.name ?: ""
+            _userName.value = userRepository.getUserProfile()?.name ?: ""
         }
     }
 

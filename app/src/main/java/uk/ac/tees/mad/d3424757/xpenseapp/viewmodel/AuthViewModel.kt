@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.UserProfile
@@ -21,8 +22,12 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_SIGNUP_FAILED
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.PASSWORD_PATTERN
 
 class AuthViewModel(context: Context) : ViewModel() {
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
+
+
     private val authRepository = AuthRepository()
-    val dao = XpenseDatabase.getDatabase(context)
+    val dao = XpenseDatabase.getDatabase(context, userId)
     val repository = UserProfileRepository(dao)
 
     // Backing properties with mutable state
@@ -83,30 +88,38 @@ class AuthViewModel(context: Context) : ViewModel() {
                     // Clear any existing errors
                     _error.value = null
 
-                    // After sign-up is successful, create the UserProfile
-                    val userId = authRepository.getCurrentUserId() // Get the user ID after successful sign-up
-                    val userProfile = UserProfile(
-                        name = name,
-                        email = username,
-                        profilePicture = profilePicture ?: ""
-                    )
-
-                    // Save the user profile to the database
-                    try {
-                        saveUserProfileToDatabase(userProfile) // Now inside the coroutine
-                        // Return success
-                        onComplete(true)
-                    } catch (e: Exception) {
-                        // If there is an error saving the profile, return failure
-                        _error.value = "$ERROR_SAVE_PROFILE_FAILED ${e.message}"
-                        onComplete(false)
-                    }
+                    insertUserProfile(name, username, profilePicture, onComplete)
                 } else {
                     // If sign-up failed, set the error message and return failure
                     _error.value = errorMessage ?: ERROR_SIGNUP_FAILED
                     onComplete(false)
                 }
             }
+        }
+    }
+
+    private fun insertUserProfile(
+        name: String,
+        username: String,
+        profilePicture: String?,
+        onComplete: (Boolean) -> Unit
+    ) {
+        // After sign-up is successful, create the UserProfile
+        val userProfile = UserProfile(
+            name = name,
+            email = username,
+            profilePicture = profilePicture ?: ""
+        )
+
+        // Save the user profile to the database
+        try {
+            saveUserProfileToDatabase(userProfile) // Now inside the coroutine
+            // Return success
+            onComplete(true)
+        } catch (e: Exception) {
+            // If there is an error saving the profile, return failure
+            _error.value = "$ERROR_SAVE_PROFILE_FAILED ${e.message}"
+            onComplete(false)
         }
     }
 
@@ -151,6 +164,10 @@ class AuthViewModel(context: Context) : ViewModel() {
                 if (success) {
                     _error.value = null
                     onComplete(true)
+
+
+                    insertUserProfile(name = "User", username = "User@example.com", profilePicture = "", onComplete)
+
                 } else {
                     _error.value = errorMessage ?: ERROR_GOOGLE_SIGNIN_FAILED
                     onComplete(false)

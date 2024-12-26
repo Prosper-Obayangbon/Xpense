@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -62,7 +63,8 @@ class BudgetViewModel(context: Context) : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     init {
-        val dao = XpenseDatabase.getDatabase(context)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
+        val dao = XpenseDatabase.getDatabase(context, userId = userId)
         budgetRepository = BudgetRepository(dao)
         transactionRepository = TransactionRepository(dao)
 

@@ -32,31 +32,40 @@ abstract class XpenseDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
 
     companion object {
-        // Volatile ensures that the instance is updated immediately across all threads.
         @Volatile
         private var INSTANCE: XpenseDatabase? = null
 
         /**
-         * Gets the singleton instance of the XpenseDatabase.
-         * This method ensures only one instance of the database exists at any given time.
+         * Gets or creates a database instance for the specified user.
          *
-         * @param context The application context for creating the database.
-         * @return The XpenseDatabase instance.
+         * @param context The application context.
+         * @param userId The unique identifier for the user.
+         * @return The XpenseDatabase instance for the user.
          */
-        fun getDatabase(context: Context): XpenseDatabase {
-            // Check if the instance is already created
+        fun getDatabase(context: Context, userId: String): XpenseDatabase {
+            // Use userId to differentiate database files
+            val databaseName = "${DATABASE_NAME}_$userId"
+
+            // Check if an instance exists for the current user
             return INSTANCE ?: synchronized(this) {
-                // Create a new instance if it doesn't exist
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     XpenseDatabase::class.java,
-                    DATABASE_NAME // Database name defined in Constants
+                    databaseName
                 ).build()
 
-                // Set the instance to the newly created one
+                // Set the singleton instance
                 INSTANCE = instance
                 instance
             }
         }
+
+        /**
+         * Clears the current database instance (useful when switching users).
+         */
+        fun clearInstance() {
+            INSTANCE = null
+        }
     }
+
 }

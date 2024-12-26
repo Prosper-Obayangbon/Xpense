@@ -61,6 +61,7 @@ object Constants {
     const val ERROR_SAVE_PROFILE_FAILED = "Error saving user profile: "
     const val ERROR_INCORRECT_CREDENTIALS = "Incorrect Email or Password."
     const val ERROR_GOOGLE_SIGNIN_FAILED = "Failed! Try again later."
+    const val PROFILE_LOAD_ERROR = "Failed to load user profile"
 
     // Transaction types for filtering
     val TRANSACTION_TYPES = listOf("All", "Income", "Expense")// Categories for transactions (Income or Expense) used in filtering.

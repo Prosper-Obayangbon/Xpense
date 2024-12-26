@@ -148,7 +148,7 @@ private fun NavGraphBuilder.reportNavGraph(modifier: Modifier, navController: Na
     }
     // Statistics screen
     composable(XpenseScreens.StatsScreen.route) {
-        val statsViewModel = StatsViewModel(repository = TransactionRepository(XpenseDatabase.getDatabase(context)))
+        val statsViewModel = StatsViewModel(context)
         StatsScreen(viewModel = statsViewModel, modifier = modifier, navController = navController, context = context)
     }
     // Transaction details screen
@@ -221,7 +221,7 @@ private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: N
     )
     // Profile main screen
     composable(XpenseScreens.Profile.route) {
-        ProfileScreen(navController = navController, modifier = modifier, viewModel = viewModel, userId = 0)
+        ProfileScreen(navController = navController, modifier = modifier, viewModel = viewModel)
     }
     // Profile information screen
     composable(XpenseScreens.ProfileInfoScreen.route) {

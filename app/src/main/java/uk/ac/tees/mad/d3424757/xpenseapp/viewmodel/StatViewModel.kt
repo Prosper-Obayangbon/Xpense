@@ -4,8 +4,12 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.github.mikephil.charting.data.Entry
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.Flow
+import uk.ac.tees.mad.d3424757.xpenseapp.data.database.XpenseDatabase
 import uk.ac.tees.mad.d3424757.xpenseapp.data.model.TransactionData
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.TransactionRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Category
@@ -20,10 +24,18 @@ import java.util.Locale
  * ViewModel for managing and processing transactions related to statistics.
  */
 class StatsViewModel(
-    private val repository: TransactionRepository
+    context: Context
 ) : ViewModel() {
+    private val repository: TransactionRepository
+    val transactions: Flow<List<TransactionData>>
 
-    val transactions = repository.loadTransactions()
+    // Initialize the repository with the DAO from the database
+    init {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
+        val dao = XpenseDatabase.getDatabase(context, userId = userId)
+        repository = TransactionRepository(dao)
+        transactions= repository.loadTransactions()
+    }
 
 
     /**

@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,7 +56,8 @@ class TransactionViewModel(context: Context) : ViewModel() {
 
     // Initialize the repository with the DAO from the database
     init {
-        val dao = XpenseDatabase.getDatabase(context)
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
+        val dao = XpenseDatabase.getDatabase(context, userId = userId)
         repository = TransactionRepository(dao)
         getTransactions()
     }

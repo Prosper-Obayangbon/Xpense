@@ -138,4 +138,8 @@ class AuthRepository {
             onComplete(false, "User email not found.") // No email found for the user
         }
     }
+
+    fun signOut() {
+        auth.signOut()
+    }
 }

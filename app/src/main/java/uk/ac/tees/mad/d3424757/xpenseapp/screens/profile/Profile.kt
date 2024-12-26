@@ -60,7 +60,6 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    userId: Int,
     viewModel: UserProfileVM,
     modifier: Modifier = Modifier
 ) {
@@ -126,7 +125,7 @@ fun ProfileScreen(
                 if (showImagePickerDialog) {
                     ImagePickerDialog(
                         onImagePicked = { uri ->
-                            viewModel.saveProfilePicture(userId, uri.toString()) // Save the new profile picture
+                            viewModel.saveProfilePicture(uri.toString()) // Save the new profile picture
                             showImagePickerDialog = false
                         },
                         onDismiss = { showImagePickerDialog = false }

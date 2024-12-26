@@ -1,11 +1,14 @@
 [versions]
 accompanistPermissions = "0.28.0"
-activityComposeVersion = "1.9.3"
+
 agp = "8.6.1"
 androidxActivityCompose = "1.7.2"
-androidxHiltCompiler = "1.0.0"
-androidxHiltLifecycleViewmodel = "1.0.0"
-androidxRoomCompiler = "2.5.0"
+
+androidxBiometric = "1.0.1"
+androidxBiometricKtx = "1.4.0-alpha02"
+biometric = "1.1.0"
+biometricKtxVersion = "1.0.1"
+biometricVersion = "1.1.0"
 cameraLifecycle = "1.4.0"
 coilCompose = "2.4.0"
 constraintlayoutCompose = "1.1.0"
@@ -13,8 +16,7 @@ converterGson = "2.9.0"
 datastorePreferences = "1.1.1"
 firebaseBom = "33.5.1"
 hiltLifecycleViewmodelVersion = "1.0.0-alpha03"
-hiltNavigationCompose = "1.0.0"
-hiltLifecycleViewModel = "1.0.0"
+
 
 imagepicker = "2.1"
 kotlin = "1.9.0"
@@ -52,17 +54,20 @@ constraintlayout = "2.2.0"
 lifecycleLivedataKtx = "2.8.7"
 runtimeLivedata = "1.7.5"
 hilt = "2.51.1"
+biometricKtx = "1.1.0"
+uiTestAndroid = "1.7.5"
 
 
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
+androidx-biometric-ktx = { module = "androidx.biometric:biometric-ktx", version.ref = "androidxBiometricKtx" }
+androidx-biometric-v101 = { module = "androidx.biometric:biometric", version.ref = "androidxBiometric" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraLifecycle" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
-androidx-hilt-lifecycle-viewmodel-v100alpha03 = { module = "androidx.hilt:hilt-lifecycle-viewmodel", version.ref = "hiltLifecycleViewmodelVersion" }
 androidx-lifecycle-viewmodel-ktx-v251 = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 
 androidx-room-compiler-v261 = { module = "androidx.room:room-compiler", version.ref = "roomCompilerVersion" }
@@ -104,6 +109,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
 
 
 [plugins]
@@ -111,8 +117,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-kapt = {id ="org.jetbrains.kotlin.kapt", version = "2.1.0-Beta2"}
 kotlin-compose = { id= "org.jetbrains.kotlin.plugin.compose", version ="2.1.0-Beta2" }
-hilt-android = { id = "com.google.dagger.hilt.android", version = "2.51.1"}
-google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
-room = { id = "androidx.room", version.ref = "room" }
-
-
+hilt-android = { id = "com.google.dagger.hilt.android", version = 

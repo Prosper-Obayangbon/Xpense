@@ -27,10 +27,9 @@ fun XTextLink(
     color: Color = tealGreen,
     onClick: () -> Unit
 ) {
-    modifier.fillMaxWidth()
     TextButton(
-        onClick = onClick,
-        modifier = modifier
+        onClick = onClick, // Corrected usage
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = text,

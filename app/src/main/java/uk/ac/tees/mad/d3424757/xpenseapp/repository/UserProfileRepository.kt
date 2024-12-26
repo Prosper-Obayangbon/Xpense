@@ -14,11 +14,10 @@ class UserProfileRepository(private val dao: XpenseDatabase) {
     /**
      * Fetches the user profile from the database by user ID.
      *
-     * @param userId The ID of the user whose profile needs to be fetched.
      * @return The user profile associated with the given ID, or null if not found.
      */
-    suspend fun getUserProfile(userId: Int): UserProfile? {
-        return dao.userProfileDao().getUserProfile(userId)
+    suspend fun getUserProfile(): UserProfile? {
+        return dao.userProfileDao().getUserProfile()
     }
 
     /**
@@ -34,11 +33,10 @@ class UserProfileRepository(private val dao: XpenseDatabase) {
     /**
      * Updates the user's profile picture in the database.
      *
-     * @param userId The ID of the user whose profile picture needs to be updated.
      * @param uri The URI of the new profile picture.
      */
-    suspend fun updateProfilePicture(userId: Int, uri: String) {
-        dao.userProfileDao().updateProfilePicture(userId, uri)
+    suspend fun updateProfilePicture(uri: String) {
+        dao.userProfileDao().updateProfilePicture(uri)
     }
 
     /**

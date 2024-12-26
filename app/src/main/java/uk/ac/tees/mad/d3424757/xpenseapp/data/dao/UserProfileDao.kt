@@ -21,8 +21,8 @@ interface UserProfileDao {
      * @param userId The ID of the user profile to retrieve.
      * @return The UserProfile object, or null if no profile exists with the given ID.
      */
-    @Query("SELECT * FROM user_profile WHERE id = :userId")
-    suspend fun getUserProfile(userId: Int): UserProfile?
+    @Query("SELECT * FROM user_profile WHERE id = 0")
+    suspend fun getUserProfile(): UserProfile?
 
     /**
      * Update the profile picture for a user.
@@ -30,6 +30,6 @@ interface UserProfileDao {
      * @param userId The ID of the user whose profile picture needs to be updated.
      * @param uri The URI of the new profile picture.
      */
-    @Query("UPDATE user_profile SET profilePicture = :uri WHERE id = :userId")
-    suspend fun updateProfilePicture(userId: Int, uri: String)
+    @Query("UPDATE user_profile SET profilePicture = :uri WHERE id = 0")
+    suspend fun updateProfilePicture(uri: String)
 }

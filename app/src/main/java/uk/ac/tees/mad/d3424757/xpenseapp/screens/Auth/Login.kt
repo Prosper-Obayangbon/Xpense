@@ -1,6 +1,8 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth
 
+import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +33,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.loc.composebiometricauth.BiometricAuthenticator
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.GoogleSignButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
@@ -69,27 +75,11 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
 @Composable
 fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController: NavController, context : Context){
 
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            account?.idToken?.let { idToken ->
-                viewModel.executeGoogleSignIn(idToken) { success ->
-                    if (success) {
-                        navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
-                            popUpTo(XpenseScreens.Login.route) { inclusive = true }
-                        }
-                    } else {
-                        // Show error in UI
-                    }
-                }
-            }
-        } catch (e: ApiException) {
-            //viewModel.setError("Google Sign-In failed: ${e.localizedMessage}")
-        }
-    }
+    val biometricAuthenticator = BiometricAuthenticator(context)
+    val activity = context as FragmentActivity
+
+
+
 
 
     Surface(modifier.fillMaxSize(),
@@ -221,21 +211,38 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
             // forgot Password & Fingerprint Links
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+
             ) {
-                XTextLink(
-                    text = "Forget Password?",
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                )
-                XTextLink(
-                    text = "Use FingerPrint",
-                    color = Color.Blue,
-                    onClick = {},
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+                TextButton (
+
+                    onClick = {
+                        biometricAuthenticator.promptBiometricAuth(
+                            title = "Login",
+                            subTitle = "Use your fingerprint",
+                            negativeButtonText = "Cancel",
+                            fragmentActivity = activity,
+                            onSuccess = {
+                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+
+                            },
+                            onError = { _, errorString ->
+                                Toast.makeText(context, errorString.toString(), Toast.LENGTH_SHORT).show()
+
+                            },
+                            onFailed = {
+                                Toast.makeText(context, "Verification error", Toast.LENGTH_SHORT).show()
+
+                            }
+                        )
+                    }
+                ){
+                    Text(  "use fingerprint")
+
+                }
+
             }
+
+
 
             Spacer(Modifier.height(16.dp))
 
@@ -261,6 +268,8 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
 
         }
     }
+
+
 }
 //@Preview(showBackground = true)
 //@Composable

@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.fragment.app.FragmentActivity
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseNavigation
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
 
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
