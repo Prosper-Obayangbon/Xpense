@@ -221,7 +221,7 @@ private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: N
     )
     // Profile main screen
     composable(XpenseScreens.Profile.route) {
-        ProfileScreen(navController = navController, modifier = modifier, viewModel = viewModel)
+        ProfileScreen(navController = navController, modifier = modifier, viewModel = viewModel, context = context)
     }
     // Profile information screen
     composable(XpenseScreens.ProfileInfoScreen.route) {

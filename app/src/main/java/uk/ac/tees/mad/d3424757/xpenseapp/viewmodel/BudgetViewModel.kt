@@ -63,8 +63,7 @@ class BudgetViewModel(context: Context) : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.Lazily, "")
 
     init {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
-        val dao = XpenseDatabase.getDatabase(context, userId = userId)
+        val dao = XpenseDatabase.getDatabase(context)
         budgetRepository = BudgetRepository(dao)
         transactionRepository = TransactionRepository(dao)
 
@@ -111,7 +110,7 @@ class BudgetViewModel(context: Context) : ViewModel() {
      */
     private suspend fun calculateSpentAmount(category: String): Double? {
         return try {
-            val currentDate = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(_currentMonth.value.time)
+            val currentDate = SimpleDateFormat("yyyy/MM", Locale.getDefault()).format(_currentMonth.value.time)
             transactionRepository.loadTotalSpent(category, currentDate)
         } catch (e: Exception) {
             Log.e("BudgetViewModel", "Error calculating spent amount for $category", e)

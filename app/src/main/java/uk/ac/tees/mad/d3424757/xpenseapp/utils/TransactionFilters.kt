@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException
 object TransactionFilters {
 
     // DateTimeFormatter to parse the date in the "dd/MM/yyyy" format
-    private val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    private val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
 
     // Helper function to safely parse a String date into a LocalDate object.
     // Returns null if the date format is invalid.
@@ -32,13 +32,13 @@ object TransactionFilters {
      * @param monthIndex The month index (1-12) to filter by.
      * @return A map where the key is the month name and the value is a list of transactions for that month.
      */
-    fun filterByMonth(transactions: List<TransactionData>, monthIndex: Int): Map<String, List<TransactionData>> {
+    fun filterByMonth(transactions: List<TransactionData>, monthIndex: String): Map<String, List<TransactionData>> {
         val filteredMap = mutableMapOf<String, List<TransactionData>>()
 
         // Filter transactions by comparing their month value to the provided monthIndex
         transactions.filter { transaction ->
             val transactionDate = parseDate(transaction.date)
-            val transactionMonth = transactionDate?.monthValue
+            val transactionMonth = transactionDate?.monthValue?.toString()?.padStart(2, '0')
             transactionMonth == monthIndex // Compare the month of each transaction to the selected month
         }.forEach { transaction ->
             // Get the month name of the transaction

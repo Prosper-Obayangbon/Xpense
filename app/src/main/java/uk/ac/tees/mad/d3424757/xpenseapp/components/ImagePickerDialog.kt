@@ -8,7 +8,6 @@ import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,88 +28,72 @@ import java.io.IOException
 @Composable
 fun ImagePickerDialog(
     onImagePicked: (Uri) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    context: Context
 ) {
-    // Access the context
-    val context = LocalContext.current
 
-    // Gallery launcher to pick an image
+
     val galleryLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            uri?.let { onImagePicked(it) } // When an image is picked, call onImagePicked
+            uri?.let { onImagePicked(it) }
         }
 
-    // Camera launcher to take a picture
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             bitmap?.let {
-                // Save the bitmap as a URI and pass it to onImagePicked
                 val uri = saveBitmapToUri(context, bitmap)
                 if (uri != Uri.EMPTY) {
                     onImagePicked(uri)
                 } else {
-                    // Show a Toast if image saving failed
                     Toast.makeText(context, "Failed to save image.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-    // Permission launcher for camera access
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // If permission granted, launch the camera
             cameraLauncher.launch(null)
         } else {
-            // If permission denied, show a Toast
             Toast.makeText(context, "Camera permission is required.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // AlertDialog with options for the user to pick an image from the gallery or take a picture
     AlertDialog(
-        onDismissRequest = onDismiss, // Close dialog on dismiss
-        title = { Text("Choose an option") }, // Title of the dialog
+        onDismissRequest = onDismiss,
+        title = { Text("Choose an option") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Button to pick an image from the gallery
                 Button(onClick = {
-                    // Check if READ_EXTERNAL_STORAGE permission is granted
-                    if (hasGalleryPermission(context)) {
-                        galleryLauncher.launch("image/*") // Launch the gallery
-                    } else {
-                        Toast.makeText(context, "Permission to access gallery is required.", Toast.LENGTH_SHORT).show()
-                    }
+                    galleryLauncher.launch("image/*")
                 }) {
                     Text("Pick from Gallery")
                 }
 
-                // Button to take a picture using the camera
                 Button(onClick = {
-                    // Check if camera permission is granted
                     if (ContextCompat.checkSelfPermission(
                             context, Manifest.permission.CAMERA
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
-                        cameraLauncher.launch(null) // Launch the camera
+                        cameraLauncher.launch(null)
                     } else {
-                        permissionLauncher.launch(Manifest.permission.CAMERA) // Request camera permission
+                        permissionLauncher.launch(Manifest.permission.CAMERA)
                     }
                 }) {
                     Text("Take a Picture")
                 }
             }
         },
-        confirmButton = {}, // No confirm button
+        confirmButton = {},
         dismissButton = {
-            // Cancel button to dismiss the dialog
             Button(onClick = onDismiss) {
                 Text("Cancel")
             }
         }
     )
 }
+
 
 /**
  * Saves a bitmap image to the external storage and returns its URI.
@@ -157,34 +140,3 @@ fun saveBitmapToUri(context: Context, bitmap: Bitmap): Uri {
     return uri ?: Uri.EMPTY
 }
 
-/**
- * Resizes a bitmap to fit within the specified maximum width and height, preserving aspect ratio.
- * This is useful when dealing with large bitmaps from the camera to reduce memory usage.
- *
- * @param bitmap The original bitmap to resize.
- * @param maxWidth The maximum width of the resized bitmap.
- * @param maxHeight The maximum height of the resized bitmap.
- * @return A resized bitmap.
- */
-fun resizeBitmap(bitmap: Bitmap, maxWidth: Int, maxHeight: Int): Bitmap {
-    // Calculate aspect ratio
-    val aspectRatio = bitmap.width.toFloat() / bitmap.height
-    val width = if (bitmap.width > maxWidth) maxWidth else bitmap.width
-    val height = (width / aspectRatio).toInt().coerceAtMost(maxHeight)
-
-    // Return the resized bitmap
-    return Bitmap.createScaledBitmap(bitmap, width, height, true)
-}
-
-/**
- * A helper function to check and request permissions before accessing the gallery.
- *
- * @param context The context used to check permissions.
- * @return True if the required permission is granted, false otherwise.
- */
-fun hasGalleryPermission(context: Context): Boolean {
-    return ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    ) == PackageManager.PERMISSION_GRANTED
-}

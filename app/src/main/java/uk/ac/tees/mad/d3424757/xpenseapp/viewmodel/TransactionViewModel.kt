@@ -56,8 +56,7 @@ class TransactionViewModel(context: Context) : ViewModel() {
 
     // Initialize the repository with the DAO from the database
     init {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
-        val dao = XpenseDatabase.getDatabase(context, userId = userId)
+        val dao = XpenseDatabase.getDatabase(context)
         repository = TransactionRepository(dao)
         getTransactions()
     }

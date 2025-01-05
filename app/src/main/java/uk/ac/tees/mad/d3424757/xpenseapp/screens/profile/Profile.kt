@@ -1,4 +1,5 @@
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Lock
@@ -42,6 +44,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.BottomNavigationBar
+import uk.ac.tees.mad.d3424757.xpenseapp.components.XHomeBackground
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
 
@@ -61,7 +64,8 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
 fun ProfileScreen(
     navController: NavController,
     viewModel: UserProfileVM,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context : Context
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
@@ -70,66 +74,69 @@ fun ProfileScreen(
     Scaffold(
         bottomBar = { BottomNavigationBar(navController = navController) }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(mintCream)
-        ) {
+        XHomeBackground {
+
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
             ) {
-                // Profile Picture Section
-                ProfilePictureSection(
-                    profilePicture = userProfile?.profilePicture,
-                    defaultProfilePicture = R.drawable.default_profile,
-                    onChangePicture = { showImagePickerDialog = true }
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // User Information Section
-                UserInfoSection(userProfile?.name, userProfile?.email)
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Profile Options
-                ProfileOptionItem(icon = Icons.Default.AccountCircle, label = "Account Info") {
-                    navController.navigate("profileInfo")
-                }
-                ProfileOptionItem(icon = Icons.Default.Lock, label = "Change Password") {
-                    navController.navigate("changePassword")
-                }
-                ProfileOptionItem(Icons.Default.ExitToApp, label = "Logout") {
-                    showLogoutDialog = true
-                }
-
-                // Logout Confirmation Dialog
-                if (showLogoutDialog) {
-                    LogoutConfirmationDialog(
-                        onConfirm = {
-                            showLogoutDialog = false
-                            FirebaseAuth.getInstance().signOut()
-                            navController.navigate("login") {
-                                popUpTo(0) // Clear navigation stack
-                            }
-                        },
-                        onDismiss = { showLogoutDialog = false }
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    // Profile Picture Section
+                    ProfilePictureSection(
+                        profilePicture = userProfile?.profilePicture,
+                        defaultProfilePicture = R.drawable.default_profile,
+                        onChangePicture = { showImagePickerDialog = true }
                     )
-                }
 
-                // Show Image Picker Dialog
-                if (showImagePickerDialog) {
-                    ImagePickerDialog(
-                        onImagePicked = { uri ->
-                            viewModel.saveProfilePicture(uri.toString()) // Save the new profile picture
-                            showImagePickerDialog = false
-                        },
-                        onDismiss = { showImagePickerDialog = false }
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // User Information Section
+                    UserInfoSection(userProfile?.name, userProfile?.email)
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Profile Options
+                    ProfileOptionItem(icon = Icons.Default.AccountCircle, label = "Account Info") {
+                        navController.navigate("profileInfo")
+                    }
+                    ProfileOptionItem(icon = Icons.Default.Lock, label = "Change Password") {
+                        navController.navigate("changePassword")
+                    }
+                    ProfileOptionItem(Icons.AutoMirrored.Filled.ExitToApp, label = "Logout") {
+                        showLogoutDialog = true
+                    }
+
+                    // Logout Confirmation Dialog
+                    if (showLogoutDialog) {
+                        LogoutConfirmationDialog(
+                            onConfirm = {
+                                showLogoutDialog = false
+                                FirebaseAuth.getInstance().signOut()
+                                navController.navigate("login") {
+                                    popUpTo(0) // Clear navigation stack
+                                }
+                            },
+                            onDismiss = { showLogoutDialog = false }
+                        )
+                    }
+
+                    // Show Image Picker Dialog
+                    if (showImagePickerDialog) {
+                        ImagePickerDialog(
+                            onImagePicked = { uri ->
+                                viewModel.saveProfilePicture(uri.toString()) // Save the new profile picture
+                                showImagePickerDialog = false
+                            },
+                            onDismiss = { showImagePickerDialog = false },
+                            context
+                        )
+                    }
                 }
             }
         }
@@ -158,13 +165,13 @@ fun ProfilePictureSection(
         rememberAsyncImagePainter(model = profilePicture) // Use URI
     }
 
-    Box(contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.padding(top = 120.dp), contentAlignment = Alignment.Center) {
         // Display the profile picture
         Image(
             painter = painter,
             contentDescription = "Profile Picture",
             modifier = Modifier
-                .size(100.dp)
+                .size(150.dp)
                 .clip(CircleShape)
         )
 

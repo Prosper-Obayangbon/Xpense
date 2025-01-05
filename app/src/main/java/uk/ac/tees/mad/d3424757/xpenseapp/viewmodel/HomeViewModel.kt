@@ -37,8 +37,7 @@ class HomeViewModel(context: Context) : ViewModel() {
 
     // Initialize repositories with database.
     init {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
-        val dao = XpenseDatabase.getDatabase(context, userId = userId)
+        val dao = XpenseDatabase.getDatabase(context)
         transactionRepository = TransactionRepository(dao)
         userRepository = UserProfileRepository(dao)
 

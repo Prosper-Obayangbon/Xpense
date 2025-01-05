@@ -42,9 +42,9 @@ abstract class XpenseDatabase : RoomDatabase() {
          * @param userId The unique identifier for the user.
          * @return The XpenseDatabase instance for the user.
          */
-        fun getDatabase(context: Context, userId: String): XpenseDatabase {
+        fun getDatabase(context: Context): XpenseDatabase {
             // Use userId to differentiate database files
-            val databaseName = "${DATABASE_NAME}_$userId"
+            val databaseName = DATABASE_NAME
 
             // Check if an instance exists for the current user
             return INSTANCE ?: synchronized(this) {

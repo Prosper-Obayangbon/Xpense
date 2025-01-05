@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +47,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.components.XButton
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XInputField
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XTextLink
 import uk.ac.tees.mad.d3424757.xpenseapp.components.XTitle
+import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.UserPreferences
 import uk.ac.tees.mad.d3424757.xpenseapp.navigation.XpenseScreens
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
@@ -77,6 +79,8 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
 
     val biometricAuthenticator = BiometricAuthenticator(context)
     val activity = context as FragmentActivity
+    val userPreferences = remember { UserPreferences(context) }
+
 
 
 
@@ -216,24 +220,36 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
                 TextButton (
 
                     onClick = {
-                        biometricAuthenticator.promptBiometricAuth(
-                            title = "Login",
-                            subTitle = "Use your fingerprint",
-                            negativeButtonText = "Cancel",
-                            fragmentActivity = activity,
-                            onSuccess = {
-                                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                        if(userPreferences.isUserRegistered() ){
+                            biometricAuthenticator.promptBiometricAuth(
+                                title = "Login",
+                                subTitle = "Use your fingerprint",
+                                negativeButtonText = "Cancel",
+                                fragmentActivity = activity,
+                                onSuccess = {
+                                    Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                                    navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
+                                        popUpTo(XpenseScreens.Login.route) { inclusive = true }
+                                    }
 
-                            },
-                            onError = { _, errorString ->
-                                Toast.makeText(context, errorString.toString(), Toast.LENGTH_SHORT).show()
 
-                            },
-                            onFailed = {
-                                Toast.makeText(context, "Verification error", Toast.LENGTH_SHORT).show()
+                                },
+                                onError = { _, errorString ->
+                                    Toast.makeText(context, errorString.toString(), Toast.LENGTH_SHORT).show()
 
+                                },
+                                onFailed = {
+                                    Toast.makeText(context, "Verification error", Toast.LENGTH_SHORT).show()
+
+                                }
+                            )
+
+                        }else {
+                            viewModel.setError(error = "Sorry you account is not on this device")
+                            navController.navigate(XpenseScreens.Signup.route) {
+                                popUpTo(XpenseScreens.Login.route) { inclusive = true }
                             }
-                        )
+                        }
                     }
                 ){
                     Text(  "use fingerprint")
@@ -241,8 +257,6 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
                 }
 
             }
-
-
 
             Spacer(Modifier.height(16.dp))
 

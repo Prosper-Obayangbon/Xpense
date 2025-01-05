@@ -27,7 +27,6 @@ class UserProfileVM(
     private val repository: UserProfileRepository
     private val authRepository: AuthRepository = AuthRepository()
 
-    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
 
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> get() = _userProfile
@@ -45,7 +44,7 @@ class UserProfileVM(
     val errorMessage: State<String> get() = _errorMessage
 
     init {
-        val dao = XpenseDatabase.getDatabase(context, userId = userId)
+        val dao = XpenseDatabase.getDatabase(context)
         repository = UserProfileRepository(dao)
         loadUserProfile() // Load a default profile (you can pass an actual user ID)
     }

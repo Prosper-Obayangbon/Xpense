@@ -42,9 +42,7 @@ fun SignUpLoadingScreen(navController: NavController, isLogin: Boolean, context 
     LaunchedEffect(0) {
         // Launch a coroutine to fetch the username from the Room database
         withContext(Dispatchers.IO) {
-            // Fetch the user profile from the database
-            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"
-            val userProfile = UserProfileRepository(XpenseDatabase.getDatabase(context,userId )).getUserProfile()
+            val userProfile = UserProfileRepository(XpenseDatabase.getDatabase(context)).getUserProfile()
             // Update the state with the username
             username = userProfile?.name ?: "User"
         }

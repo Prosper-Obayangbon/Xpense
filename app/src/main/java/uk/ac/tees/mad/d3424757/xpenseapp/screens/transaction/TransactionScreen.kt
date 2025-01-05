@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -73,8 +74,9 @@ fun TransactionScreen(
 
         // Apply month filter if selectedMonth is not "All"
         if (selectedMonth != "All") {
-            val monthIndex = Constants.MONTH_FILTER.indexOf(selectedMonth)  // Get the month index (1-based)
-            result = TransactionFilters.filterByMonth(transactions, monthIndex)  // Filter by month
+            val monthIndex = MONTH_FILTER.indexOf(selectedMonth)
+            val formattedMonthIndex = monthIndex.toString().padStart(2, '0')
+            result = TransactionFilters.filterByMonth(transactions, formattedMonthIndex)
         }
 
         // Apply type filter if selectedType is not "All"
@@ -98,7 +100,6 @@ fun TransactionScreen(
         // Layout for the Transaction Screen
         Column(modifier = Modifier
             .background(color = mintCream)) {
-
             Box(modifier.fillMaxSize()) {
                 Column {
                     // Filter Dropdowns for Month and Type
@@ -112,7 +113,7 @@ fun TransactionScreen(
                         // Month Dropdown selector
                         XDropDownSelector(
                             selectedItem = selectedMonth,
-                            options = Constants.MONTH_FILTER,
+                            options = MONTH_FILTER,
                             onOptionSelected = { selectedMonth = it }
                         )
 
@@ -124,7 +125,6 @@ fun TransactionScreen(
                             onExpandedChange = { filterExpanded = it }
                         )
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Link to financial report screen
@@ -139,10 +139,19 @@ fun TransactionScreen(
                         Icon(painter = painterResource(R.drawable.keyboard_arrow_right), contentDescription = null, tint = tealGreen)
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Display the filtered and grouped transactions
-                    GroupedTransactionList(groupedTransactions = filteredTransactions, navController = navController)
+                    if(filteredTransactions.isNotEmpty()) {
+                        GroupedTransactionList(
+                            groupedTransactions = filteredTransactions,
+                            navController = navController
+                        )
+                    }else{
+                        Text(modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = "No Transaction data Available!!",
+                            color = Color.Gray)
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
@@ -210,8 +219,8 @@ fun FilterDropdownMenu(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GroupedTransactionList(groupedTransactions: Map<String, List<TransactionData>>, navController: NavController) {
-    LazyColumn(modifier = Modifier.fillMaxWidth()
-        .height(500.dp)
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
         .padding(8.dp)) {
         // Iterate over the grouped transactions and display each group
         groupedTransactions.forEach { (header, transactionList) ->

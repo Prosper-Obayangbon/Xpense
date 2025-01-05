@@ -27,7 +27,7 @@ class AuthViewModel(context: Context) : ViewModel() {
 
 
     private val authRepository = AuthRepository()
-    val dao = XpenseDatabase.getDatabase(context, userId)
+    val dao = XpenseDatabase.getDatabase(context)
     val repository = UserProfileRepository(dao)
 
     // Backing properties with mutable state
@@ -132,6 +132,10 @@ class AuthViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
             repository.saveUserProfile(userProfile)
         }
+    }
+
+    fun setError(error : String){
+        _error.value = error
     }
 
     /**
