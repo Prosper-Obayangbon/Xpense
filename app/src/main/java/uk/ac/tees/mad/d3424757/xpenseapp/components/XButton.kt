@@ -84,7 +84,8 @@ fun GoogleSignButton(
     text: String,
     onSignInResult: (String?) -> Unit, // Callback for the result
     modifier: Modifier = Modifier,
-    context: Context
+    context: Context,
+    enabled: Boolean = true
 ) {
 
     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -110,7 +111,8 @@ fun GoogleSignButton(
     Button(
         onClick = { launcher.launch(googleSignInClient.signInIntent) },
         colors = ButtonDefaults.buttonColors(mintCream),
-        modifier = modifier
+        modifier = modifier,
+        enabled = enabled
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_google_icon),

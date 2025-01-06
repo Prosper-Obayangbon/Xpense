@@ -189,9 +189,11 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
 
                     /*--------------------Google Sign-In Button-------------------*/
                     // Google Sign-In Button
+
                     GoogleSignButton(
                         text = "Sign In with Google",
                         onSignInResult = { idToken ->
+
                             viewModel.executeGoogleSignIn(idToken) { success ->
                                 if (success) {
                                     navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/true") {
@@ -243,7 +245,7 @@ fun Login(modifier: Modifier = Modifier, viewModel: AuthViewModel, navController
                             )
 
                         }else {
-                            viewModel.setError(error = "Sorry you account is not on this device")
+                            Toast.makeText(context, "Sorry you do not have an account yet", Toast.LENGTH_SHORT).show()
                             navController.navigate(XpenseScreens.Signup.route) {
                                 popUpTo(XpenseScreens.Login.route) { inclusive = true }
                             }

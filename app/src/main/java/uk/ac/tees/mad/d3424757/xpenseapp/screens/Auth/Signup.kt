@@ -221,6 +221,7 @@ fun Signup(navController: NavController, viewModel: AuthViewModel, context: Cont
                         /*------------------Google Sign-Up Button-----------------*/
                     GoogleSignButton(
                         text = "Sign In with Google",
+                        enabled = isChecked,
                         onSignInResult = { idToken ->
                             viewModel.executeGoogleSignIn(idToken) { success ->
                                 if (success) {
@@ -236,23 +237,8 @@ fun Signup(navController: NavController, viewModel: AuthViewModel, context: Cont
                         context = context
                     )
 
-                        Spacer(modifier = Modifier.height(16.dp))
 
-                        /*------------------Login Link-----------------*/
-                        Row(
-                            modifier = Modifier.padding(top = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Already Have an Account?",
-                                color = Color.Black,
-                                fontSize = 14.sp
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            XTextLink(text = "Log In") {
-                                navController.navigate(XpenseScreens.Login.name) // Navigate to login
-                            }
-                        }
+
                     }
                 }
 

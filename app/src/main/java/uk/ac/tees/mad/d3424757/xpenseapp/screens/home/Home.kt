@@ -50,7 +50,6 @@ fun Home(
     navController: NavController
 ) {
     val transactions by viewModel.transactions.collectAsState(emptyList())
-    val userName by viewModel.userName.collectAsState()
 
     Scaffold(
         bottomBar = {

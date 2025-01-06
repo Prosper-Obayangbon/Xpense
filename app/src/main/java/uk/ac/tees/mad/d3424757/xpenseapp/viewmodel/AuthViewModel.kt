@@ -180,5 +180,4 @@ class AuthViewModel(context: Context) : ViewModel() {
     fun updateName(newName: String) { _name.value = newName }
     fun updateEmail(newEmail: String) { _email.value = newEmail }
     fun updatePassword(newPassword: String) { _password.value = newPassword }
-    fun setError(error: String) { _error.value = error }
 }

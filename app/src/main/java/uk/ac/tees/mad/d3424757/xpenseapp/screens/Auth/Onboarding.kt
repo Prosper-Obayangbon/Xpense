@@ -116,23 +116,7 @@ fun Onboarding(navController: NavController) {
                     fontSize = 18.sp
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier.padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Already Have Account?",
-                    color = Color.Black, // Set color to black
-                    fontSize = 14.sp
-                )
-
-                XTextLink(text = "Log In", onClick = {
-                    navController.navigate(XpenseScreens.Login.name)
-                } )
-            }
 
 
         }

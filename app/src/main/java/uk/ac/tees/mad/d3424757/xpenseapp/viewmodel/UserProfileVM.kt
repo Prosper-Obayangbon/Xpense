@@ -46,14 +46,8 @@ class UserProfileVM(
     init {
         val dao = XpenseDatabase.getDatabase(context)
         repository = UserProfileRepository(dao)
-        loadUserProfile()
-    }
 
-    /**
-     * Loads the user profile based on the user ID.
-     * @param userId The ID of the user whose profile needs to be loaded.
-     */
-    private fun loadUserProfile() {
+
         viewModelScope.launch {
             try {
                 Log.d("UserProfileVM", "Fetching user profile...")
@@ -68,6 +62,14 @@ class UserProfileVM(
     }
 
     /**
+     * Loads the user profile based on the user ID.
+     * @param userId The ID of the user whose profile needs to be loaded.
+     */
+    private fun loadUserProfile() {
+
+    }
+
+    /**
      * Saves the profile picture URI for a user.
      * @param uri The URI of the new profile picture.
      */
@@ -75,13 +77,15 @@ class UserProfileVM(
         viewModelScope.launch {
             try {
                 repository.updateProfilePicture(uri)
-                loadUserProfile() // Refresh user profile after update
+                _userProfile.value = repository.getUserProfile() // Explicitly refresh profile
                 showToast(Constants.PROFILE_UPDATE_SUCCESS)
             } catch (e: Exception) {
+                Log.e("UserProfileVM", "Error updating profile picture", e)
                 showToast(Constants.PROFILE_PICTURE_UPDATE_ERROR)
             }
         }
     }
+
 
     /**
      * Updates the user profile with the provided name and email.

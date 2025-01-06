@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.XpenseAppTheme
+import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 
 /**
  * TransactionItem composable that displays an individual transaction's details in a row layout.
@@ -84,7 +85,7 @@ fun TransactionItem(
             // Amount text with dynamic color based on whether it's negative or positive
             Text(
                 text = amount,
-                color = if (amount.contains("-")) Color.Red else Color.Green,
+                color = if (amount.contains("-")) Color.Red else tealGreen,
                 fontWeight = FontWeight.Bold
             )
             // Time displayed in gray color with a smaller font size
