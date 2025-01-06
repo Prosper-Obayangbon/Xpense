@@ -44,7 +44,7 @@ fun SignUpLoadingScreen(navController: NavController, isLogin: Boolean, context 
         withContext(Dispatchers.IO) {
             val userProfile = UserProfileRepository(XpenseDatabase.getDatabase(context)).getUserProfile()
             // Update the state with the username
-            username = userProfile?.name ?: "User"
+            username = userProfile?.firstName ?: "User"
         }
     }
 

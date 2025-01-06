@@ -47,7 +47,9 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants
 fun XButton(
     modifier: Modifier = Modifier,
     text: String,
+    enabled : Boolean = true,
     handleClick: () -> Unit
+
 ) {
     Button(
         onClick = handleClick,
@@ -55,7 +57,8 @@ fun XButton(
         shape = RoundedCornerShape(16.dp),
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(48.dp),
+        enabled = enabled
     ) {
         Text(
             text = text,
@@ -132,6 +135,6 @@ fun GoogleSignButton(
 @Composable
 fun ButtonPreview() {
     XpenseAppTheme {
-        XButton(text = "heh") { }
+        XButton(text = "heh",) { }
     }
 }

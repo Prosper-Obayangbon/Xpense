@@ -56,6 +56,7 @@ runtimeLivedata = "1.7.5"
 hilt = "2.51.1"
 biometricKtx = "1.1.0"
 uiTestAndroid = "1.7.5"
+uiTestJunit4 = "1.7.6"
 
 
 
@@ -110,6 +111,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
+ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "uiTestJunit4" }
 
 
 [plugins]

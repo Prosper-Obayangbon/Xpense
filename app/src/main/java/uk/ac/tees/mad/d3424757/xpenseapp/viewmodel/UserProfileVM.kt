@@ -87,7 +87,9 @@ class UserProfileVM(
      */
     fun updateUserProfile(name: String, email: String) {
         viewModelScope.launch {
-            val updatedProfile = _userProfile.value?.copy(name = name, email = email)
+            val nameParts = name.trim().split(" ")
+            val updatedProfile = _userProfile.value?.copy(firstName =nameParts.first(),
+                lastName =nameParts.drop(1).joinToString(" "), email = email)
             updatedProfile?.let {
                 try {
                     repository.updateUserProfile(it) // Update profile in the repository

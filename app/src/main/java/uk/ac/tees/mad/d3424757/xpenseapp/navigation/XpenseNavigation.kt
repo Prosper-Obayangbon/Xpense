@@ -31,10 +31,12 @@ import uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth.Onboarding
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.profile.ProfileInfoScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth.SplashScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.TransactionScreen
+import uk.ac.tees.mad.d3424757.xpenseapp.screens.legal.TermsAndConditionsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction.StatsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.screens.transaction.TransactionDetailsScreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.BudgetViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.LegalViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.StatsViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.TransactionViewModel
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.UserProfileVM
@@ -60,7 +62,7 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
         startDestination = startDestination // Starting screen of the app
     ) {
         // Set up navigation graphs for each module
-        authNavGraph(navController, context)
+        authNavGraph(navController, context, modifier)
         mainNavGraph(modifier, navController, context)
         reportNavGraph(modifier, navController, context)
         budgetNavGraph(modifier, navController, context)
@@ -77,7 +79,7 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
 /**
  * Defines navigation for authentication-related screens such as login, signup, onboarding, and splash screens.
  */
-private fun NavGraphBuilder.authNavGraph(navController: NavController, context: Context) {
+private fun NavGraphBuilder.authNavGraph(navController: NavController, context: Context, modifier: Modifier) {
     // Splash screen
     composable(XpenseScreens.SplashScreen.route) {
         SplashScreen(navController = navController, context = context)
@@ -89,7 +91,10 @@ private fun NavGraphBuilder.authNavGraph(navController: NavController, context: 
     // Signup screen
     composable(XpenseScreens.Signup.route) {
         val authViewModel = AuthViewModel(context)
-        Signup(navController = navController, viewModel = authViewModel, context = context)
+        Signup(navController = navController, viewModel = authViewModel, context = context, legalViewModel = LegalViewModel())
+    }
+    composable(XpenseScreens.TermsAndConditions.route) {
+        TermsAndConditionsScreen(navController = navController, modifier = modifier, legalViewModel = LegalViewModel())
     }
     // Login screen
     composable(XpenseScreens.Login.route) {

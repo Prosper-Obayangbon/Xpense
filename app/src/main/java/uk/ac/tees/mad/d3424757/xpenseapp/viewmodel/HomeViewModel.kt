@@ -52,7 +52,7 @@ class HomeViewModel(context: Context) : ViewModel() {
      */
     private fun getUserName() {
         viewModelScope.launch {
-            _userName.value = userRepository.getUserProfile()?.name ?: ""
+            _userName.value = userRepository.getUserProfile()?.firstName ?: ""
         }
     }
 

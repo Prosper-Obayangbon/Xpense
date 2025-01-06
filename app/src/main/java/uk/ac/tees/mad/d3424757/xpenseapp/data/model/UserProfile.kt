@@ -15,7 +15,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user_profile")
 data class UserProfile(
     @PrimaryKey(autoGenerate = true) val id: Long? = 0,          // Unique ID for the user profile (auto-generated)
-    val name: String,                                            // User's name
+    val firstName: String,
+    val lastName: String,
     val email: String,                                           // User's email address
     val profilePicture: String?                                  // URI for the profile picture (optional)
 )

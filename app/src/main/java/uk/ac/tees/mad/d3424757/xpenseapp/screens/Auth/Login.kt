@@ -37,9 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
+
 import com.loc.composebiometricauth.BiometricAuthenticator
 import uk.ac.tees.mad.d3424757.xpenseapp.R
 import uk.ac.tees.mad.d3424757.xpenseapp.components.GoogleSignButton

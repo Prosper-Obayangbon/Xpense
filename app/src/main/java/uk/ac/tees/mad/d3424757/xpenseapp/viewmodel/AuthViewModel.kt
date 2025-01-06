@@ -12,6 +12,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.data.preferences.UserPreferences
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.AuthRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_EMAIL_EMPTY
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_FULL_NAME
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_GOOGLE_SIGNIN_FAILED
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_INCORRECT_CREDENTIALS
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_NAME_EMPTY
@@ -19,11 +20,11 @@ import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_PASSWORD_COMPLEXI
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_PASSWORD_EMPTY
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_SAVE_PROFILE_FAILED
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.ERROR_SIGNUP_FAILED
+import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.FULL_NAME_PATTERN
 import uk.ac.tees.mad.d3424757.xpenseapp.utils.Constants.PASSWORD_PATTERN
 
 class AuthViewModel(context: Context) : ViewModel() {
 
-    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "defaultUser"  // Get user ID from Firebase Auth
 
 
     private val authRepository = AuthRepository()
@@ -37,7 +38,7 @@ class AuthViewModel(context: Context) : ViewModel() {
     private var _error = mutableStateOf<String?>(null)
 
     // Public read-only properties
-    val name: String get() = _name.value
+    val fullName: String get() = _name.value
     val email: String get() = _email.value
     val password: String get() = _password.value
     val error: String? get() = _error.value
@@ -55,7 +56,7 @@ class AuthViewModel(context: Context) : ViewModel() {
             _error.value = errorMessage
             onComplete(false)
         } ?: run {
-            executeSignUp(name, email, "", onComplete)
+            executeSignUp(fullName, email, "", onComplete)
         }
     }
 
@@ -65,7 +66,8 @@ class AuthViewModel(context: Context) : ViewModel() {
      */
     private fun validateInputs(): String? {
         return when {
-            name.isBlank() -> ERROR_NAME_EMPTY
+            fullName.isBlank() -> ERROR_NAME_EMPTY
+            !fullName.matches(FULL_NAME_PATTERN) -> ERROR_FULL_NAME
             email.isBlank() -> ERROR_EMAIL_EMPTY
             password.isBlank() -> ERROR_PASSWORD_EMPTY
             !password.matches(PASSWORD_PATTERN) -> ERROR_PASSWORD_COMPLEXITY
@@ -80,7 +82,7 @@ class AuthViewModel(context: Context) : ViewModel() {
      * @param profilePicture The profile picture URI (can be null)
      * @param onComplete Callback indicating the success or failure of the sign-up
      */
-    private fun executeSignUp(name: String, username: String, profilePicture: String?, onComplete: (Boolean) -> Unit) {
+    private fun executeSignUp(fullName: String, username: String, profilePicture: String?, onComplete: (Boolean) -> Unit) {
         viewModelScope.launch {
             // Perform sign-up with the AuthRepository
             authRepository.signUpWithEmail(email, password) { success, errorMessage ->
@@ -88,7 +90,16 @@ class AuthViewModel(context: Context) : ViewModel() {
                     // Clear any existing errors
                     _error.value = null
 
-                    insertUserProfile(name, username, profilePicture, onComplete)
+                    val nameParts = fullName.trim().split(" ")
+
+                    insertUserProfile(
+                        firstName = nameParts.first(),
+                        lastName = nameParts.drop(1).joinToString(" "),
+                        username,
+                        profilePicture,
+                        onComplete
+                    )
+
                 } else {
                     // If sign-up failed, set the error message and return failure
                     _error.value = errorMessage ?: ERROR_SIGNUP_FAILED
@@ -99,14 +110,16 @@ class AuthViewModel(context: Context) : ViewModel() {
     }
 
     private fun insertUserProfile(
-        name: String,
+        firstName : String,
+        lastName: String,
         username: String,
         profilePicture: String?,
         onComplete: (Boolean) -> Unit
     ) {
         // After sign-up is successful, create the UserProfile
         val userProfile = UserProfile(
-            name = name,
+            firstName = firstName,
+            lastName = lastName,
             email = username,
             profilePicture = profilePicture ?: ""
         )
@@ -170,7 +183,7 @@ class AuthViewModel(context: Context) : ViewModel() {
                     onComplete(true)
 
 
-                    insertUserProfile(name = "User", username = "User@example.com", profilePicture = "", onComplete)
+                    insertUserProfile(firstName = "User", lastName = " ", username = "User@example.com", profilePicture = "", onComplete)
 
                 } else {
                     _error.value = errorMessage ?: ERROR_GOOGLE_SIGNIN_FAILED

@@ -51,12 +51,15 @@ object Constants {
 
     // Regular expression for password complexity requirements
     val PASSWORD_PATTERN = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$")
+    val FULL_NAME_PATTERN = Regex("^[A-Za-z]+(?:\\s[A-Za-z]+)+$")
+
 
     // Error messages
     const val ERROR_NAME_EMPTY = "Name cannot be empty."
     const val ERROR_EMAIL_EMPTY = "Email cannot be empty."
     const val ERROR_PASSWORD_EMPTY = "Password cannot be empty."
     const val ERROR_PASSWORD_COMPLEXITY = "Password must contain at least 8 characters, including uppercase, lowercase, number, and symbol."
+    const val ERROR_FULL_NAME = "Full name must contain at least two words with only alphabetic characters and a single space between words."
     const val ERROR_SIGNUP_FAILED = "Sign-up failed. Please try again."
     const val ERROR_SAVE_PROFILE_FAILED = "Error saving user profile: "
     const val ERROR_INCORRECT_CREDENTIALS = "Incorrect Email or Password."

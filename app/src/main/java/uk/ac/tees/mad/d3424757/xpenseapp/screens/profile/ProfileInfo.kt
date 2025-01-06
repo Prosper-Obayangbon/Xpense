@@ -62,7 +62,7 @@ fun ProfileInfoScreen(
     val userProfile by viewModel.userProfile.collectAsState()
 
     // Mutable states for editable fields
-    var name = userProfile?.name
+    var name = userProfile?.firstName + " " + userProfile?.lastName
     var email = userProfile?.email
 
     Scaffold(

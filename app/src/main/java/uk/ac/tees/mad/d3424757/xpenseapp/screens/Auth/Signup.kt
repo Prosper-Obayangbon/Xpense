@@ -1,8 +1,10 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.screens.Auth
 
-
 import android.content.Context
+
+
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,17 +21,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
@@ -47,6 +55,7 @@ import uk.ac.tees.mad.d3424757.xpenseapp.repository.UserProfileRepository
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.mintCream
 import uk.ac.tees.mad.d3424757.xpenseapp.ui.theme.tealGreen
 import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
+import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.LegalViewModel
 
 /**
  * Signup screen for the Xpense app.
@@ -68,7 +77,9 @@ import uk.ac.tees.mad.d3424757.xpenseapp.viewmodel.AuthViewModel
  * @param context Application context, used for updating user registration status.
  */
 @Composable
-fun Signup(navController: NavController, viewModel: AuthViewModel, context: Context) {
+fun Signup(navController: NavController, viewModel: AuthViewModel, context: Context, legalViewModel: LegalViewModel) {
+
+    var isChecked = legalViewModel.hasAgreedToTerms.value
 
 
     Surface(
@@ -106,7 +117,7 @@ fun Signup(navController: NavController, viewModel: AuthViewModel, context: Cont
 
                         /*-------------------- Name Field-----------------*/
                         XInputField(
-                            value = viewModel.name,
+                            value = viewModel.fullName,
                             onValueChange = { viewModel.updateName(it) },
                             label = "Name",
                             leadingIcon = {
@@ -157,25 +168,54 @@ fun Signup(navController: NavController, viewModel: AuthViewModel, context: Cont
                                     .padding(vertical = 8.dp)
                             )
                         }
+                    /* ------------------ Terms and Conditions ----------------- */
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        Checkbox(
+                            checked = isChecked,
+                            onCheckedChange = { newValue ->
+                                isChecked = newValue
+                                legalViewModel.hasAgreedToTerms.value = newValue
+
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "I agree to the ",
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            text = "Terms and Conditions",
+                            fontSize = 14.sp,
+                            color = tealGreen,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable {
+                                // Navigate to a Terms and Conditions screen or open a web link
+                                navController.navigate(XpenseScreens.TermsAndConditions.route)
+                            }
+                        )
+                    }
 
 
-                        /*------------------Sign-Up Button-----------------*/
-                        XButton(
-                            text = "Sign Up",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
-                        ) {
-                            viewModel.signUpUser { success ->
-                                if (success) {
-                                    viewModel.updateUserRegistrationStatus(context)
-                                    navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/false") {
-                                        popUpTo(XpenseScreens.Signup.route) { inclusive = true }
-
-                                    }
+                    /* ------------------Sign-Up Button----------------- */
+                    XButton(
+                        text = "Sign Up",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        enabled = isChecked // Disable button until terms are accepted
+                    ) {
+                        viewModel.signUpUser { success ->
+                            if (success) {
+                                viewModel.updateUserRegistrationStatus(context)
+                                navController.navigate("${XpenseScreens.SignUpLoadingScreen.route}/false") {
+                                    popUpTo(XpenseScreens.Signup.route) { inclusive = true }
                                 }
                             }
                         }
+                    }
 
 
                         /*------------------Google Sign-Up Button-----------------*/

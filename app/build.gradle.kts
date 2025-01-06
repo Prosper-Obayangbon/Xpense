@@ -83,6 +83,18 @@ dependencies {
     implementation(platform(libs.firebase.bom)) // Use the latest version
     implementation(libs.google.firebase.auth.ktx)
 
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.ui.test.junit4)
+
+    configurations.all {
+        resolutionStrategy {
+            force("androidx.test.espresso:espresso-core:3.6.1")
+        }
+    }
+
+
+
+
 
 
 

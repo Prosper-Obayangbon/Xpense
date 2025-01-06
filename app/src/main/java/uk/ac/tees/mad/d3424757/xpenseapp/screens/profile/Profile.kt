@@ -97,7 +97,7 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     // User Information Section
-                    UserInfoSection(userProfile?.name, userProfile?.email)
+                    UserInfoSection(userProfile?.firstName+" "+ userProfile?.lastName, userProfile?.email)
 
                     Spacer(modifier = Modifier.height(32.dp))
 

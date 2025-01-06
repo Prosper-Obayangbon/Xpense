@@ -125,7 +125,7 @@ fun TransactionScreen(
                             onExpandedChange = { filterExpanded = it }
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     // Link to financial report screen
                     Row(

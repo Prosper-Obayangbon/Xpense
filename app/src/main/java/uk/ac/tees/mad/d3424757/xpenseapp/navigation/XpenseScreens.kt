@@ -9,6 +9,7 @@ enum class XpenseScreens(val route: String) {
     Login("login"),
     Home("home"),
     SignUpLoadingScreen("loading/{userId}"),
+    TermsAndConditions("legal"),
 
     // Transaction-related Screens
     AddScreen("add"),

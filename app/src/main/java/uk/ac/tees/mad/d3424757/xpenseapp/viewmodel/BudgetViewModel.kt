@@ -83,7 +83,7 @@ class BudgetViewModel(context: Context) : ViewModel() {
     private fun loadBudgetsForCurrentMonth() {
         viewModelScope.launch {
             try {
-                val currentDate = SimpleDateFormat("yyyy-MM", Locale.getDefault()).format(_currentMonth.value.time)
+                val currentDate = SimpleDateFormat("yyyy/MM", Locale.getDefault()).format(_currentMonth.value.time)
                 val budgets = budgetRepository.getBudgetsForMonth(currentDate)
                 _budgetsForMonth.value = budgets
 
