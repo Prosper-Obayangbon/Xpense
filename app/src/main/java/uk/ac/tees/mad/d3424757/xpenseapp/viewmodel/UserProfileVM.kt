@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.d3424757.xpenseapp.viewmodel
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -27,7 +28,6 @@ class UserProfileVM(
     private val repository: UserProfileRepository
     private val authRepository: AuthRepository = AuthRepository()
 
-
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> get() = _userProfile
 
@@ -46,7 +46,7 @@ class UserProfileVM(
     init {
         val dao = XpenseDatabase.getDatabase(context)
         repository = UserProfileRepository(dao)
-        loadUserProfile() // Load a default profile (you can pass an actual user ID)
+        loadUserProfile()
     }
 
     /**
@@ -56,9 +56,12 @@ class UserProfileVM(
     private fun loadUserProfile() {
         viewModelScope.launch {
             try {
-                _userProfile.value = repository.getUserProfile() // Get the user profile from the repository
+                Log.d("UserProfileVM", "Fetching user profile...")
+                _userProfile.value = repository.getUserProfile()
+                Log.d("UserProfileVM", "User profile loaded successfully: ${_userProfile.value}")
             } catch (e: Exception) {
                 _userProfile.value = null
+                Log.e("UserProfileVM", "Error fetching user profile", e)
                 showToast(PROFILE_LOAD_ERROR)
             }
         }
@@ -88,8 +91,8 @@ class UserProfileVM(
     fun updateUserProfile(name: String, email: String) {
         viewModelScope.launch {
             val nameParts = name.trim().split(" ")
-            val updatedProfile = _userProfile.value?.copy(firstName =nameParts.first(),
-                lastName =nameParts.drop(1).joinToString(" "), email = email)
+            val updatedProfile = _userProfile.value?.copy(firstName = nameParts.first(),
+                lastName = nameParts.drop(1).joinToString(" "), email = email)
             updatedProfile?.let {
                 try {
                     repository.updateUserProfile(it) // Update profile in the repository

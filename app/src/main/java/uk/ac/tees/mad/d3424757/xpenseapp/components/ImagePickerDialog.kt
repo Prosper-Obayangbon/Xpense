@@ -1,38 +1,32 @@
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import java.io.IOException
 
-/**
- * A composable function that presents a dialog with options to pick an image from the gallery
- * or take a picture using the camera.
- *
- * @param onImagePicked A lambda function that receives the URI of the picked image.
- * @param onDismiss A lambda function that is called when the dialog is dismissed.
- */
 @Composable
 fun ImagePickerDialog(
     onImagePicked: (Uri) -> Unit,
     onDismiss: () -> Unit,
     context: Context
 ) {
-
-
     val galleryLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let { onImagePicked(it) }
@@ -94,49 +88,111 @@ fun ImagePickerDialog(
     )
 }
 
+/**
+ * Saves a bitmap image to the appropriate storage based on the Android version.
+ * For Android 10 and above, it uses MediaStore. For Android 9 and below, it requests WRITE_EXTERNAL_STORAGE permission.
+ *
+ * @param context The context used to access the content resolver and request permissions.
+ * @param bitmap The bitmap image to be saved.
+ * @return The URI pointing to the saved image, or Uri.EMPTY if the operation fails.
+ */
+fun saveBitmapToUri(context: Context, bitmap: Bitmap): Uri {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        // Use MediaStore for scoped storage (Android 10 and above)
+        saveImageUsingMediaStore(context, bitmap)
+    } else {
+        // For Android 9 and below, use WRITE_EXTERNAL_STORAGE permission
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            saveImageToExternalStorage(context, bitmap)
+        } else {
+            requestStoragePermission(context)
+            Uri.EMPTY
+        }
+    }
+}
 
 /**
- * Saves a bitmap image to the external storage and returns its URI.
- * This method ensures that the image is saved as a JPEG file.
+ * Saves a bitmap to MediaStore for devices running Android 10 and above (Scoped Storage).
  *
  * @param context The context used to access the content resolver.
  * @param bitmap The bitmap image to be saved.
  * @return The URI pointing to the saved image, or Uri.EMPTY if the operation fails.
  */
-fun saveBitmapToUri(context: Context, bitmap: Bitmap): Uri {
-    // Generate unique file name based on current timestamp
+fun saveImageUsingMediaStore(context: Context, bitmap: Bitmap): Uri {
     val uniqueFileName = "IMG_${System.currentTimeMillis()}.jpg"
 
-    // Create content values to specify file metadata
     val contentValues = ContentValues().apply {
         put(MediaStore.Images.Media.DISPLAY_NAME, uniqueFileName)
         put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
     }
 
-    // Insert the content values into the MediaStore
-    val uri = try {
+    val uri: Uri? = try {
         context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
     } catch (e: Exception) {
         e.printStackTrace()
         null
     }
 
-    // Check if the URI was created successfully
-    uri?.let {
+    return uri?.let {
         try {
-            // Open an output stream to write the bitmap to the URI
             context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                // Compress and write the bitmap as JPEG
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                if (!bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)) {
+                    throw IOException("Failed to compress bitmap")
+                }
             }
+            it // Successfully saved, return the URI
         } catch (e: IOException) {
             e.printStackTrace()
-            // If saving the image fails, return an empty URI
             Toast.makeText(context, "Error saving the image.", Toast.LENGTH_SHORT).show()
+            Uri.EMPTY
         }
-    }
-
-    // Return the URI or Uri.EMPTY if the operation failed
-    return uri ?: Uri.EMPTY
+    } ?: Uri.EMPTY
 }
 
+/**
+ * Saves a bitmap to external storage for devices running Android 9 and below.
+ *
+ * @param context The context used to access the content resolver.
+ * @param bitmap The bitmap image to be saved.
+ * @return The URI pointing to the saved image, or Uri.EMPTY if the operation fails.
+ */
+fun saveImageToExternalStorage(context: Context, bitmap: Bitmap): Uri {
+    val uniqueFileName = "IMG_${System.currentTimeMillis()}.jpg"
+    val externalStorageDir = context.getExternalFilesDir(null)
+
+    if (externalStorageDir == null) {
+        Toast.makeText(context, "External storage is not available.", Toast.LENGTH_SHORT).show()
+        return Uri.EMPTY
+    }
+
+    val file = java.io.File(externalStorageDir, uniqueFileName)
+
+    return try {
+        val fileOutputStream = file.outputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+        fileOutputStream.flush()
+        fileOutputStream.close()
+
+        Uri.fromFile(file) // Return the URI of the saved image
+    } catch (e: IOException) {
+        e.printStackTrace()
+        Toast.makeText(context, "Error saving the image.", Toast.LENGTH_SHORT).show()
+        Uri.EMPTY
+    }
+}
+
+/**
+ * Requests WRITE_EXTERNAL_STORAGE permission if needed for Android 9 and below.
+ *
+ * @param context The context used to request the permission.
+ */
+fun requestStoragePermission(context: Context) {
+    if (ActivityCompat.shouldShowRequestPermissionRationale(
+            context as Activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+        // Show a rationale to the user
+        Toast.makeText(context, "Storage permission is required to save images.", Toast.LENGTH_SHORT).show()
+    }
+    ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+}

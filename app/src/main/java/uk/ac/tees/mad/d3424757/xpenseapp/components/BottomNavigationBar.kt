@@ -85,7 +85,7 @@ fun BottomNavigationBar(modifier: Modifier = Modifier, navController: NavControl
             label = "Budget"
         ),
         NavigationItemData(
-            route = XpenseScreens.Profile.route,
+            route = XpenseScreens.ProfileScreen.route,
             icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
             label = "Profile"
         )

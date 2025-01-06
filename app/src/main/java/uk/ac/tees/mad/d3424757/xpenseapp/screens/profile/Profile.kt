@@ -203,7 +203,7 @@ fun UserInfoSection(name: String?, email: String?) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = name ?: "Loading...",
+            text = name ?: "User",
             style = MaterialTheme.typography.titleLarge,
             color = Color.Black
         )

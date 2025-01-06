@@ -85,7 +85,7 @@ class AuthRepository {
      * @param currentPassword The user's current password.
      * @param onComplete Callback that returns whether the operation was successful and any error message if applicable.
      */
-    fun reauthenticateUser(
+    private fun reauthenticateUser(
         email: String,
         currentPassword: String,
         onComplete: (Boolean, String?) -> Unit

@@ -120,7 +120,8 @@ fun Onboarding(navController: NavController) {
 
             Row(
                 modifier = Modifier.padding(top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Already Have Account?",

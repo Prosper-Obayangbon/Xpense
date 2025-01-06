@@ -66,11 +66,8 @@ fun XpenseNavigation(modifier: Modifier, context: Context) {
         mainNavGraph(modifier, navController, context)
         reportNavGraph(modifier, navController, context)
         budgetNavGraph(modifier, navController, context)
+        profileNavGraph(modifier, navController, context)
 
-        // Profile navigation is only available for specific API levels
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            profileNavGraph(modifier, navController, context)
-        }
     }
 }
 
@@ -218,14 +215,13 @@ private fun NavGraphBuilder.budgetNavGraph(modifier: Modifier, navController: Na
  * Navigation graph for profile-related screens.
  * Only available on devices running Android 13+.
  */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 private fun NavGraphBuilder.profileNavGraph(modifier: Modifier, navController: NavController, context: Context) {
     val viewModel = UserProfileVM(
         context = context,
         showToast = { message -> Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
     )
     // Profile main screen
-    composable(XpenseScreens.Profile.route) {
+    composable(XpenseScreens.ProfileScreen.route) {
         ProfileScreen(navController = navController, modifier = modifier, viewModel = viewModel, context = context)
     }
     // Profile information screen
